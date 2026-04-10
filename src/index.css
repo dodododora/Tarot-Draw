@@ -32,15 +32,9 @@
 }
 
 .gold-text {
-  color: #785a00; /* Deep gold/brown for ultra clear light mode */
-  font-weight: 800;
-}
-
-.dark .gold-text {
-  background: linear-gradient(to bottom, #ffe873, #eebb00);
+  background: linear-gradient(to bottom, #f1c40f, #d4af37);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  color: transparent;
 }
 
 .reversed-card {

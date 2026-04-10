@@ -1,7 +1,15 @@
 import React, { useState, useEffect, type MouseEvent, type FormEvent } from 'react';
 import { Moon, Sun, Plus, Trash2, Edit2, Copy, ArrowLeft, Sparkles, Wand2, Info, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ALL_CARDS, BUILTIN_SPREADS, type Spread, type TarotCard } from './constants';
+import { ALL_CARDS, BUILTIN_SPREADS, getCardEmoji, type Spread, type TarotCard } from './constants';
+
+export interface DrawHistory {
+  id: string;
+  date: number;
+  question: string;
+  spread: Spread;
+  cards: DrawnCard[];
+}
 
 interface DrawnCard extends TarotCard {
   isReversed: boolean;
@@ -9,8 +17,10 @@ interface DrawnCard extends TarotCard {
 }
 
 export default function App() {
-  const [view, setView] = useState<'home' | 'draw' | 'result'>('home');
+  const [view, setView] = useState<'home' | 'draw' | 'result' | 'history'>('home');
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  const [history, setHistory] = useState<DrawHistory[]>([]);
+  const [currentHistoryId, setCurrentHistoryId] = useState<string | null>(null);
   const [customSpreads, setCustomSpreads] = useState<Spread[]>([]);
   const [selectedSpread, setSelectedSpread] = useState<Spread | null>(null);
   const [question, setQuestion] = useState('');
@@ -37,6 +47,16 @@ export default function App() {
         console.error('Failed to parse saved spreads', e);
       }
     }
+
+    const savedHistory = localStorage.getItem('tarot-history');
+    if (savedHistory) {
+      try {
+        setHistory(JSON.parse(savedHistory));
+      } catch (e) {
+        console.error('Failed to parse saved history', e);
+      }
+    }
+    
     setIsLoaded(true);
   }, []);
 
@@ -48,8 +68,9 @@ export default function App() {
   useEffect(() => {
     if (isLoaded) {
       localStorage.setItem('tarot-custom-spreads', JSON.stringify(customSpreads));
+      localStorage.setItem('tarot-history', JSON.stringify(history));
     }
-  }, [customSpreads, isLoaded]);
+  }, [customSpreads, history, isLoaded]);
 
   const toggleTheme = () => setTheme(theme === 'light' ? 'dark' : 'light');
 
@@ -71,6 +92,42 @@ export default function App() {
 
     setDrawnCards(results);
     setView('result');
+
+    const newHistoryId = Date.now().toString() + Math.random().toString(36).substring(2, 9);
+    setCurrentHistoryId(newHistoryId);
+    
+    const newHistoryEntry: DrawHistory = {
+      id: newHistoryId,
+      date: Date.now(),
+      question: question || '',
+      spread: selectedSpread,
+      cards: results,
+    };
+    
+    setHistory(prev => [newHistoryEntry, ...prev]);
+  };
+
+  const drawExtraCard = () => {
+    if (!selectedSpread) return;
+    const availableCards = ALL_CARDS.filter(c => !drawnCards.some(dc => dc.id === c.id));
+    if (availableCards.length === 0) return;
+    
+    const randomIndex = Math.floor(Math.random() * availableCards.length);
+    const newCard = availableCards[randomIndex];
+    const extraCard: DrawnCard = {
+      ...newCard,
+      isReversed: Math.random() > 0.5,
+      positionName: `補充指引 ${drawnCards.length - selectedSpread.count + 1}`,
+    };
+
+    const newDrawnCards = [...drawnCards, extraCard];
+    setDrawnCards(newDrawnCards);
+
+    if (currentHistoryId) {
+      setHistory(prev => prev.map(h => 
+        h.id === currentHistoryId ? { ...h, cards: newDrawnCards } : h
+      ));
+    }
   };
 
   const copyToClipboard = () => {
@@ -135,17 +192,25 @@ ${drawnCards.map((card, i) => `${i + 1}. ${card.positionName}：${card.nameCN} $
           className="flex items-center gap-2 cursor-pointer group"
           onClick={() => setView('home')}
         >
-          <div className="w-8 h-8 rounded-full bg-slate-800 dark:bg-mystic-600 flex items-center justify-center text-gold-400 group-hover:scale-110 transition-transform">
+          <div className="w-8 h-8 rounded-full bg-mystic-600 flex items-center justify-center text-gold-400 group-hover:scale-110 transition-transform">
             <Sparkles size={18} />
           </div>
           <h1 className="text-xl font-bold tracking-tight gold-text">✦ Tarot Draw</h1>
         </div>
-        <button 
-          onClick={toggleTheme}
-          className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-mystic-800 transition-colors text-slate-600 dark:text-slate-400"
-        >
-          {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
-        </button>
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={() => setView('history')}
+            className="hidden sm:block px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-mystic-800 transition-colors text-sm font-medium text-slate-600 dark:text-slate-300"
+          >
+            歷史紀錄
+          </button>
+          <button 
+            onClick={toggleTheme}
+            className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-mystic-800 transition-colors text-slate-600 dark:text-slate-400"
+          >
+            {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+          </button>
+        </div>
       </nav>
 
       <main className="flex-grow container mx-auto px-4 py-8 max-w-6xl">
@@ -161,7 +226,7 @@ ${drawnCards.map((card, i) => `${i + 1}. ${card.positionName}：${card.nameCN} $
               {/* Built-in Spreads */}
               <section>
                 <div className="flex items-center gap-3 mb-6">
-                  <Wand2 className="text-slate-800 dark:text-slate-200" size={24} />
+                  <Wand2 className="text-mystic-500" size={24} />
                   <h2 className="text-2xl font-bold">內建牌陣</h2>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -183,12 +248,12 @@ ${drawnCards.map((card, i) => `${i + 1}. ${card.positionName}：${card.nameCN} $
               <section>
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
-                    <Edit2 className="text-slate-800 dark:text-slate-200" size={24} />
+                    <Edit2 className="text-mystic-500" size={24} />
                     <h2 className="text-2xl font-bold">自訂牌陣</h2>
                   </div>
                   <button 
                     onClick={openAddModal}
-                    className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-900 dark:bg-mystic-600 dark:hover:bg-mystic-500 text-white rounded-lg transition-colors text-sm font-medium"
+                    className="flex items-center gap-2 px-4 py-2 bg-mystic-600 hover:bg-mystic-500 text-white rounded-lg transition-colors text-sm font-medium"
                   >
                     <Plus size={18} /> 新增牌陣
                   </button>
@@ -214,7 +279,7 @@ ${drawnCards.map((card, i) => `${i + 1}. ${card.positionName}：${card.nameCN} $
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl text-slate-600 dark:text-slate-300">
+                  <div className="text-center py-12 border-2 border-dashed border-slate-200 dark:border-mystic-800 rounded-2xl text-slate-500 dark:text-mystic-400">
                     <p>尚未建立自訂牌陣</p>
                   </div>
                 )}
@@ -232,36 +297,36 @@ ${drawnCards.map((card, i) => `${i + 1}. ${card.positionName}：${card.nameCN} $
             >
               <button 
                 onClick={() => setView('home')}
-                className="flex items-center gap-2 text-slate-600 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white transition-colors"
+                className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-mystic-600 dark:hover:text-mystic-400 transition-colors"
               >
                 <ArrowLeft size={18} /> 返回首頁
               </button>
 
-              <div className="bg-white dark:bg-mystic-900 p-8 rounded-3xl shadow-xl border border-slate-200 dark:border-mystic-800">
+              <div className="bg-white dark:bg-mystic-900 p-8 rounded-3xl shadow-xl border border-slate-100 dark:border-mystic-800">
                 <div className="text-center mb-8">
-                  <h2 className="text-3xl font-bold mb-2 gold-text tracking-wide">{selectedSpread.name}</h2>
-                  <p className="text-slate-700 dark:text-slate-200 text-lg font-medium">{selectedSpread.hint}</p>
+                  <h2 className="text-3xl font-bold mb-2 gold-text">{selectedSpread.name}</h2>
+                  <p className="text-slate-500 dark:text-mystic-400">{selectedSpread.hint}</p>
                 </div>
 
                 <div className="space-y-6">
                   <div>
-                    <label className="block text-sm font-bold mb-2 text-slate-800 dark:text-white">
+                    <label className="block text-sm font-medium mb-2 text-slate-600 dark:text-mystic-300">
                       你想問的問題？
                     </label>
                     <textarea 
                       value={question}
                       onChange={(e) => setQuestion(e.target.value)}
                       placeholder="請輸入你的困惑或想了解的事情..."
-                      className="w-full h-32 px-4 py-3 rounded-xl border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-slate-800 dark:focus:ring-mystic-400 outline-none transition-all resize-none text-slate-900 dark:text-slate-100"
+                      className="w-full h-32 px-4 py-3 rounded-xl border border-slate-200 dark:border-mystic-800 bg-slate-50 dark:bg-mystic-950 focus:ring-2 focus:ring-mystic-500 outline-none transition-all resize-none"
                     />
                   </div>
 
-                  <div className="bg-slate-100 dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700">
+                  <div className="bg-mystic-50 dark:bg-mystic-800/50 p-4 rounded-xl border border-mystic-100 dark:border-mystic-700">
                     <div className="flex items-start gap-3">
-                      <Info className="text-slate-700 dark:text-slate-300 mt-1 flex-shrink-0" size={20} />
+                      <Info className="text-mystic-500 mt-1 flex-shrink-0" size={18} />
                       <div>
-                        <p className="text-base font-bold text-slate-900 dark:text-white">牌陣資訊</p>
-                        <p className="text-sm font-medium text-slate-700 dark:text-slate-200 mt-1 leading-relaxed">
+                        <p className="text-sm font-medium text-mystic-900 dark:text-mystic-100">牌陣資訊</p>
+                        <p className="text-xs text-mystic-600 dark:text-mystic-400 mt-1">
                           此牌陣將抽取 {selectedSpread.count} 張牌，分別代表：
                           {selectedSpread.positions.join('、')}
                         </p>
@@ -271,9 +336,9 @@ ${drawnCards.map((card, i) => `${i + 1}. ${card.positionName}：${card.nameCN} $
 
                   <button 
                     onClick={handleDraw}
-                    className="w-full py-4 bg-slate-800 hover:bg-slate-900 dark:bg-mystic-600 dark:hover:bg-mystic-500 text-white rounded-xl font-bold text-xl shadow-lg transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2"
+                    className="w-full py-4 bg-mystic-600 hover:bg-mystic-500 text-white rounded-xl font-bold text-lg shadow-lg shadow-mystic-500/20 transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2"
                   >
-                    <Sparkles size={24} /> 開始抽牌
+                    <Sparkles size={20} /> 開始抽牌
                   </button>
                 </div>
               </div>
@@ -289,31 +354,45 @@ ${drawnCards.map((card, i) => `${i + 1}. ${card.positionName}：${card.nameCN} $
             >
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                  <h2 className="text-2xl font-bold gold-text tracking-wider">{selectedSpread.name}</h2>
-                  <p className="text-slate-700 dark:text-slate-200 text-lg font-bold">問題：{question || '未輸入'}</p>
+                  <h2 className="text-2xl font-bold gold-text">{selectedSpread.name}</h2>
+                  <p className="text-slate-500 dark:text-mystic-400">問題：{question || '未輸入'}</p>
                 </div>
                 <div className="flex gap-3">
                   <button 
-                    onClick={() => setView('draw')}
-                    className="px-4 py-2 rounded-lg border-2 border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-sm font-bold text-slate-800 dark:text-white"
+                    onClick={() => {
+                      setView('draw');
+                      setCurrentHistoryId(null);
+                      setDrawnCards([]);
+                    }}
+                    className="px-4 py-2 rounded-lg border border-slate-200 dark:border-mystic-800 hover:bg-slate-50 dark:hover:bg-mystic-900 transition-colors text-sm font-medium"
                   >
                     重新抽牌
                   </button>
                 </div>
               </div>
 
-              {/* 實體桌巾區域 (Tablecloth Container) */}
-              <div className="relative bg-slate-200 dark:bg-slate-900 p-8 rounded-3xl shadow-inner border-4 border-slate-300 dark:border-slate-800 overflow-hidden">
-                <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-900 via-transparent to-transparent pointer-events-none"></div>
-                <div className="relative z-10 flex flex-wrap justify-center items-center gap-x-6 gap-y-10 min-h-[300px]">
+              {/* Tablecloth Layout */}
+              <div className="relative bg-mystic-900 dark:bg-mystic-950 rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-12 shadow-2xl shadow-mystic-900/50 border-4 border-mystic-800/30 overflow-hidden">
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-mystic-800/20 via-mystic-900/80 to-mystic-950 pointer-events-none"></div>
+                
+                <div className="relative z-10 flex flex-wrap justify-center gap-6 sm:gap-10">
                   {drawnCards.map((card, index) => (
                     <TarotCardDisplay key={index} card={card} index={index} />
                   ))}
                 </div>
+
+                <div className="relative z-10 mt-12 flex justify-center">
+                  <button 
+                    onClick={drawExtraCard}
+                    className="px-6 py-2.5 rounded-full border border-gold-500/50 text-gold-500 hover:bg-gold-500/10 transition-colors font-bold flex items-center gap-2"
+                  >
+                    <Plus size={18} /> 追加補抽一張
+                  </button>
+                </div>
               </div>
 
-              <div className="bg-slate-100 dark:bg-slate-800 p-6 rounded-2xl border-2 border-slate-300 dark:border-slate-700 text-center">
-                <p className="text-slate-800 dark:text-white font-bold text-lg">
+              <div className="bg-white dark:bg-mystic-900 p-6 rounded-2xl border border-slate-100 dark:border-mystic-800 text-center">
+                <p className="text-slate-600 dark:text-mystic-300 italic">
                   「牌卡只是指引，真正的答案在你的內心。」
                 </p>
               </div>
@@ -323,7 +402,7 @@ ${drawnCards.map((card, i) => `${i + 1}. ${card.positionName}：${card.nameCN} $
                 <div className="flex items-center gap-4">
                   <button 
                     onClick={copyToClipboard}
-                    className="px-8 py-3 rounded-xl bg-slate-800 hover:bg-slate-900 dark:bg-mystic-600 dark:hover:bg-mystic-500 text-white shadow-lg transition-all hover:-translate-y-1 active:scale-95 font-bold flex items-center gap-2"
+                    className="px-8 py-3 rounded-xl bg-mystic-600 hover:bg-mystic-500 text-white shadow-lg shadow-mystic-500/20 transition-all hover:-translate-y-1 active:scale-95 font-bold flex items-center gap-2"
                   >
                     <Copy size={18} /> 📋 一鍵複製結果
                   </button>
@@ -450,17 +529,17 @@ function SpreadCard({ spread, isCustom, onClick, onEdit, onDelete }: {
         </span>
       )}
       <div className="mb-4">
-        <h3 className="text-lg font-bold group-hover:text-slate-600 dark:group-hover:text-white transition-colors text-slate-900 dark:text-white">{spread.name}</h3>
-        <span className="text-xs font-medium text-slate-700 dark:text-slate-300">{spread.count} 張牌</span>
+        <h3 className="text-lg font-bold group-hover:text-mystic-500 transition-colors">{spread.name}</h3>
+        <span className="text-xs font-medium text-slate-500 dark:text-mystic-400">{spread.count} 張牌</span>
       </div>
-      <p className="text-sm text-slate-800 dark:text-slate-200 line-clamp-2">{spread.hint || `自訂牌陣 · ${spread.count} 張`}</p>
+      <p className="text-sm text-slate-500 dark:text-mystic-400 line-clamp-2">{spread.hint || `自訂牌陣 · ${spread.count} 張`}</p>
       
       {isCustom && (
-        <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <button onClick={onEdit} className="p-1.5 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+        <div className="mt-4 pt-4 border-t border-slate-100 dark:border-mystic-800 flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <button onClick={onEdit} className="p-1.5 text-slate-400 dark:text-mystic-500 hover:text-mystic-600 dark:hover:text-mystic-400 transition-colors">
             <Edit2 size={16} />
           </button>
-          <button onClick={onDelete} className="p-1.5 text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-colors">
+          <button onClick={onDelete} className="p-1.5 text-slate-400 dark:text-mystic-500 hover:text-red-500 dark:hover:text-red-400 transition-colors">
             <Trash2 size={16} />
           </button>
         </div>
@@ -470,14 +549,16 @@ function SpreadCard({ spread, isCustom, onClick, onEdit, onDelete }: {
 }
 
 function TarotCardDisplay({ card, index }: { card: DrawnCard; index: number; key?: string | number }) {
+  const emoji = getCardEmoji(card.id);
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
-      className="flex flex-col items-center gap-4"
+      className="flex flex-col items-center gap-4 shrink-0"
     >
-      <div className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-widest bg-slate-100/50 dark:bg-black/20 px-2 py-1 rounded-md">
+      <div className="text-xs font-bold text-mystic-600 dark:text-mystic-400 uppercase tracking-widest">
         {index + 1}. {card.positionName}
       </div>
       
@@ -495,10 +576,10 @@ function TarotCardDisplay({ card, index }: { card: DrawnCard; index: number; key
           <div className="absolute bottom-4 right-4 text-mystic-700 opacity-20"><Sparkles size={12} /></div>
 
           {/* Card Content */}
-          <div className={`flex flex-col items-center text-center transition-transform duration-700 ${card.isReversed ? 'rotate-180' : ''}`}>
-            <div className="text-4xl mb-4">🎴</div>
-            <div className="text-mystic-200 font-bold text-sm mb-1">{card.nameCN}</div>
-            <div className="text-mystic-500 text-[10px] leading-tight px-2">{card.nameEN}</div>
+          <div className={`flex flex-col items-center justify-center text-center transition-transform duration-700 h-full w-full ${card.isReversed ? 'rotate-180' : ''}`}>
+            <div className="text-3xl sm:text-4xl mb-4 sm:mb-6">{emoji}</div>
+            <div className="text-mystic-100 font-extrabold text-base sm:text-lg mb-1 tracking-wider leading-tight px-2">{card.nameCN}</div>
+            <div className="text-mystic-400 text-[9px] sm:text-[10px] tracking-widest uppercase px-1 leading-tight">{card.nameEN}</div>
           </div>
         </div>
 
@@ -510,9 +591,9 @@ function TarotCardDisplay({ card, index }: { card: DrawnCard; index: number; key
         )}
       </div>
 
-      <div className="text-center bg-slate-100/50 dark:bg-black/20 px-3 py-2 rounded-xl">
-        <div className="font-bold text-slate-900 dark:text-white text-base">{card.nameCN}</div>
-        <div className={`text-sm font-bold mt-1 ${card.isReversed ? 'text-red-600 dark:text-red-400' : 'text-slate-700 dark:text-slate-300'}`}>
+      <div className="text-center">
+        <div className="font-bold text-slate-800 dark:text-mystic-100">{card.nameCN}</div>
+        <div className={`text-xs font-bold ${card.isReversed ? 'text-red-600 dark:text-red-400' : 'text-mystic-600 dark:text-mystic-400'}`}>
           {card.isReversed ? '逆位' : '正位'}
         </div>
       </div>

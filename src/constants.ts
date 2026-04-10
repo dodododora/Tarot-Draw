@@ -87,3 +87,16 @@ export const BUILTIN_SPREADS: Spread[] = [
   { id: "shadow", name: "影子自我", count: 4, positions: ["你展現的面貌", "你壓抑的面貌", "影子的根源", "整合之道"], hint: "面對與接納你的暗面" },
   { id: "hero", name: "英雄之旅", count: 7, positions: ["出發點", "召喚", "考驗", "導師/盟友", "深淵", "轉化", "歸來"], hint: "你的故事正走到哪一章？" },
 ];
+
+export function getCardEmoji(cardId: number): string {
+  if (cardId < 22) return "🌟"; // Major Arcana
+  
+  const suitIndex = Math.floor((cardId - 22) / 14);
+  switch (suitIndex) {
+    case 0: return "🪄"; // Wands
+    case 1: return "🏆"; // Cups
+    case 2: return "⚔️"; // Swords
+    case 3: return "🪙"; // Pentacles
+    default: return "🎴";
+  }
+}
