@@ -135,7 +135,7 @@ ${drawnCards.map((card, i) => `${i + 1}. ${card.positionName}：${card.nameCN} $
           className="flex items-center gap-2 cursor-pointer group"
           onClick={() => setView('home')}
         >
-          <div className="w-8 h-8 rounded-full bg-mystic-600 flex items-center justify-center text-gold-400 group-hover:scale-110 transition-transform">
+          <div className="w-8 h-8 rounded-full bg-slate-800 dark:bg-mystic-600 flex items-center justify-center text-gold-400 group-hover:scale-110 transition-transform">
             <Sparkles size={18} />
           </div>
           <h1 className="text-xl font-bold tracking-tight gold-text">✦ Tarot Draw</h1>
@@ -161,7 +161,7 @@ ${drawnCards.map((card, i) => `${i + 1}. ${card.positionName}：${card.nameCN} $
               {/* Built-in Spreads */}
               <section>
                 <div className="flex items-center gap-3 mb-6">
-                  <Wand2 className="text-mystic-500" size={24} />
+                  <Wand2 className="text-slate-800 dark:text-slate-200" size={24} />
                   <h2 className="text-2xl font-bold">內建牌陣</h2>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -183,12 +183,12 @@ ${drawnCards.map((card, i) => `${i + 1}. ${card.positionName}：${card.nameCN} $
               <section>
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
-                    <Edit2 className="text-mystic-500" size={24} />
+                    <Edit2 className="text-slate-800 dark:text-slate-200" size={24} />
                     <h2 className="text-2xl font-bold">自訂牌陣</h2>
                   </div>
                   <button 
                     onClick={openAddModal}
-                    className="flex items-center gap-2 px-4 py-2 bg-mystic-600 hover:bg-mystic-500 text-white rounded-lg transition-colors text-sm font-medium"
+                    className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-900 dark:bg-mystic-600 dark:hover:bg-mystic-500 text-white rounded-lg transition-colors text-sm font-medium"
                   >
                     <Plus size={18} /> 新增牌陣
                   </button>
@@ -214,7 +214,7 @@ ${drawnCards.map((card, i) => `${i + 1}. ${card.positionName}：${card.nameCN} $
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12 border-2 border-dashed border-slate-200 dark:border-mystic-800 rounded-2xl text-slate-500 dark:text-mystic-400">
+                  <div className="text-center py-12 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl text-slate-600 dark:text-slate-300">
                     <p>尚未建立自訂牌陣</p>
                   </div>
                 )}
@@ -232,36 +232,36 @@ ${drawnCards.map((card, i) => `${i + 1}. ${card.positionName}：${card.nameCN} $
             >
               <button 
                 onClick={() => setView('home')}
-                className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-mystic-600 dark:hover:text-mystic-400 transition-colors"
+                className="flex items-center gap-2 text-slate-600 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white transition-colors"
               >
                 <ArrowLeft size={18} /> 返回首頁
               </button>
 
-              <div className="bg-white dark:bg-mystic-900 p-8 rounded-3xl shadow-xl border border-slate-100 dark:border-mystic-800">
+              <div className="bg-white dark:bg-mystic-900 p-8 rounded-3xl shadow-xl border border-slate-200 dark:border-mystic-800">
                 <div className="text-center mb-8">
-                  <h2 className="text-3xl font-bold mb-2 gold-text">{selectedSpread.name}</h2>
-                  <p className="text-slate-500 dark:text-mystic-400">{selectedSpread.hint}</p>
+                  <h2 className="text-3xl font-bold mb-2 gold-text tracking-wide">{selectedSpread.name}</h2>
+                  <p className="text-slate-700 dark:text-slate-200 text-lg font-medium">{selectedSpread.hint}</p>
                 </div>
 
                 <div className="space-y-6">
                   <div>
-                    <label className="block text-sm font-medium mb-2 text-slate-600 dark:text-mystic-300">
+                    <label className="block text-sm font-bold mb-2 text-slate-800 dark:text-white">
                       你想問的問題？
                     </label>
                     <textarea 
                       value={question}
                       onChange={(e) => setQuestion(e.target.value)}
                       placeholder="請輸入你的困惑或想了解的事情..."
-                      className="w-full h-32 px-4 py-3 rounded-xl border border-slate-200 dark:border-mystic-800 bg-slate-50 dark:bg-mystic-950 focus:ring-2 focus:ring-mystic-500 outline-none transition-all resize-none"
+                      className="w-full h-32 px-4 py-3 rounded-xl border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-slate-800 dark:focus:ring-mystic-400 outline-none transition-all resize-none text-slate-900 dark:text-slate-100"
                     />
                   </div>
 
-                  <div className="bg-mystic-50 dark:bg-mystic-800/50 p-4 rounded-xl border border-mystic-100 dark:border-mystic-700">
+                  <div className="bg-slate-100 dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700">
                     <div className="flex items-start gap-3">
-                      <Info className="text-mystic-500 mt-1 flex-shrink-0" size={18} />
+                      <Info className="text-slate-700 dark:text-slate-300 mt-1 flex-shrink-0" size={20} />
                       <div>
-                        <p className="text-sm font-medium text-mystic-900 dark:text-mystic-100">牌陣資訊</p>
-                        <p className="text-xs text-mystic-600 dark:text-mystic-400 mt-1">
+                        <p className="text-base font-bold text-slate-900 dark:text-white">牌陣資訊</p>
+                        <p className="text-sm font-medium text-slate-700 dark:text-slate-200 mt-1 leading-relaxed">
                           此牌陣將抽取 {selectedSpread.count} 張牌，分別代表：
                           {selectedSpread.positions.join('、')}
                         </p>
@@ -271,9 +271,9 @@ ${drawnCards.map((card, i) => `${i + 1}. ${card.positionName}：${card.nameCN} $
 
                   <button 
                     onClick={handleDraw}
-                    className="w-full py-4 bg-mystic-600 hover:bg-mystic-500 text-white rounded-xl font-bold text-lg shadow-lg shadow-mystic-500/20 transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2"
+                    className="w-full py-4 bg-slate-800 hover:bg-slate-900 dark:bg-mystic-600 dark:hover:bg-mystic-500 text-white rounded-xl font-bold text-xl shadow-lg transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2"
                   >
-                    <Sparkles size={20} /> 開始抽牌
+                    <Sparkles size={24} /> 開始抽牌
                   </button>
                 </div>
               </div>
@@ -289,23 +289,31 @@ ${drawnCards.map((card, i) => `${i + 1}. ${card.positionName}：${card.nameCN} $
             >
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                  <h2 className="text-2xl font-bold gold-text">{selectedSpread.name}</h2>
-                  <p className="text-slate-500 dark:text-mystic-400">問題：{question || '未輸入'}</p>
+                  <h2 className="text-2xl font-bold gold-text tracking-wider">{selectedSpread.name}</h2>
+                  <p className="text-slate-700 dark:text-slate-200 text-lg font-bold">問題：{question || '未輸入'}</p>
                 </div>
                 <div className="flex gap-3">
                   <button 
                     onClick={() => setView('draw')}
-                    className="px-4 py-2 rounded-lg border border-slate-200 dark:border-mystic-800 hover:bg-slate-50 dark:hover:bg-mystic-900 transition-colors text-sm font-medium"
+                    className="px-4 py-2 rounded-lg border-2 border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-sm font-bold text-slate-800 dark:text-white"
                   >
                     重新抽牌
                   </button>
                 </div>
               </div>
 
-              <SpreadLayoutEngine spread={selectedSpread} cards={drawnCards} />
+              {/* 實體桌巾區域 (Tablecloth Container) */}
+              <div className="relative bg-slate-200 dark:bg-slate-900 p-8 rounded-3xl shadow-inner border-4 border-slate-300 dark:border-slate-800 overflow-hidden">
+                <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-900 via-transparent to-transparent pointer-events-none"></div>
+                <div className="relative z-10 flex flex-wrap justify-center items-center gap-x-6 gap-y-10 min-h-[300px]">
+                  {drawnCards.map((card, index) => (
+                    <TarotCardDisplay key={index} card={card} index={index} />
+                  ))}
+                </div>
+              </div>
 
-              <div className="bg-white dark:bg-mystic-900 p-6 rounded-2xl border border-slate-100 dark:border-mystic-800 text-center">
-                <p className="text-slate-600 dark:text-mystic-300 italic">
+              <div className="bg-slate-100 dark:bg-slate-800 p-6 rounded-2xl border-2 border-slate-300 dark:border-slate-700 text-center">
+                <p className="text-slate-800 dark:text-white font-bold text-lg">
                   「牌卡只是指引，真正的答案在你的內心。」
                 </p>
               </div>
@@ -315,7 +323,7 @@ ${drawnCards.map((card, i) => `${i + 1}. ${card.positionName}：${card.nameCN} $
                 <div className="flex items-center gap-4">
                   <button 
                     onClick={copyToClipboard}
-                    className="px-8 py-3 rounded-xl bg-mystic-600 hover:bg-mystic-500 text-white shadow-lg shadow-mystic-500/20 transition-all hover:-translate-y-1 active:scale-95 font-bold flex items-center gap-2"
+                    className="px-8 py-3 rounded-xl bg-slate-800 hover:bg-slate-900 dark:bg-mystic-600 dark:hover:bg-mystic-500 text-white shadow-lg transition-all hover:-translate-y-1 active:scale-95 font-bold flex items-center gap-2"
                   >
                     <Copy size={18} /> 📋 一鍵複製結果
                   </button>
@@ -442,17 +450,17 @@ function SpreadCard({ spread, isCustom, onClick, onEdit, onDelete }: {
         </span>
       )}
       <div className="mb-4">
-        <h3 className="text-lg font-bold group-hover:text-mystic-500 transition-colors">{spread.name}</h3>
-        <span className="text-xs font-medium text-slate-500 dark:text-mystic-400">{spread.count} 張牌</span>
+        <h3 className="text-lg font-bold group-hover:text-slate-600 dark:group-hover:text-white transition-colors text-slate-900 dark:text-white">{spread.name}</h3>
+        <span className="text-xs font-medium text-slate-700 dark:text-slate-300">{spread.count} 張牌</span>
       </div>
-      <p className="text-sm text-slate-500 dark:text-mystic-400 line-clamp-2">{spread.hint || `自訂牌陣 · ${spread.count} 張`}</p>
+      <p className="text-sm text-slate-800 dark:text-slate-200 line-clamp-2">{spread.hint || `自訂牌陣 · ${spread.count} 張`}</p>
       
       {isCustom && (
-        <div className="mt-4 pt-4 border-t border-slate-100 dark:border-mystic-800 flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <button onClick={onEdit} className="p-1.5 text-slate-400 dark:text-mystic-500 hover:text-mystic-600 dark:hover:text-mystic-400 transition-colors">
+        <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <button onClick={onEdit} className="p-1.5 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
             <Edit2 size={16} />
           </button>
-          <button onClick={onDelete} className="p-1.5 text-slate-400 dark:text-mystic-500 hover:text-red-500 dark:hover:text-red-400 transition-colors">
+          <button onClick={onDelete} className="p-1.5 text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-colors">
             <Trash2 size={16} />
           </button>
         </div>
@@ -461,134 +469,53 @@ function SpreadCard({ spread, isCustom, onClick, onEdit, onDelete }: {
   );
 }
 
-function TarotCardDisplay({ card, index, isAbsolute }: { card: DrawnCard; index: number; isAbsolute?: boolean; key?: string | number }) {
+function TarotCardDisplay({ card, index }: { card: DrawnCard; index: number; key?: string | number }) {
   return (
     <motion.div 
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: index * 0.15, type: 'spring' }}
-      className={`flex flex-col items-center gap-2 w-full ${isAbsolute ? '' : 'h-full'}`}
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.1 }}
+      className="flex flex-col items-center gap-4"
     >
-      <div className={`text-[10px] sm:text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider bg-slate-100/90 dark:bg-black/80 px-2 py-0.5 rounded shadow whitespace-nowrap text-center ${isAbsolute ? 'absolute -top-6 left-1/2 -translate-x-1/2 z-20 whitespace-normal min-w-[120%]' : ''}`}>
+      <div className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-widest bg-slate-100/50 dark:bg-black/20 px-2 py-1 rounded-md">
         {index + 1}. {card.positionName}
-        {isAbsolute && <div className="text-[10px] text-slate-600 dark:text-slate-300 mt-0.5">{card.nameCN} {card.isReversed ? '(逆)' : ''}</div>}
       </div>
       
-      <div className={`relative w-full aspect-[2/3.5] max-w-[180px] rounded-xl overflow-hidden border-2 sm:border-4 transition-all duration-500 ${
-        card.isReversed ? 'border-red-600 shadow-[0_0_15px_rgba(220,38,38,0.6)]' : 'border-yellow-400 shadow-[0_0_15px_rgba(250,204,21,0.5)]'
-      }`}>
-        <div className="absolute inset-0 bg-slate-900 flex flex-col items-center justify-center p-2">
-          <div className="absolute inset-1.5 border-2 border-slate-700/50 rounded pointer-events-none" />
+      <div className={`relative w-full aspect-[2/3.5] max-w-[180px] rounded-xl overflow-hidden border-4 transition-all duration-500 ${
+        card.isReversed ? 'border-red-500/50 shadow-red-500/20' : 'border-gold-500/50 shadow-gold-500/20'
+      } shadow-2xl`}>
+        {/* Card Background Decoration */}
+        <div className="absolute inset-0 bg-mystic-900 flex flex-col items-center justify-center p-4">
+          <div className="absolute inset-2 border border-mystic-800/50 rounded-lg pointer-events-none" />
           
-          <div className={`flex flex-col items-center justify-center text-center transition-transform duration-700 w-full h-full ${card.isReversed ? 'rotate-180' : ''}`}>
-            <div className="text-3xl sm:text-4xl mb-2">🎴</div>
-            <div className="text-white font-extrabold text-[10px] sm:text-sm leading-tight mb-1 px-1">{card.nameCN}</div>
-            <div className="text-slate-400 font-bold text-[8px] sm:text-[10px] leading-tight px-1">{card.nameEN}</div>
+          {/* Mystical Symbols */}
+          <div className="absolute top-4 left-4 text-mystic-700 opacity-20"><Sparkles size={12} /></div>
+          <div className="absolute top-4 right-4 text-mystic-700 opacity-20"><Sparkles size={12} /></div>
+          <div className="absolute bottom-4 left-4 text-mystic-700 opacity-20"><Sparkles size={12} /></div>
+          <div className="absolute bottom-4 right-4 text-mystic-700 opacity-20"><Sparkles size={12} /></div>
+
+          {/* Card Content */}
+          <div className={`flex flex-col items-center text-center transition-transform duration-700 ${card.isReversed ? 'rotate-180' : ''}`}>
+            <div className="text-4xl mb-4">🎴</div>
+            <div className="text-mystic-200 font-bold text-sm mb-1">{card.nameCN}</div>
+            <div className="text-mystic-500 text-[10px] leading-tight px-2">{card.nameEN}</div>
           </div>
         </div>
 
+        {/* Reversed Badge */}
         {card.isReversed && (
-          <div className="absolute top-1 right-1 bg-red-600 text-white text-[9px] font-black px-1 rounded shadow-sm z-10">
+          <div className="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm z-10">
             逆
           </div>
         )}
       </div>
 
-      {!isAbsolute && (
-        <div className="text-center mt-1 bg-white/90 dark:bg-black/80 px-3 py-1 rounded-lg shadow whitespace-nowrap">
-          <div className="font-extrabold text-slate-900 dark:text-white text-sm">{card.nameCN}</div>
-          <div className={`text-xs font-black ${card.isReversed ? 'text-red-600 dark:text-red-400' : 'text-slate-800 dark:text-slate-300'}`}>
-            {card.isReversed ? '逆位' : '正位'}
-          </div>
+      <div className="text-center bg-slate-100/50 dark:bg-black/20 px-3 py-2 rounded-xl">
+        <div className="font-bold text-slate-900 dark:text-white text-base">{card.nameCN}</div>
+        <div className={`text-sm font-bold mt-1 ${card.isReversed ? 'text-red-600 dark:text-red-400' : 'text-slate-700 dark:text-slate-300'}`}>
+          {card.isReversed ? '逆位' : '正位'}
         </div>
-      )}
+      </div>
     </motion.div>
-  );
-}
-
-function SpreadLayoutEngine({ spread, cards }: { spread: Spread, cards: DrawnCard[] }) {
-  const LAYOUTS: Record<string, { w: string, cards: { left: string, top: string, rotation?: number }[] }> = {
-    celtic: {
-      w: 'aspect-[3/4] sm:aspect-[4/3] w-full max-w-4xl relative',
-      cards: [
-        { left: '40%', top: '50%' }, // 1 現況
-        { left: '40%', top: '50%', rotation: 90 }, // 2 挑戰
-        { left: '40%', top: '80%' }, // 3 潛意識
-        { left: '15%', top: '50%' }, // 4 過去
-        { left: '40%', top: '20%' }, // 5 可能結果
-        { left: '65%', top: '50%' }, // 6 近未來
-        { left: '90%', top: '80%' }, // 7 自我認知
-        { left: '90%', top: '60%' }, // 8 外在環境
-        { left: '90%', top: '40%' }, // 9 希望與恐懼
-        { left: '90%', top: '20%' }, // 10 最終結果
-      ]
-    },
-    choice: {
-      w: 'aspect-[4/3] sm:aspect-video w-full max-w-3xl relative',
-      cards: [
-        { left: '50%', top: '80%' }, // 1
-        { left: '30%', top: '50%' }, // 2
-        { left: '15%', top: '20%' }, // 3
-        { left: '70%', top: '50%' }, // 4
-        { left: '85%', top: '20%' }, // 5
-      ]
-    },
-    lovers: {
-      w: 'aspect-[4/3] sm:aspect-video w-full max-w-3xl relative',
-      cards: [
-        { left: '20%', top: '30%' }, // 1
-        { left: '80%', top: '30%' }, // 2
-        { left: '50%', top: '50%' }, // 3
-        { left: '35%', top: '80%' }, // 4
-        { left: '65%', top: '80%' }, // 5
-        { left: '50%', top: '20%' }, // 6
-      ]
-    }
-  };
-
-  const layout = spread.isCustom ? null : LAYOUTS[spread.id];
-
-  const TableclothWrapper = ({ children, className = '' }: { children: React.ReactNode, className?: string }) => (
-    <div className="tarot-tablecloth w-full overflow-hidden flex items-center justify-center min-h-[50vh]">
-      <div className={`w-full ${className}`}>
-        {children}
-      </div>
-    </div>
-  );
-
-  if (layout && layout.cards.length === cards.length) {
-    return (
-      <TableclothWrapper className={layout.w}>
-        {cards.map((card, idx) => {
-          const pos = layout.cards[idx];
-          return (
-            <div 
-              key={idx} 
-              className="absolute w-[22%] sm:w-[15%] max-w-[130px] z-10 transition-all duration-300 hover:z-30 hover:scale-[1.15]"
-              style={{ 
-                left: pos.left, 
-                top: pos.top, 
-                transform: `translate(-50%, -50%) ${pos.rotation ? `rotate(${pos.rotation}deg)` : ''}` 
-              }}
-            >
-              <TarotCardDisplay card={card} index={idx} isAbsolute />
-            </div>
-          );
-        })}
-      </TableclothWrapper>
-    );
-  }
-
-  // Fallback / default generic layout (Flex Wrap, clean horizontal)
-  return (
-    <TableclothWrapper>
-      <div className="flex flex-wrap justify-center items-center gap-6 sm:gap-10 py-10 px-4 max-w-5xl mx-auto">
-        {cards.map((card, index) => (
-          <div key={index} className="w-[110px] sm:w-[140px] z-10 hover:z-20 hover:-translate-y-2 transition-transform duration-300">
-            <TarotCardDisplay card={card} index={index} />
-          </div>
-        ))}
-      </div>
-    </TableclothWrapper>
   );
 }
