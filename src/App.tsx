@@ -18,6 +18,7 @@ export default function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSpread, setEditingSpread] = useState<Spread | null>(null);
   const [showCopySuccess, setShowCopySuccess] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   // Initialize theme and custom spreads
   useEffect(() => {
@@ -30,8 +31,13 @@ export default function App() {
 
     const savedSpreads = localStorage.getItem('tarot-custom-spreads');
     if (savedSpreads) {
-      setCustomSpreads(JSON.parse(savedSpreads));
+      try {
+        setCustomSpreads(JSON.parse(savedSpreads));
+      } catch (e) {
+        console.error('Failed to parse saved spreads', e);
+      }
     }
+    setIsLoaded(true);
   }, []);
 
   useEffect(() => {
@@ -39,10 +45,11 @@ export default function App() {
     localStorage.setItem('tarot-theme', theme);
   }, [theme]);
 
-  const saveCustomSpreads = (spreads: Spread[]) => {
-    setCustomSpreads(spreads);
-    localStorage.setItem('tarot-custom-spreads', JSON.stringify(spreads));
-  };
+  useEffect(() => {
+    if (isLoaded) {
+      localStorage.setItem('tarot-custom-spreads', JSON.stringify(customSpreads));
+    }
+  }, [customSpreads, isLoaded]);
 
   const toggleTheme = () => setTheme(theme === 'light' ? 'dark' : 'light');
 
@@ -84,7 +91,7 @@ ${drawnCards.map((card, i) => `${i + 1}. ${card.positionName}：${card.nameCN} $
 
   const openAddModal = () => {
     setEditingSpread({
-      id: crypto.randomUUID(),
+      id: Date.now().toString() + Math.random().toString(36).substring(2, 9),
       name: '',
       count: 3,
       positions: ['', '', ''],
@@ -101,8 +108,8 @@ ${drawnCards.map((card, i) => `${i + 1}. ${card.positionName}：${card.nameCN} $
 
   const deleteSpread = (id: string, e: MouseEvent) => {
     e.stopPropagation();
-    if (confirm('確定要刪除此自訂牌陣嗎？')) {
-      saveCustomSpreads(customSpreads.filter(s => s.id !== id));
+    if (window.confirm('確定要刪除此自訂牌陣嗎？')) {
+      setCustomSpreads(prev => prev.filter(s => s.id !== id));
     }
   };
 
@@ -110,11 +117,13 @@ ${drawnCards.map((card, i) => `${i + 1}. ${card.positionName}：${card.nameCN} $
     e.preventDefault();
     if (!editingSpread) return;
     
-    const newSpreads = editingSpread.id && customSpreads.find(s => s.id === editingSpread.id)
-      ? customSpreads.map(s => s.id === editingSpread.id ? editingSpread : s)
-      : [...customSpreads, editingSpread];
+    setCustomSpreads(prev => {
+      if (editingSpread.id && prev.find(s => s.id === editingSpread.id)) {
+        return prev.map(s => s.id === editingSpread.id ? editingSpread : s);
+      }
+      return [...prev, editingSpread];
+    });
     
-    saveCustomSpreads(newSpreads);
     setIsModalOpen(false);
   };
 
@@ -205,7 +214,7 @@ ${drawnCards.map((card, i) => `${i + 1}. ${card.positionName}：${card.nameCN} $
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12 border-2 border-dashed border-slate-200 dark:border-mystic-800 rounded-2xl text-slate-400 dark:text-mystic-700">
+                  <div className="text-center py-12 border-2 border-dashed border-slate-200 dark:border-mystic-800 rounded-2xl text-slate-500 dark:text-mystic-400">
                     <p>尚未建立自訂牌陣</p>
                   </div>
                 )}
@@ -223,7 +232,7 @@ ${drawnCards.map((card, i) => `${i + 1}. ${card.positionName}：${card.nameCN} $
             >
               <button 
                 onClick={() => setView('home')}
-                className="flex items-center gap-2 text-slate-500 hover:text-mystic-500 transition-colors"
+                className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-mystic-600 dark:hover:text-mystic-400 transition-colors"
               >
                 <ArrowLeft size={18} /> 返回首頁
               </button>
@@ -293,11 +302,7 @@ ${drawnCards.map((card, i) => `${i + 1}. ${card.positionName}：${card.nameCN} $
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-                {drawnCards.map((card, index) => (
-                  <TarotCardDisplay key={index} card={card} index={index} />
-                ))}
-              </div>
+              <SpreadLayoutEngine spread={selectedSpread} cards={drawnCards} />
 
               <div className="bg-white dark:bg-mystic-900 p-6 rounded-2xl border border-slate-100 dark:border-mystic-800 text-center">
                 <p className="text-slate-600 dark:text-mystic-300 italic">
@@ -345,7 +350,7 @@ ${drawnCards.map((card, i) => `${i + 1}. ${card.positionName}：${card.nameCN} $
             >
               <div className="px-6 py-4 border-b border-slate-100 dark:border-mystic-800 flex justify-between items-center">
                 <h3 className="text-xl font-bold">自訂牌陣</h3>
-                <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+                <button onClick={() => setIsModalOpen(false)} className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
                   <X size={24} />
                 </button>
               </div>
@@ -438,16 +443,16 @@ function SpreadCard({ spread, isCustom, onClick, onEdit, onDelete }: {
       )}
       <div className="mb-4">
         <h3 className="text-lg font-bold group-hover:text-mystic-500 transition-colors">{spread.name}</h3>
-        <span className="text-xs font-medium text-slate-400 dark:text-mystic-500">{spread.count} 張牌</span>
+        <span className="text-xs font-medium text-slate-500 dark:text-mystic-400">{spread.count} 張牌</span>
       </div>
       <p className="text-sm text-slate-500 dark:text-mystic-400 line-clamp-2">{spread.hint || `自訂牌陣 · ${spread.count} 張`}</p>
       
       {isCustom && (
         <div className="mt-4 pt-4 border-t border-slate-100 dark:border-mystic-800 flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <button onClick={onEdit} className="p-1.5 text-slate-400 hover:text-mystic-500 transition-colors">
+          <button onClick={onEdit} className="p-1.5 text-slate-400 dark:text-mystic-500 hover:text-mystic-600 dark:hover:text-mystic-400 transition-colors">
             <Edit2 size={16} />
           </button>
-          <button onClick={onDelete} className="p-1.5 text-slate-400 hover:text-red-500 transition-colors">
+          <button onClick={onDelete} className="p-1.5 text-slate-400 dark:text-mystic-500 hover:text-red-500 dark:hover:text-red-400 transition-colors">
             <Trash2 size={16} />
           </button>
         </div>
@@ -456,53 +461,134 @@ function SpreadCard({ spread, isCustom, onClick, onEdit, onDelete }: {
   );
 }
 
-function TarotCardDisplay({ card, index }: { card: DrawnCard; index: number; key?: string | number }) {
+function TarotCardDisplay({ card, index, isAbsolute }: { card: DrawnCard; index: number; isAbsolute?: boolean; key?: string | number }) {
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.1 }}
-      className="flex flex-col items-center gap-4"
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay: index * 0.15, type: 'spring' }}
+      className={`flex flex-col items-center gap-2 w-full ${isAbsolute ? '' : 'h-full'}`}
     >
-      <div className="text-xs font-bold text-mystic-500 dark:text-mystic-400 uppercase tracking-widest">
+      <div className={`text-[10px] sm:text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider bg-slate-100/90 dark:bg-black/80 px-2 py-0.5 rounded shadow whitespace-nowrap text-center ${isAbsolute ? 'absolute -top-6 left-1/2 -translate-x-1/2 z-20 whitespace-normal min-w-[120%]' : ''}`}>
         {index + 1}. {card.positionName}
+        {isAbsolute && <div className="text-[10px] text-slate-600 dark:text-slate-300 mt-0.5">{card.nameCN} {card.isReversed ? '(逆)' : ''}</div>}
       </div>
       
-      <div className={`relative w-full aspect-[2/3.5] max-w-[180px] rounded-xl overflow-hidden border-4 transition-all duration-500 ${
-        card.isReversed ? 'border-red-500/50 shadow-red-500/20' : 'border-gold-500/50 shadow-gold-500/20'
-      } shadow-2xl`}>
-        {/* Card Background Decoration */}
-        <div className="absolute inset-0 bg-mystic-900 flex flex-col items-center justify-center p-4">
-          <div className="absolute inset-2 border border-mystic-800/50 rounded-lg pointer-events-none" />
+      <div className={`relative w-full aspect-[2/3.5] max-w-[180px] rounded-xl overflow-hidden border-2 sm:border-4 transition-all duration-500 ${
+        card.isReversed ? 'border-red-600 shadow-[0_0_15px_rgba(220,38,38,0.6)]' : 'border-yellow-400 shadow-[0_0_15px_rgba(250,204,21,0.5)]'
+      }`}>
+        <div className="absolute inset-0 bg-slate-900 flex flex-col items-center justify-center p-2">
+          <div className="absolute inset-1.5 border-2 border-slate-700/50 rounded pointer-events-none" />
           
-          {/* Mystical Symbols */}
-          <div className="absolute top-4 left-4 text-mystic-700 opacity-20"><Sparkles size={12} /></div>
-          <div className="absolute top-4 right-4 text-mystic-700 opacity-20"><Sparkles size={12} /></div>
-          <div className="absolute bottom-4 left-4 text-mystic-700 opacity-20"><Sparkles size={12} /></div>
-          <div className="absolute bottom-4 right-4 text-mystic-700 opacity-20"><Sparkles size={12} /></div>
-
-          {/* Card Content */}
-          <div className={`flex flex-col items-center text-center transition-transform duration-700 ${card.isReversed ? 'rotate-180' : ''}`}>
-            <div className="text-4xl mb-4">🎴</div>
-            <div className="text-mystic-200 font-bold text-sm mb-1">{card.nameCN}</div>
-            <div className="text-mystic-500 text-[10px] leading-tight px-2">{card.nameEN}</div>
+          <div className={`flex flex-col items-center justify-center text-center transition-transform duration-700 w-full h-full ${card.isReversed ? 'rotate-180' : ''}`}>
+            <div className="text-3xl sm:text-4xl mb-2">🎴</div>
+            <div className="text-white font-extrabold text-[10px] sm:text-sm leading-tight mb-1 px-1">{card.nameCN}</div>
+            <div className="text-slate-400 font-bold text-[8px] sm:text-[10px] leading-tight px-1">{card.nameEN}</div>
           </div>
         </div>
 
-        {/* Reversed Badge */}
         {card.isReversed && (
-          <div className="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm z-10">
+          <div className="absolute top-1 right-1 bg-red-600 text-white text-[9px] font-black px-1 rounded shadow-sm z-10">
             逆
           </div>
         )}
       </div>
 
-      <div className="text-center">
-        <div className="font-bold text-slate-800 dark:text-mystic-100">{card.nameCN}</div>
-        <div className={`text-xs font-bold ${card.isReversed ? 'text-red-500' : 'text-mystic-500'}`}>
-          {card.isReversed ? '逆位' : '正位'}
+      {!isAbsolute && (
+        <div className="text-center mt-1 bg-white/90 dark:bg-black/80 px-3 py-1 rounded-lg shadow whitespace-nowrap">
+          <div className="font-extrabold text-slate-900 dark:text-white text-sm">{card.nameCN}</div>
+          <div className={`text-xs font-black ${card.isReversed ? 'text-red-600 dark:text-red-400' : 'text-slate-800 dark:text-slate-300'}`}>
+            {card.isReversed ? '逆位' : '正位'}
+          </div>
         </div>
-      </div>
+      )}
     </motion.div>
+  );
+}
+
+function SpreadLayoutEngine({ spread, cards }: { spread: Spread, cards: DrawnCard[] }) {
+  const LAYOUTS: Record<string, { w: string, cards: { left: string, top: string, rotation?: number }[] }> = {
+    celtic: {
+      w: 'aspect-[3/4] sm:aspect-[4/3] w-full max-w-4xl relative',
+      cards: [
+        { left: '40%', top: '50%' }, // 1 現況
+        { left: '40%', top: '50%', rotation: 90 }, // 2 挑戰
+        { left: '40%', top: '80%' }, // 3 潛意識
+        { left: '15%', top: '50%' }, // 4 過去
+        { left: '40%', top: '20%' }, // 5 可能結果
+        { left: '65%', top: '50%' }, // 6 近未來
+        { left: '90%', top: '80%' }, // 7 自我認知
+        { left: '90%', top: '60%' }, // 8 外在環境
+        { left: '90%', top: '40%' }, // 9 希望與恐懼
+        { left: '90%', top: '20%' }, // 10 最終結果
+      ]
+    },
+    choice: {
+      w: 'aspect-[4/3] sm:aspect-video w-full max-w-3xl relative',
+      cards: [
+        { left: '50%', top: '80%' }, // 1
+        { left: '30%', top: '50%' }, // 2
+        { left: '15%', top: '20%' }, // 3
+        { left: '70%', top: '50%' }, // 4
+        { left: '85%', top: '20%' }, // 5
+      ]
+    },
+    lovers: {
+      w: 'aspect-[4/3] sm:aspect-video w-full max-w-3xl relative',
+      cards: [
+        { left: '20%', top: '30%' }, // 1
+        { left: '80%', top: '30%' }, // 2
+        { left: '50%', top: '50%' }, // 3
+        { left: '35%', top: '80%' }, // 4
+        { left: '65%', top: '80%' }, // 5
+        { left: '50%', top: '20%' }, // 6
+      ]
+    }
+  };
+
+  const layout = spread.isCustom ? null : LAYOUTS[spread.id];
+
+  const TableclothWrapper = ({ children, className = '' }: { children: React.ReactNode, className?: string }) => (
+    <div className="tarot-tablecloth w-full overflow-hidden flex items-center justify-center min-h-[50vh]">
+      <div className={`w-full ${className}`}>
+        {children}
+      </div>
+    </div>
+  );
+
+  if (layout && layout.cards.length === cards.length) {
+    return (
+      <TableclothWrapper className={layout.w}>
+        {cards.map((card, idx) => {
+          const pos = layout.cards[idx];
+          return (
+            <div 
+              key={idx} 
+              className="absolute w-[22%] sm:w-[15%] max-w-[130px] z-10 transition-all duration-300 hover:z-30 hover:scale-[1.15]"
+              style={{ 
+                left: pos.left, 
+                top: pos.top, 
+                transform: `translate(-50%, -50%) ${pos.rotation ? `rotate(${pos.rotation}deg)` : ''}` 
+              }}
+            >
+              <TarotCardDisplay card={card} index={idx} isAbsolute />
+            </div>
+          );
+        })}
+      </TableclothWrapper>
+    );
+  }
+
+  // Fallback / default generic layout (Flex Wrap, clean horizontal)
+  return (
+    <TableclothWrapper>
+      <div className="flex flex-wrap justify-center items-center gap-6 sm:gap-10 py-10 px-4 max-w-5xl mx-auto">
+        {cards.map((card, index) => (
+          <div key={index} className="w-[110px] sm:w-[140px] z-10 hover:z-20 hover:-translate-y-2 transition-transform duration-300">
+            <TarotCardDisplay card={card} index={index} />
+          </div>
+        ))}
+      </div>
+    </TableclothWrapper>
   );
 }
