@@ -885,7 +885,7 @@ function SpreadCard({ spread, isCustom, onClick, onEdit, onDelete }: {
       </div>
 
       {isCustom && (
-        <div className="mt-4 pt-4 border-t border-amber-100 dark:border-mystic-800 flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity relative z-10">
+        <div className="mt-4 pt-4 border-t border-amber-100 dark:border-mystic-800 flex justify-end gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity relative z-10">
           <button 
             onClick={(e) => {
               e.stopPropagation();
