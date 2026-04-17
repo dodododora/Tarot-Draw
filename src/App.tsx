@@ -127,6 +127,7 @@ export default function App() {
   const [showCopySuccess, setShowCopySuccess] = useState<'all' | 'main' | 'extra' | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [extraQuestion, setExtraQuestion] = useState('');
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   // Initialize theme and custom spreads
   useEffect(() => {
@@ -618,9 +619,24 @@ export default function App() {
                 <h2 className="text-xl font-bold flex items-center gap-2">
                   <History size={20} className="text-stone-600 dark:text-mystic-500" /> 歷史紀錄
                 </h2>
-                <button onClick={() => setIsHistoryOpen(false)} className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
-                  <X size={20} />
-                </button>
+                <div className="flex items-center gap-2">
+                  {history.length > 0 && (
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowClearConfirm(true);
+                      }}
+                      className="p-2 text-slate-400 hover:text-red-500 transition-colors flex items-center gap-1 text-sm font-medium bg-slate-100/50 hover:bg-red-50 dark:bg-mystic-800/50 dark:hover:bg-red-900/20 rounded-lg px-3"
+                      title="清空全部紀錄"
+                    >
+                      <Trash2 size={16} />
+                      <span className="hidden sm:inline">清空全部紀錄</span>
+                    </button>
+                  )}
+                  <button onClick={() => setIsHistoryOpen(false)} className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors ml-1">
+                    <X size={20} />
+                  </button>
+                </div>
               </div>
               
               <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
@@ -686,6 +702,49 @@ export default function App() {
                   </div>
                 )}
               </div>
+              
+              <AnimatePresence>
+                {showClearConfirm && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 50 }}
+                    className="absolute bottom-6 left-4 right-4 bg-white dark:bg-mystic-900 rounded-2xl shadow-2xl border-2 border-red-200 dark:border-red-900/50 p-5 z-50 overflow-hidden"
+                  >
+                    <div className="absolute inset-0 bg-red-50/50 dark:bg-red-900/10 pointer-events-none" />
+                    <div className="relative z-10 flex flex-col items-center text-center gap-3">
+                      <div className="w-12 h-12 bg-red-100 dark:bg-red-900/40 rounded-full flex items-center justify-center text-red-500 mb-1">
+                        <Trash2 size={24} />
+                      </div>
+                      <h3 className="text-lg font-bold text-red-600 dark:text-red-400">確定要清空所有紀錄嗎？</h3>
+                      <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">此動作無法復原，請確認是否要繼續。</p>
+                      <div className="flex w-full gap-3 mt-1">
+                        <button 
+                          onClick={() => setShowClearConfirm(false)}
+                          className="flex-1 py-2.5 rounded-xl font-bold bg-slate-100 dark:bg-mystic-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-mystic-700 transition-colors"
+                        >
+                          取消
+                        </button>
+                        <button 
+                          onClick={() => {
+                            setHistory([]);
+                            if (currentHistoryId && history.find(h => h.id === currentHistoryId)) {
+                              setCurrentHistoryId(null);
+                              setDrawnCards([]);
+                              setView('home');
+                            }
+                            setShowClearConfirm(false);
+                            showToast('已清空所有紀錄');
+                          }}
+                          className="flex-1 py-2.5 rounded-xl font-bold bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/20 transition-all active:scale-95"
+                        >
+                          確認清空
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.div>
           </div>
         )}
@@ -804,7 +863,7 @@ function SpreadCard({ spread, isCustom, onClick, onEdit, onDelete }: {
       onClick={onClick}
       className="group relative bg-white/60 dark:bg-mystic-900/60 backdrop-blur-md p-4 sm:p-6 rounded-2xl sm:rounded-[1.5rem] border border-stone-200/60 dark:border-mystic-800/60 hover:border-stone-400 dark:hover:border-mystic-500 transition-all cursor-pointer hover:shadow-xl hover:shadow-stone-500/10 dark:hover:shadow-mystic-500/10 hover:-translate-y-1 overflow-hidden flex flex-col h-full"
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-stone-500/0 via-transparent to-stone-500/5 dark:from-mystic-500/0 dark:via-transparent dark:to-mystic-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="absolute inset-0 bg-gradient-to-br from-stone-500/0 via-transparent to-stone-500/5 dark:from-mystic-500/0 dark:via-transparent dark:to-mystic-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
       
       {isCustom && (
         <span className="absolute top-3 right-3 sm:top-4 sm:right-4 px-1.5 py-0.5 sm:px-2 sm:py-0.5 bg-stone-200/60 dark:bg-mystic-800/80 text-stone-700 dark:text-mystic-400 text-[9px] sm:text-[10px] font-bold rounded uppercase tracking-wider shadow-sm z-10">
@@ -826,11 +885,25 @@ function SpreadCard({ spread, isCustom, onClick, onEdit, onDelete }: {
       </div>
 
       {isCustom && (
-        <div className="mt-4 pt-4 border-t border-amber-100 dark:border-mystic-800 flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <button onClick={onEdit} className="p-1.5 text-slate-400 dark:text-mystic-500 hover:text-amber-600 dark:hover:text-mystic-400 transition-colors">
+        <div className="mt-4 pt-4 border-t border-amber-100 dark:border-mystic-800 flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity relative z-10">
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              if (onEdit) onEdit(e);
+            }} 
+            className="p-1.5 text-slate-400 dark:text-mystic-500 hover:text-amber-600 dark:hover:text-mystic-400 transition-colors"
+          >
             <Edit2 size={16} />
           </button>
-          <button onClick={onDelete} className="p-1.5 text-slate-400 dark:text-mystic-500 hover:text-red-500 dark:hover:text-red-400 transition-colors">
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              if (onDelete) onDelete(e);
+            }} 
+            className="p-1.5 text-slate-400 dark:text-mystic-500 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+          >
             <Trash2 size={16} />
           </button>
         </div>
