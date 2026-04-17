@@ -1,7 +1,7 @@
 import React, { useState, useEffect, type MouseEvent, type FormEvent } from 'react';
-import { Moon, Sun, Plus, Trash2, Edit2, Copy, ArrowLeft, Sparkles, Wand2, Info, X, History, CheckCircle2, Compass } from 'lucide-react';
+import { Moon, Sun, Plus, Trash2, Edit2, Copy, ArrowLeft, Sparkles, Wand2, Info, X, History, CheckCircle2, Compass, Lightbulb } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ALL_CARDS, BUILTIN_SPREADS, getCardEmoji, type Spread, type TarotCard } from './constants';
+import { ALL_CARDS, BUILTIN_SPREADS, getCardEmoji, TAROT_TRIVIA, type Spread, type TarotCard } from './constants';
 
 export interface DrawHistory {
   id: string;
@@ -129,6 +129,9 @@ export default function App() {
   const [extraQuestion, setExtraQuestion] = useState('');
   const [showClearConfirm, setShowClearConfirm] = useState(false);
 
+  const currentTrivia = React.useMemo(() => {
+    return TAROT_TRIVIA[Math.floor(Math.random() * TAROT_TRIVIA.length)];
+  }, [view, selectedSpread]);
   // Initialize theme and custom spreads
   useEffect(() => {
     const savedTheme = localStorage.getItem('tarot-theme') as 'light' | 'dark';
@@ -253,11 +256,11 @@ export default function App() {
 
     let text = '';
     if (type === 'all') {
-      text = `🔮 塔羅牌抽牌結果\n\n📌 問題：${question || '未輸入'}\n🃏 牌陣：${selectedSpread.name}（${selectedSpread.count} 張）\n\n${mainText}${extraText ? `\n\n✨ 補充指引\n${extraText}` : ''}`;
+      text = `🔮 偉特塔羅牌抽牌結果\n\n📌 問題：${question || '未輸入'}\n🃏 牌陣：${selectedSpread.name}（${selectedSpread.count} 張）\n\n${mainText}${extraText ? `\n\n✨ 補充指引\n${extraText}` : ''}`;
     } else if (type === 'main') {
-      text = `🔮 塔羅牌抽牌結果（主牌陣）\n\n📌 問題：${question || '未輸入'}\n🃏 牌陣：${selectedSpread.name}（${selectedSpread.count} 張）\n\n${mainText}`;
+      text = `🔮 偉特塔羅牌抽牌結果（主牌陣）\n\n📌 問題：${question || '未輸入'}\n🃏 牌陣：${selectedSpread.name}（${selectedSpread.count} 張）\n\n${mainText}`;
     } else if (type === 'extra') {
-      text = `✨ 塔羅牌補充指引\n\n📌 原問題：${question || '未輸入'}\n🃏 衍生自：${selectedSpread.name}\n\n${extraText}`;
+      text = `✨ 偉特塔羅牌補充指引\n\n📌 原問題：${question || '未輸入'}\n🃏 衍生自：${selectedSpread.name}\n\n${extraText}`;
     }
 
     navigator.clipboard.writeText(text).then(() => {
@@ -347,7 +350,7 @@ export default function App() {
                   <Wand2 className="text-stone-600 dark:text-mystic-500" size={24} />
                   <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">內建牌陣</h2>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5 mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mx-auto">
                   {BUILTIN_SPREADS.map((spread) => (
                     <SpreadCard 
                       key={spread.id} 
@@ -377,7 +380,7 @@ export default function App() {
                   </button>
                 </div>
                 {customSpreads.length > 0 ? (
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5 mx-auto">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mx-auto">
                     {customSpreads.map((spread) => (
                       <SpreadCard 
                         key={spread.id} 
@@ -444,10 +447,16 @@ export default function App() {
                       <Info className="text-amber-500 dark:text-mystic-500 mt-1 flex-shrink-0" size={18} />
                       <div>
                         <p className="text-sm font-medium text-amber-900 dark:text-mystic-100">牌陣資訊</p>
-                        <p className="text-xs text-amber-700 dark:text-mystic-400 mt-1">
+                        <p className="text-xs text-amber-700 dark:text-mystic-400 mt-1 mb-3 pb-3 border-b border-amber-200/50 dark:border-mystic-700/50 leading-relaxed">
                           此牌陣將抽取 {selectedSpread.count} 張牌，分別代表：
                           {selectedSpread.positions.join('、')}
                         </p>
+                        <div className="flex items-start gap-2">
+                          <Lightbulb className="text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" size={14} />
+                          <p className="text-[13px] text-amber-800/80 dark:text-mystic-300 italic tracking-wide leading-relaxed">
+                            {currentTrivia}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -788,7 +797,7 @@ export default function App() {
                 <div>
                   <label className="block text-sm font-medium mb-1">抽牌張數 ({editingSpread.count})</label>
                   <input 
-                    type="range" min="1" max="10"
+                    type="range" min="1" max="20"
                     value={editingSpread.count}
                     onChange={e => {
                       const count = parseInt(e.target.value);
@@ -861,27 +870,53 @@ function SpreadCard({ spread, isCustom, onClick, onEdit, onDelete }: {
   return (
     <div 
       onClick={onClick}
-      className="group relative bg-white/60 dark:bg-mystic-900/60 backdrop-blur-md p-4 sm:p-6 rounded-2xl sm:rounded-[1.5rem] border border-stone-200/60 dark:border-mystic-800/60 hover:border-stone-400 dark:hover:border-mystic-500 transition-all cursor-pointer hover:shadow-xl hover:shadow-stone-500/10 dark:hover:shadow-mystic-500/10 hover:-translate-y-1 overflow-hidden flex flex-col h-full"
+      className="group relative bg-gradient-to-br from-white/80 to-white/60 dark:from-mystic-900/80 dark:to-mystic-900/50 backdrop-blur-xl p-5 sm:p-6 rounded-[1.25rem] sm:rounded-[1.5rem] border border-stone-200/60 dark:border-mystic-800/60 hover:border-amber-300/50 dark:hover:border-mystic-500/50 transition-all cursor-pointer hover:shadow-2xl hover:shadow-amber-900/5 dark:hover:shadow-mystic-500/20 hover:-translate-y-1 overflow-hidden flex flex-col h-full"
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-stone-500/0 via-transparent to-stone-500/5 dark:from-mystic-500/0 dark:via-transparent dark:to-mystic-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-br from-amber-500/0 via-transparent to-amber-500/5 dark:from-mystic-500/0 dark:via-transparent dark:to-mystic-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
       
       {isCustom && (
-        <span className="absolute top-3 right-3 sm:top-4 sm:right-4 px-1.5 py-0.5 sm:px-2 sm:py-0.5 bg-stone-200/60 dark:bg-mystic-800/80 text-stone-700 dark:text-mystic-400 text-[9px] sm:text-[10px] font-bold rounded uppercase tracking-wider shadow-sm z-10">
+        <span className="absolute top-4 right-4 px-2 py-0.5 bg-stone-200/60 dark:bg-mystic-800/80 text-stone-700 dark:text-mystic-400 text-[10px] font-bold rounded uppercase tracking-wider shadow-sm z-10">
           自訂
         </span>
       )}
-      <div className="mb-3 sm:mb-4 relative z-10">
-        <h3 className="text-[17px] sm:text-xl font-bold group-hover:text-stone-700 dark:group-hover:text-mystic-400 transition-colors drop-shadow-sm leading-tight pr-6 sm:pr-0">{spread.name}</h3>
-        <span className="text-[10px] sm:text-xs font-semibold text-stone-500 dark:text-mystic-400 shrink-0 opacity-80 mt-0.5 sm:mt-1 block">{spread.count} 張牌</span>
-      </div>
-      <p className="text-xs sm:text-sm text-slate-500 dark:text-mystic-300 line-clamp-2 mb-4 sm:mb-6 relative z-10 font-medium">{spread.hint || `自訂牌陣 · ${spread.count} 張`}</p>
       
-      <div className="flex flex-wrap gap-1 sm:gap-1.5 mt-auto relative z-10">
-        {spread.positions.map((pos, idx) => (
-          <span key={idx} className="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-stone-100 dark:bg-mystic-800 text-slate-600 dark:text-mystic-300 text-[9px] sm:text-[10px] rounded sm:rounded-md font-medium whitespace-nowrap">
-            {pos}
-          </span>
-        ))}
+      {/* Header section */}
+      <div className="mb-2 relative z-10 flex flex-wrap items-start justify-between gap-2 pr-12">
+        <h3 className="text-lg sm:text-[1.35rem] font-bold text-slate-800 dark:text-slate-100 group-hover:text-amber-800 dark:group-hover:text-amber-400 transition-colors drop-shadow-sm leading-tight leading-snug">
+          {spread.name}
+        </h3>
+        <span className="text-xs sm:text-sm font-bold text-amber-800 dark:text-amber-200 bg-amber-100 dark:bg-amber-900/30 px-2.5 py-1 rounded-lg shrink-0 border border-amber-200 dark:border-amber-700/30 shadow-sm">
+          {spread.count} 張牌
+        </span>
+      </div>
+      
+      {/* Hint (Theory/Description) */}
+      <p className="text-sm text-slate-600 dark:text-mystic-300 line-clamp-2 mb-6 relative z-10 font-medium leading-relaxed">
+        {spread.hint || `自訂牌陣 · ${spread.count} 張`}
+      </p>
+      
+      {/* Positions Area (Horizontal Scroll) */}
+      <div className="mt-auto relative z-10 w-full overflow-hidden rounded-lg bg-stone-50/50 dark:bg-mystic-950/30 p-2 sm:p-3 border border-stone-100 dark:border-mystic-800/50 shadow-inner">
+        <div className="relative">
+          {/* Right fade-out gradient */}
+          <div className="absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-stone-50 dark:from-mystic-900 via-stone-50/80 dark:via-mystic-900/80 to-transparent pointer-events-none z-10 rounded-r-lg" />
+          
+          <div className="flex items-center gap-2.5 overflow-x-auto pb-1 pr-10 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            {spread.positions.map((pos, idx) => (
+              <div key={idx} className="flex items-center gap-2.5 shrink-0">
+                <div className="flex items-center gap-1.5 px-2 py-1.5 bg-white dark:bg-mystic-900/80 rounded-md text-slate-700 dark:text-mystic-200 text-xs sm:text-sm font-semibold whitespace-nowrap shadow-sm border border-stone-200 dark:border-mystic-700">
+                  <span className="w-5 h-5 rounded-full bg-amber-100 dark:bg-mystic-800 text-amber-700 dark:text-mystic-400 flex items-center justify-center text-[10px] sm:text-xs">
+                    {idx + 1}
+                  </span>
+                  {pos}
+                </div>
+                {idx < spread.positions.length - 1 && (
+                  <span className="text-stone-300 dark:text-mystic-600 text-sm">➔</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {isCustom && (

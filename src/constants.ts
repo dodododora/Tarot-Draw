@@ -76,24 +76,36 @@ export const ALL_CARDS = [...MAJOR_ARCANA, ...MINOR_ARCANA];
 export const BUILTIN_SPREADS: Spread[] = [
   // 1 card
   { id: "single", name: "單張牌指引", count: 1, positions: ["指引"], hint: "一張牌，一個方向", exampleQuestion: "請給我一個針對今天工作挑戰的簡單指引？" },
-  // 3 cards
-  { id: "karma", name: "靈魂業力課題", count: 3, positions: ["靈魂攜帶的舊業力", "今生重現的課題", "剪斷迴圈的剪刀"], hint: "理解靈魂層面的功課", exampleQuestion: "為什麼總是重複遇到同一種類型的主管？" },
-  { id: "shadow", name: "暗影特質探索", count: 3, positions: ["展露的面貌", "隱藏的陰暗面", "接納整合之道"], hint: "面對與接納暗面特質", exampleQuestion: "為什麼有時候會突然對身邊的人發無名火？" },
+
   // 4 cards
-  { id: "blindspot", name: "盲點洞察", count: 4, positions: ["公開的我", "隱藏的我", "盲點", "潛力"], hint: "揭露沒被注意到的事", exampleQuestion: "為什麼最近總是和伴侶起衝突，有什麼是沒注意到的？" },
-  { id: "subconscious", name: "潛意識深探", count: 4, positions: ["表層的偽裝", "潛意識的渴望", "該釋放的執念", "靈魂的真實呼喚"], hint: "探索內在深層的訊息", exampleQuestion: "對於更換跑道這件事情，真實的想法到底是什麼？" },
-  { id: "goal", name: "願望目標顯化", count: 4, positions: ["目前的立足點", "隱藏的階梯（助力）", "必須跨越的坎", "摘星之果（最終結果）"], hint: "聚焦想實現的事", exampleQuestion: "想在半年內創業，該怎麼開始準備？" },
-  { id: "elements", name: "四元素全貌", count: 4, positions: ["火（行動/熱情）", "水（情感/直覺）", "風（思維/溝通）", "土（物質/現實）"], hint: "從四元素看問題的全貌", exampleQuestion: "面對即將到來的面試，該如何調整整體狀態？" },
+  { id: "elements", name: "四元素全貌", count: 4, positions: ["火元素 (行動與熱情)", "水元素 (潛意識與情感)", "風元素 (思維與溝通)", "土元素 (物質與現實)"], hint: "從四大元素看清問題的全貌", exampleQuestion: "面對即將到來的面試，我目前的整體狀態如何？" },
+
   // 5 cards
-  { id: "flow", name: "時間之流", count: 5, positions: ["過去", "現在", "隱藏的影響", "建議", "未來"], hint: "順著時間線理解事件脈絡", exampleQuestion: "我跟這個新認識的對象，未來的發展會如何？" },
-  { id: "choice", name: "命運二擇一", count: 5, positions: ["現況", "選擇A的發展", "選擇A的結果", "選擇B的發展", "選擇B的結果"], hint: "面對岔路時的決策參考", exampleQuestion: "我該留在原公司，還是接受獵頭提供的新 offer？" },
+  { id: "blindspot", name: "盲點洞察", count: 5, positions: ["公開表現的面貌", "沒被察覺的盲點", "刻意隱藏的秘密", "尚未發掘的潛能", "破除盲點的建議"], hint: "揭露認知落差的盲點與潛藏能量", exampleQuestion: "為什麼最近總是和伴侶起衝突，有什麼是我們都沒注意到的？" },
+  { id: "choice", name: "命運二擇一", count: 5, positions: ["決策當下的現況", "選擇A的發展軌跡", "選擇A的結果", "選擇B的發展軌跡", "選擇B的結果"], hint: "面對岔路時，推演不同選擇的發展與結果", exampleQuestion: "我該留在原公司，還是接受獵頭提供的新 offer？" },
+  { id: "karma", name: "靈魂業力課題", count: 5, positions: ["過去糾結的舊業", "反覆出現的課題", "隱藏的珍貴禮物", "打破迴圈的行動", "成長後的最終局"], hint: "探索生命中不斷重複的深層課題與解法", exampleQuestion: "為什麼總是重複遇到同一種類型的主管？" },
+
   // 6 cards
-  { id: "lovers", name: "戀人金字塔", count: 6, positions: ["你的狀態", "對方的狀態", "關係現況", "挑戰", "建議", "未來走向"], hint: "深入剖析雙方的情感連結", exampleQuestion: "我和目前的曖昧對象，這段關係是否有機會晉升為戀人？" },
-  { id: "mirror", name: "雙方鏡像關係", count: 6, positions: ["你眼中的自己", "對方眼中的你", "你眼中的對方", "對方眼中的自己", "關係核心課題", "發展建議"], hint: "從雙方視角看關係全貌", exampleQuestion: "我跟前任目前各自對彼此的真實想法是什麼？" },
+  { id: "subconscious", name: "潛意識深探", count: 6, positions: ["表層的想法認知", "被壓抑的舊經驗", "深層渴望原動力", "道德與自我批評", "潛意識防衛機制", "自我療癒的建議"], hint: "像冰山一樣，挖掘沒有被察覺的內心", exampleQuestion: "對於更換跑道這件事情，我總是猶豫不決的深層原因是什麼？" },
+  { id: "lovers", name: "戀人三角", count: 6, positions: ["雙方親密與信任", "感情激情與吸引", "未來承諾與責任", "目前的關係挑戰", "改善關係的建議", "未來的走向預測"], hint: "從親密、激情、承諾，為感情狀態把脈", exampleQuestion: "我和目前的曖昧對象，這段關係是否有機會晉升為戀人？" },
+  { id: "mirror", name: "雙方鏡像關係", count: 6, positions: ["主角眼中的自己", "對象眼中的主角", "主角眼中的對象", "對象眼中的自己", "互動產生的誤解", "關係發展的建議"], hint: "跳脫主觀本位，看清雙方的真實想法與落差", exampleQuestion: "我跟前任目前各自對彼此真實的看法是什麼？" },
+
   // 7 cards
-  { id: "hero", name: "英雄之旅", count: 7, positions: ["出發點", "召喚", "考驗", "導師/盟友", "深淵", "轉化", "歸來"], hint: "你的故事正走到哪一章？", exampleQuestion: "我決定離職去旅行，這段人生的新旅程將如何展開？" },
+  { id: "hero", name: "英雄之旅", count: 7, positions: ["現狀與出發點", "冒險的召喚", "越過門檻的考驗", "指引導師與盟友", "墜入深淵與試煉", "獲得啟示與轉化", "帶著恩賜歸來"], hint: "把旅途化作一場冒險，看看正處於哪一章", exampleQuestion: "我決定離職去旅行，這段人生的新旅程將如何展開？" },
+  { id: "hexagram", name: "六芒星指引", count: 7, positions: ["過去的軌跡", "現在的處境", "未來的趨勢", "潛意識的拉扯", "客觀環境", "最佳的應對策略", "最終的因果歸宿"], hint: "測吉凶、問對策，看清內外環境的百搭牌陣", exampleQuestion: "這份新的事業計畫整體的吉凶與走向如何？" },
+  { id: "horseshoe", name: "馬蹄鐵牌陣", count: 7, positions: ["過去狀況", "當前問題點", "可預期的未來", "建議付出的行動", "外界的客觀干擾", "無法預知的障礙", "最後的結局發展"], hint: "針對單一具體難題，掃描前方阻礙與解決方案", exampleQuestion: "我想在下個月搬家換城市生活，這會是正確的決定嗎？" },
+
+  // 8 cards
+  { id: "octagon", name: "八方全覽", count: 8, positions: ["提問核心", "精神與思維狀態", "情感與內心世界", "金錢與現實資源", "專長與隱藏潛能", "被忽略的危機", "破局的轉機", "最後的收穫歸宿"], hint: "遇到十字路口？一次盤點所有現況", exampleQuestion: "我最近面臨人生十字路口，不知該怎麼全盤整理生活並找到方向？" },
+
+  // 9 cards
+  { id: "matrix", name: "九宮格全局觀", count: 9, positions: ["目前心境", "潛意識動機", "外界觀感", "舊有基礎", "核心干擾", "意外助力", "預期發展", "意外轉折", "最終成就"], hint: "拉遠視角，看懂未來的長遠局勢與變化", exampleQuestion: "未來半年內，我若開啟新副業的整體局勢會是如何？" },
+
   // 10 cards
-  { id: "celtic", name: "凱爾特十字", count: 10, positions: ["現況", "挑戰", "潛意識", "過去", "可能結果", "近未來", "自我認知", "外在環境", "希望與恐懼", "最終結果"], hint: "經典全面解析牌陣", exampleQuestion: "我目前深陷生活與財務壓力中，我該如何看清全局並突破現狀？" },
+  { id: "celtic", name: "凱爾特十字", count: 10, positions: ["現況", "挑戰與阻礙", "顯意識目標", "潛意識與過去", "可能預期結果", "近未來", "自我認知", "外在環境影響", "希望與恐懼", "最終結果"], hint: "塔羅最經典！像剝洋蔥般，把複雜問題看到透", exampleQuestion: "我目前深陷生活與財務壓力中，我該如何看清全局並突破現狀？" },
+
+  // 12 cards
+  { id: "astrology", name: "黃道十二宮", count: 12, positions: ["本命自我(一)", "財富資源(二)", "溝通學習(三)", "家庭根基(四)", "愛情創造(五)", "健康服務(六)", "伴侶合作(七)", "變革與深層恐懼(八)", "理想與遠行(九)", "事業成就(十)", "人際願景(十一)", "潛意識與秘密(十二)"], hint: "結合占星宮位，進行全面大體檢", exampleQuestion: "請幫我看看明年整年度在十二個生活領域中，各別的運勢發展？" },
 ];
 
 export function getCardEmoji(cardId: number): string {
@@ -124,7 +136,7 @@ export function getCardEmoji(cardId: number): string {
     ];
     return MAJOR_EMOJIS[cardId] || "🌟";
   }
-  
+
   const suitIndex = Math.floor((cardId - 22) / 14);
   switch (suitIndex) {
     case 0: return "🪄"; // Wands
@@ -134,3 +146,14 @@ export function getCardEmoji(cardId: number): string {
     default: return "🎴";
   }
 }
+
+export const TAROT_TRIVIA = [
+  "偉特塔羅牌由亞瑟·偉特設計、帕梅拉繪製，是目前最普及的版本。",
+  "塔羅牌共有78張：22張大阿爾克那代表靈魂課題，56張小阿爾克那代表日常細節。",
+  "抽牌時保持心情平靜，深呼吸三次，有助於直覺與牌卡產生連結。",
+  "逆位牌不一定代表壞事，通常暗示能量的阻礙、延遲，或需要反思的內在層面。",
+  "愚者（The Fool）編號為 0，代表無限的可能性與未知的旅程，是所有牌的起點。",
+  "寶劍牌組與「風」元素有關，代表理智與溝通；聖杯與「水」有關，代表情感與關係。",
+  "權杖牌組與「火」有關，代表行動力與熱情；錢幣與「土」有關，代表物質與現實基礎。",
+  "別害怕抽到「死神」或「高塔」，它們通常代表結束舊有模式、帶來實質的改變與重生。"
+];
