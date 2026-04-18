@@ -350,7 +350,7 @@ export default function App() {
                   <Wand2 className="text-stone-600 dark:text-mystic-500" size={24} />
                   <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">內建牌陣</h2>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mx-auto">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6 mx-auto">
                   {BUILTIN_SPREADS.map((spread) => (
                     <SpreadCard 
                       key={spread.id} 
@@ -380,7 +380,7 @@ export default function App() {
                   </button>
                 </div>
                 {customSpreads.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mx-auto">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6 mx-auto">
                     {customSpreads.map((spread) => (
                       <SpreadCard 
                         key={spread.id} 
@@ -442,22 +442,13 @@ export default function App() {
                     />
                   </div>
 
-                  <div className="bg-amber-50 dark:bg-mystic-800/50 p-4 rounded-xl border border-amber-100 dark:border-mystic-700">
-                    <div className="flex items-start gap-3">
-                      <Info className="text-amber-500 dark:text-mystic-500 mt-1 flex-shrink-0" size={18} />
-                      <div>
-                        <p className="text-sm font-medium text-amber-900 dark:text-mystic-100">牌陣資訊</p>
-                        <p className="text-xs text-amber-700 dark:text-mystic-400 mt-1 mb-3 pb-3 border-b border-amber-200/50 dark:border-mystic-700/50 leading-relaxed">
-                          此牌陣將抽取 {selectedSpread.count} 張牌，分別代表：
-                          {selectedSpread.positions.join('、')}
-                        </p>
-                        <div className="flex items-start gap-2">
-                          <Lightbulb className="text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" size={14} />
-                          <p className="text-[13px] text-amber-800/80 dark:text-mystic-300 italic tracking-wide leading-relaxed">
-                            {currentTrivia}
-                          </p>
-                        </div>
-                      </div>
+                  <div className="bg-amber-50 dark:bg-mystic-800/50 p-4 sm:px-5 rounded-2xl border border-amber-100/80 dark:border-mystic-700 flex items-start gap-3">
+                    <Info className="text-amber-500/80 dark:text-mystic-400 mt-0.5 flex-shrink-0" size={18} />
+                    <div>
+                      <p className="text-sm font-bold text-amber-900 dark:text-mystic-100 mb-1.5 tracking-wide">牌陣資訊</p>
+                      <p className="text-sm text-amber-800/80 dark:text-mystic-400 leading-relaxed">
+                        將抽取 {selectedSpread.count} 張牌，依序代表：{selectedSpread.positions.join('、')}
+                      </p>
                     </div>
                   </div>
 
@@ -467,6 +458,16 @@ export default function App() {
                   >
                     <Compass size={20} /> 開始抽牌
                   </button>
+
+                  <div className="bg-indigo-50/60 dark:bg-indigo-950/30 p-4 sm:px-5 rounded-2xl border border-indigo-100/60 dark:border-indigo-900/30 flex items-start gap-3">
+                    <Lightbulb className="text-indigo-400 dark:text-indigo-400 mt-0.5 flex-shrink-0" size={18} />
+                    <div>
+                      <p className="text-sm font-bold text-indigo-900 dark:text-indigo-300 mb-1.5 tracking-wide">塔羅小知識</p>
+                      <p className="text-sm text-indigo-800/80 dark:text-indigo-200/70 leading-relaxed italic">
+                        {currentTrivia}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -865,33 +866,23 @@ function SpreadCard({ spread, isCustom, onClick, onEdit, onDelete }: {
   onClick: () => void;
   onEdit?: (e: MouseEvent) => void;
   onDelete?: (e: MouseEvent) => void;
-  key?: string | number;
 }) {
   return (
     <div 
       onClick={onClick}
-      className="group relative bg-gradient-to-br from-white/80 to-white/60 dark:from-mystic-900/80 dark:to-mystic-900/50 backdrop-blur-xl p-5 sm:p-6 rounded-[1.25rem] sm:rounded-[1.5rem] border border-stone-200/60 dark:border-mystic-800/60 hover:border-amber-300/50 dark:hover:border-mystic-500/50 transition-all cursor-pointer hover:shadow-2xl hover:shadow-amber-900/5 dark:hover:shadow-mystic-500/20 hover:-translate-y-1 overflow-hidden flex flex-col h-full"
+      className="relative bg-white/70 dark:bg-mystic-900/60 p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] border border-amber-100 dark:border-mystic-800 hover:border-amber-300 dark:hover:border-mystic-600 shadow-sm hover:shadow-[0_8px_30px_rgb(251,191,36,0.1)] dark:hover:shadow-[0_8px_30px_rgba(99,102,241,0.05)] transition-all cursor-pointer group flex flex-col h-[180px] sm:h-[220px] overflow-hidden backdrop-blur-sm hover:-translate-y-1 active:scale-[0.98]"
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-amber-500/0 via-transparent to-amber-500/5 dark:from-mystic-500/0 dark:via-transparent dark:to-mystic-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-      
-      {isCustom && (
-        <span className="absolute top-4 right-4 px-2 py-0.5 bg-stone-200/60 dark:bg-mystic-800/80 text-stone-700 dark:text-mystic-400 text-[10px] font-bold rounded uppercase tracking-wider shadow-sm z-10">
-          自訂
-        </span>
-      )}
-      
-      {/* Header section */}
-      <div className="mb-2 relative z-10 flex flex-wrap items-start justify-between gap-2 pr-12">
-        <h3 className="text-lg sm:text-[1.35rem] font-bold text-slate-800 dark:text-slate-100 group-hover:text-amber-800 dark:group-hover:text-amber-400 transition-colors drop-shadow-sm leading-tight leading-snug">
+      <div className="flex justify-between items-start mb-2 sm:mb-4 relative z-10 gap-2">
+        <h3 className="text-base sm:text-xl font-bold text-amber-900 dark:text-mystic-100 group-hover:text-amber-600 dark:group-hover:text-indigo-400 transition-colors drop-shadow-sm leading-tight line-clamp-2">
           {spread.name}
         </h3>
-        <span className="text-xs sm:text-sm font-bold text-amber-800 dark:text-amber-200 bg-amber-100 dark:bg-amber-900/30 px-2.5 py-1 rounded-lg shrink-0 border border-amber-200 dark:border-amber-700/30 shadow-sm">
+        <span className="shrink-0 px-2 sm:px-3 py-1 bg-amber-50 dark:bg-mystic-800 text-amber-700 dark:text-mystic-400 text-[10px] sm:text-xs font-bold rounded-full border border-amber-200 dark:border-mystic-700 shadow-sm whitespace-nowrap">
           {spread.count} 張牌
         </span>
       </div>
       
       {/* Hint (Theory/Description) */}
-      <p className="text-sm text-slate-600 dark:text-mystic-300 line-clamp-2 mb-6 relative z-10 font-medium leading-relaxed">
+      <p className="text-xs sm:text-sm text-slate-600 dark:text-mystic-300 line-clamp-2 mb-4 sm:mb-6 relative z-10 font-medium leading-relaxed">
         {spread.hint || `自訂牌陣 · ${spread.count} 張`}
       </p>
       
