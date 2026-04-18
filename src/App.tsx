@@ -466,6 +466,13 @@ export default function App() {
                     />
                   </div>
 
+                  <button 
+                    onClick={handleDraw}
+                    className="w-full py-4 bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 dark:hover:from-mystic-500 dark:hover:to-mystic-400 text-stone-50 dark:text-white rounded-xl font-bold text-lg shadow-lg shadow-stone-800/20 dark:shadow-mystic-500/20 transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2"
+                  >
+                    <Compass size={20} /> 開始抽牌
+                  </button>
+
                   {selectedSpread.id === 'choice' && (
                     <div className="bg-indigo-50/50 dark:bg-mystic-800/30 p-4 rounded-xl border border-indigo-100 dark:border-mystic-700/50">
                       <label className="text-sm font-bold text-indigo-900 dark:text-mystic-200 block mb-3">
@@ -491,13 +498,6 @@ export default function App() {
                       </p>
                     </div>
                   )}
-
-                  <button 
-                    onClick={handleDraw}
-                    className="w-full py-4 bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 dark:hover:from-mystic-500 dark:hover:to-mystic-400 text-stone-50 dark:text-white rounded-xl font-bold text-lg shadow-lg shadow-stone-800/20 dark:shadow-mystic-500/20 transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2"
-                  >
-                    <Compass size={20} /> 開始抽牌
-                  </button>
 
                   <div className="bg-amber-50 dark:bg-mystic-800/50 p-4 sm:px-5 rounded-2xl border border-amber-100/80 dark:border-mystic-700 flex items-start gap-3">
                     <Info className="text-amber-500/80 dark:text-mystic-400 mt-0.5 flex-shrink-0" size={18} />
