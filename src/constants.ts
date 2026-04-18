@@ -82,7 +82,7 @@ export const BUILTIN_SPREADS: Spread[] = [
 
   // 5 cards
   { id: "blindspot", name: "盲點洞察", count: 5, positions: ["公開表現的面貌", "沒被察覺的盲點", "刻意隱藏的秘密", "尚未發掘的潛能", "破除盲點的建議"], hint: "揭露認知落差的盲點與潛藏能量", exampleQuestion: "為什麼最近總是和伴侶起衝突，有什麼是我們都沒注意到的？" },
-  { id: "choice", name: "命運二擇一", count: 5, positions: ["決策當下的現況", "選擇A的發展軌跡", "選擇A的結果", "選擇B的發展軌跡", "選擇B的結果"], hint: "面對岔路時，推演不同選擇的發展與結果", exampleQuestion: "我該留在原公司，還是接受獵頭提供的新 offer？" },
+  { id: "choice", name: "命運二擇一", count: 5, positions: ["決策當下的現況", "選擇A的發展軌跡", "選擇A的結果", "選擇B的發展軌跡", "選擇B的結果"], hint: "面對岔路時，推演不同選擇的發展與結果（可擴展至十擇一）", exampleQuestion: "我該留在原公司，還是接受獵頭提供的新 offer？" },
   { id: "karma", name: "靈魂業力課題", count: 5, positions: ["過去糾結的舊業", "反覆出現的課題", "隱藏的珍貴禮物", "打破迴圈的行動", "成長後的最終局"], hint: "探索生命中不斷重複的深層課題與解法", exampleQuestion: "為什麼總是重複遇到同一種類型的主管？" },
 
   // 6 cards

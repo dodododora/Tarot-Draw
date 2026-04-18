@@ -128,10 +128,33 @@ export default function App() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [extraQuestion, setExtraQuestion] = useState('');
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [choiceCount, setChoiceCount] = useState(2);
 
   const currentTrivia = React.useMemo(() => {
     return TAROT_TRIVIA[Math.floor(Math.random() * TAROT_TRIVIA.length)];
   }, [view, selectedSpread]);
+
+  // Dynamic choice spread modifier
+  useEffect(() => {
+    if (selectedSpread?.id === 'choice') {
+      const positions = ["決策當下的現況"];
+      for (let i = 0; i < choiceCount; i++) {
+        const char = String.fromCharCode(65 + i);
+        positions.push(`選擇${char}的發展軌跡`, `選擇${char}的結果`);
+      }
+      
+      const expectedCount = 1 + choiceCount * 2;
+      if (selectedSpread.count !== expectedCount) {
+        setSelectedSpread({
+          ...selectedSpread,
+          name: choiceCount === 2 ? "命運二擇一" : `命運多擇一 (${choiceCount} 選項)`,
+          count: expectedCount,
+          positions,
+          exampleQuestion: choiceCount > 2 ? "我該如何從多個不同的潛在選擇中做出決定？" : "我該留在原公司，還是接受獵頭提供的新 offer？"
+        });
+      }
+    }
+  }, [choiceCount, selectedSpread]);
   // Initialize theme and custom spreads
   useEffect(() => {
     const savedTheme = localStorage.getItem('tarot-theme') as 'light' | 'dark';
@@ -357,6 +380,7 @@ export default function App() {
                       spread={spread} 
                       onClick={() => {
                         setSelectedSpread(spread);
+                        if (spread.id === 'choice') setChoiceCount(2);
                         setView('draw');
                         setQuestion('');
                       }} 
@@ -442,6 +466,39 @@ export default function App() {
                     />
                   </div>
 
+                  {selectedSpread.id === 'choice' && (
+                    <div className="bg-indigo-50/50 dark:bg-mystic-800/30 p-4 rounded-xl border border-indigo-100 dark:border-mystic-700/50">
+                      <label className="text-sm font-bold text-indigo-900 dark:text-mystic-200 block mb-3">
+                        這題有幾個選項需要比較？（目前：{choiceCount} 個）
+                      </label>
+                      <div className="flex flex-wrap gap-2">
+                        {[2, 3, 4, 5, 6, 7, 8, 9, 10].map(num => (
+                          <button
+                            key={num}
+                            onClick={() => setChoiceCount(num)}
+                            className={`w-[42px] h-[42px] sm:w-11 sm:h-11 rounded-full font-bold text-sm sm:text-base flex items-center justify-center transition-all duration-300 ${
+                              choiceCount === num 
+                                ? 'bg-indigo-600 dark:bg-indigo-500 text-white shadow-md shadow-indigo-500/30 scale-105 ring-2 ring-indigo-300 dark:ring-indigo-700 ring-offset-1 dark:ring-offset-mystic-900' 
+                                : 'bg-white/80 dark:bg-mystic-900 shadow-sm text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-mystic-600 hover:bg-indigo-100 dark:hover:bg-mystic-800'
+                            }`}
+                          >
+                            {num}
+                          </button>
+                        ))}
+                      </div>
+                      <p className="text-xs text-indigo-700/80 dark:text-mystic-400 mt-4 leading-relaxed">
+                        直接點擊數字切換。每多一個選擇，系統就會對應多抽出「發展」與「結果」2 張牌喔。
+                      </p>
+                    </div>
+                  )}
+
+                  <button 
+                    onClick={handleDraw}
+                    className="w-full py-4 bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 dark:hover:from-mystic-500 dark:hover:to-mystic-400 text-stone-50 dark:text-white rounded-xl font-bold text-lg shadow-lg shadow-stone-800/20 dark:shadow-mystic-500/20 transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2"
+                  >
+                    <Compass size={20} /> 開始抽牌
+                  </button>
+
                   <div className="bg-amber-50 dark:bg-mystic-800/50 p-4 sm:px-5 rounded-2xl border border-amber-100/80 dark:border-mystic-700 flex items-start gap-3">
                     <Info className="text-amber-500/80 dark:text-mystic-400 mt-0.5 flex-shrink-0" size={18} />
                     <div>
@@ -451,13 +508,6 @@ export default function App() {
                       </p>
                     </div>
                   </div>
-
-                  <button 
-                    onClick={handleDraw}
-                    className="w-full py-4 bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 dark:hover:from-mystic-500 dark:hover:to-mystic-400 text-stone-50 dark:text-white rounded-xl font-bold text-lg shadow-lg shadow-stone-800/20 dark:shadow-mystic-500/20 transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2"
-                  >
-                    <Compass size={20} /> 開始抽牌
-                  </button>
 
                   <div className="bg-indigo-50/60 dark:bg-indigo-950/30 p-4 sm:px-5 rounded-2xl border border-indigo-100/60 dark:border-indigo-900/30 flex items-start gap-3">
                     <Lightbulb className="text-indigo-400 dark:text-indigo-400 mt-0.5 flex-shrink-0" size={18} />
