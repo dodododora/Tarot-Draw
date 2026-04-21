@@ -129,6 +129,7 @@ export default function App() {
   const [extraQuestion, setExtraQuestion] = useState('');
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [choiceCount, setChoiceCount] = useState(2);
+  const [peopleCount, setPeopleCount] = useState(2);
 
   const currentTrivia = React.useMemo(() => {
     return TAROT_TRIVIA[Math.floor(Math.random() * TAROT_TRIVIA.length)];
@@ -155,6 +156,39 @@ export default function App() {
       }
     }
   }, [choiceCount, selectedSpread]);
+
+  // Dynamic mirror spread modifier
+  useEffect(() => {
+    if (selectedSpread?.id === 'mirror') {
+      const positions = ["主角眼中的自己"];
+      for (let i = 0; i < peopleCount - 1; i++) {
+        const char = peopleCount === 2 ? "" : String.fromCharCode(65 + i);
+        const label = `對象${char}`;
+        positions.push(
+          `${label}眼中的主角`,
+          `主角眼中的${label}`,
+          `${label}眼中的自己`
+        );
+      }
+      
+      positions.push(
+        peopleCount === 2 ? "互動產生的誤解" : "多方互動的盲點",
+        peopleCount === 2 ? "關係發展的建議" : "群體關係的建議"
+      );
+      
+      const expectedCount = 1 + (peopleCount - 1) * 3 + 2;
+      
+      if (selectedSpread.count !== expectedCount) {
+        setSelectedSpread({
+          ...selectedSpread,
+          name: peopleCount === 2 ? "雙方鏡像關係" : `多方鏡像關係 (${peopleCount}人局)`,
+          count: expectedCount,
+          positions,
+          exampleQuestion: peopleCount > 2 ? "我與團隊中另外幾位同事彼此之間真實的看法是什麼？" : "我跟前任目前各自對彼此真實的看法是什麼？"
+        });
+      }
+    }
+  }, [peopleCount, selectedSpread]);
   // Initialize theme and custom spreads
   useEffect(() => {
     const savedTheme = localStorage.getItem('tarot-theme') as 'light' | 'dark';
@@ -381,6 +415,7 @@ export default function App() {
                       onClick={() => {
                         setSelectedSpread(spread);
                         if (spread.id === 'choice') setChoiceCount(2);
+                        if (spread.id === 'mirror') setPeopleCount(2);
                         setView('draw');
                         setQuestion('');
                       }} 
@@ -495,6 +530,32 @@ export default function App() {
                       </div>
                       <p className="text-xs text-indigo-700/80 dark:text-mystic-400 mt-4 leading-relaxed">
                         直接點擊數字切換。每多一個選擇，系統就會對應多抽出「發展」與「結果」2 張牌喔。
+                      </p>
+                    </div>
+                  )}
+
+                  {selectedSpread.id === 'mirror' && (
+                    <div className="bg-emerald-50/50 dark:bg-emerald-950/20 p-4 rounded-xl border border-emerald-100 dark:border-emerald-900/30">
+                      <label className="text-sm font-bold text-emerald-900 dark:text-emerald-300 block mb-3">
+                        這段關係牽涉多少人？（包含你，目前：{peopleCount} 人）
+                      </label>
+                      <div className="flex flex-wrap gap-2">
+                        {[2, 3, 4, 5, 6].map(num => (
+                          <button
+                            key={num}
+                            onClick={() => setPeopleCount(num)}
+                            className={`w-[42px] h-[42px] sm:w-11 sm:h-11 rounded-full font-bold text-sm sm:text-base flex items-center justify-center transition-all duration-300 ${
+                              peopleCount === num 
+                                ? 'bg-emerald-600 dark:bg-emerald-600 text-white shadow-md shadow-emerald-500/30 scale-105 ring-2 ring-emerald-300 dark:ring-emerald-700 ring-offset-1 dark:ring-offset-mystic-900' 
+                                : 'bg-white/80 dark:bg-mystic-900 shadow-sm text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-mystic-600 hover:bg-emerald-100 dark:hover:bg-mystic-800'
+                            }`}
+                          >
+                            {num}
+                          </button>
+                        ))}
+                      </div>
+                      <p className="text-xs text-emerald-700/80 dark:text-emerald-400 mt-4 leading-relaxed">
+                        最高支援 6 人局。系統將為每一位「對象」配置專屬的心態牌，協助你跳脫框架看清全局。
                       </p>
                     </div>
                   )}
