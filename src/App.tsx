@@ -23,99 +23,71 @@ interface DrawnLenormandCard extends LenormandCard {
   positionName: string;
 }
 const TarotLogoSVG = () => (
-  <svg viewBox="0 0 100 100" className="w-8 h-8 sm:w-9 sm:h-9 drop-shadow-sm rounded-[10px] overflow-hidden group-hover:scale-105 group-hover:shadow-[0_0_15px_rgba(252,211,77,0.4)] transition-all duration-300 flex-shrink-0" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="100" height="100" fill="url(#logo-gradient)" />
-    
-    <path d="M-5 85 Q 25 72 55 88 T 105 82" stroke="#FBBF24" strokeWidth="5" strokeLinecap="round" fill="none" />
-    <path d="M 40 95 L 90 95" stroke="#FBBF24" strokeWidth="4" strokeLinecap="round" fill="none" />
-    
-    <circle cx="50" cy="74" r="5" stroke="#FBBF24" strokeWidth="4" fill="none" />
-    <line x1="50" y1="58" x2="50" y2="69" stroke="#FBBF24" strokeWidth="4" strokeLinecap="round" />
-    <line x1="26" y1="58" x2="74" y2="58" stroke="#FBBF24" strokeWidth="5" strokeLinecap="round" />
-    <path d="M44 58 L48 20 Q 50 14 52 20 L56 58" stroke="#FBBF24" strokeWidth="4" strokeLinejoin="round" fill="none" />
-    
-    <path d="M22 20 Q 22 28 30 28 Q 22 28 22 36 Q 22 28 14 28 Q 22 28 22 20 Z" fill="#FBBF24" />
-    <path d="M72 16 A 10 10 0 1 0 86 30 A 14 14 0 0 1 72 16 Z" fill="#FBBF24" />
-    
-    <circle cx="78" cy="50" r="2.5" fill="#FBBF24" />
-    <circle cx="34" cy="42" r="2.5" fill="#FBBF24" />
-
+  <svg viewBox="0 0 100 100" className="w-8 h-8 sm:w-10 sm:h-10 drop-shadow-sm rounded-xl overflow-hidden group-hover:scale-105 group-hover:shadow-[0_0_18px_rgba(252,211,77,0.5)] transition-all duration-300 flex-shrink-0" fill="none" xmlns="http://www.w3.org/2000/svg">
     <defs>
-      <radialGradient id="logo-gradient" cx="50%" cy="50%" r="70%" fx="50%" fy="30%">
-        <stop offset="0%" stopColor="#2e1065" />
-        <stop offset="100%" stopColor="#0f172a" />
+      <radialGradient id="ll-bg" cx="50%" cy="35%" r="75%">
+        <stop offset="0%" stopColor="#3730a3" />
+        <stop offset="100%" stopColor="#0a0718" />
       </radialGradient>
     </defs>
+    {/* Background */}
+    <rect width="100" height="100" fill="url(#ll-bg)" />
+    {/* Outer dashed ring */}
+    <circle cx="50" cy="50" r="46" stroke="#FBBF24" strokeWidth="0.8" strokeDasharray="3 6" opacity="0.35" />
+    {/* Tarot card frame */}
+    <rect x="20" y="10" width="60" height="80" rx="6" stroke="#FBBF24" strokeWidth="2" fill="rgba(255,255,255,0.03)" />
+    <rect x="24" y="14" width="52" height="72" rx="4" stroke="#FBBF24" strokeWidth="0.7" fill="none" opacity="0.4" />
+    {/* Crescent moon at top */}
+    <path d="M36 24 A16 16 0 0 1 64 24 A12 12 0 0 0 36 24 Z" fill="#FBBF24" opacity="0.82" />
+    {/* Hexagram (Star of David) — triangle up */}
+    <path d="M50 37 L59 53 L41 53 Z" stroke="#FBBF24" strokeWidth="1.6" fill="rgba(251,191,36,0.12)" />
+    {/* Hexagram — triangle down */}
+    <path d="M50 63 L41 47 L59 47 Z" stroke="#FBBF24" strokeWidth="1.6" fill="rgba(251,191,36,0.12)" />
+    {/* Center circle */}
+    <circle cx="50" cy="50" r="4" fill="#FBBF24" />
+    <circle cx="51.5" cy="48.5" r="1.4" fill="#0a0718" opacity="0.8" />
+    {/* Corner dots */}
+    <circle cx="28" cy="22" r="2" fill="#FBBF24" opacity="0.6" />
+    <circle cx="72" cy="22" r="2" fill="#FBBF24" opacity="0.6" />
+    <circle cx="28" cy="78" r="2" fill="#FBBF24" opacity="0.6" />
+    <circle cx="72" cy="78" r="2" fill="#FBBF24" opacity="0.6" />
+    {/* Bottom horizon lines */}
+    <line x1="38" y1="71" x2="62" y2="71" stroke="#FBBF24" strokeWidth="1.5" opacity="0.6" strokeLinecap="round" />
+    <line x1="33" y1="75" x2="67" y2="75" stroke="#FBBF24" strokeWidth="1" opacity="0.4" strokeLinecap="round" />
+    <line x1="41" y1="79" x2="59" y2="79" stroke="#FBBF24" strokeWidth="0.8" opacity="0.3" strokeLinecap="round" />
+    {/* Side sparkles */}
+    <path d="M29 50 L30.4 53.6 L34 55 L30.4 56.4 L29 60 L27.6 56.4 L24 55 L27.6 53.6 Z" fill="#FBBF24" opacity="0.5" />
+    <path d="M71 42 L72 44.5 L74.5 45.5 L72 46.5 L71 49 L70 46.5 L67.5 45.5 L70 44.5 Z" fill="#FBBF24" opacity="0.45" />
   </svg>
 );
 
 const GlobalBackground = ({ theme }: { theme: 'light' | 'dark' }) => (
-  <div className="fixed inset-0 pointer-events-none -z-10 bg-[#f7f3e8] dark:bg-[#0b0a14] transition-colors duration-1000 overflow-hidden">
-    {/* Sunlight Layer */}
-    <svg className={`absolute inset-0 w-full h-full transition-opacity duration-1000 mix-blend-multiply ${theme === 'light' ? 'opacity-100' : 'opacity-0'}`} preserveAspectRatio="xMidYMid slice" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <radialGradient id="sun-glow" cx="50%" cy="0%" r="80%">
-          <stop offset="0%" stopColor="#fde047" stopOpacity="0.15" />
-          <stop offset="100%" stopColor="#fef08a" stopOpacity="0" />
-        </radialGradient>
-      </defs>
-      <rect width="1000" height="1000" fill="url(#sun-glow)" />
-
-      <g stroke="#d97706" fill="none" opacity="0.05" strokeWidth="1.5">
-        <circle cx="500" cy="0" r="400" />
-        <circle cx="500" cy="0" r="410" strokeDasharray="5,15" />
-        <circle cx="500" cy="0" r="600" />
-        <circle cx="500" cy="0" r="800" strokeDasharray="30,10" />
-        <path d="M500 0 L200 1000 M500 0 L800 1000 M500 0 L0 800 M500 0 L1000 800 L0 0 M1000 0 L500 1000" strokeDasharray="15,20" />
-      </g>
-
-      <g stroke="#d97706" strokeWidth="1.5" fill="none" opacity="0.1">
-        <path d="M100 200 L110 210 M110 200 L100 210" />
-        <path d="M850 150 L860 160 M860 150 L850 160" />
-        <path d="M200 800 L210 810 M210 800 L200 810" />
-        <path d="M800 850 L810 860 M810 850 L800 860" />
-      </g>
-    </svg>
-
-    {/* Mystic Night Layer */}
-    <svg className={`absolute inset-0 w-full h-full transition-opacity duration-1000 mix-blend-screen ${theme === 'dark' ? 'opacity-100' : 'opacity-0'}`} preserveAspectRatio="xMidYMid slice" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <radialGradient id="nebula1" cx="20%" cy="30%" r="60%">
-          <stop offset="0%" stopColor="#4c1d95" stopOpacity="0.4" />
-          <stop offset="100%" stopColor="#1e1b4b" stopOpacity="0" />
-        </radialGradient>
-        <radialGradient id="nebula2" cx="85%" cy="80%" r="60%">
-          <stop offset="0%" stopColor="#1e3a8a" stopOpacity="0.3" />
-          <stop offset="100%" stopColor="#020617" stopOpacity="0" />
-        </radialGradient>
-      </defs>
-      <rect width="1000" height="1000" fill="url(#nebula1)" />
-      <rect width="1000" height="1000" fill="url(#nebula2)" />
-      
-      <g stroke="#a5b4fc" fill="none" opacity="0.05" strokeWidth="1.5">
-        <circle cx="500" cy="500" r="300" />
-        <circle cx="500" cy="500" r="320" strokeDasharray="4,8" />
-        <circle cx="500" cy="500" r="450" />
-        <circle cx="500" cy="500" r="600" strokeDasharray="10,20" />
-        <path d="M500 0 L500 1000 M0 500 L1000 500" strokeDasharray="10,15" />
-        <path d="M146 146 L854 854 M146 854 L854 146" strokeDasharray="10,20" />
-        
-        <polygon points="500,200 759,350 759,650 500,800 241,650 241,350" strokeDasharray="5,10" />
-      </g>
-      
-      <g fill="#e0e7ff" opacity="0.3">
-        <circle cx="150" cy="200" r="2.5" />
-        <circle cx="850" cy="180" r="1.5" />
-        <circle cx="700" cy="800" r="3" opacity="0.4"/>
-        <circle cx="200" cy="750" r="1.5" />
-        <circle cx="450" cy="250" r="1" />
-        <circle cx="900" cy="500" r="2" />
-        <circle cx="100" cy="500" r="1.5" opacity="0.5"/>
-        <circle cx="800" cy="900" r="2" />
-      </g>
-    </svg>
+  <div className="fixed inset-0 pointer-events-none -z-10 transition-colors duration-700 overflow-hidden"
+    style={{
+      background: theme === 'dark'
+        ? 'radial-gradient(ellipse at 20% 30%, #4c1d9540 0%, transparent 60%), radial-gradient(ellipse at 85% 80%, #1e3a8a30 0%, transparent 60%), #0b0a14'
+        : 'radial-gradient(ellipse at 50% 0%, #fde04720 0%, transparent 70%), #f7f3e8'
+    }}
+  >
+    {/* Subtle star dots — dark only */}
+    {theme === 'dark' && (
+      <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
+        <g fill="#e0e7ff" opacity="0.25">
+          <circle cx="150" cy="200" r="2" />
+          <circle cx="850" cy="180" r="1.5" />
+          <circle cx="700" cy="800" r="2.5" />
+          <circle cx="200" cy="750" r="1.5" />
+          <circle cx="900" cy="500" r="2" />
+          <circle cx="100" cy="500" r="1.5" />
+          <circle cx="450" cy="100" r="1" />
+          <circle cx="600" cy="300" r="1" />
+        </g>
+      </svg>
+    )}
   </div>
 );
+
+
 
 export default function App() {
   const [mode, setMode] = useState<'tarot' | 'lenormand' | 'thoth'>('tarot');
@@ -551,7 +523,7 @@ export default function App() {
                 : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
             }`}
           >
-            🔮<span className="hidden sm:inline"> 偉特</span>
+            🔮<span className="text-[10px] sm:text-xs"> 偉特</span>
           </button>
           <button
             onClick={() => { setMode('thoth'); setView('home'); setSelectedSpread(null); }}
@@ -561,7 +533,7 @@ export default function App() {
                 : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
             }`}
           >
-            🌌<span className="hidden sm:inline"> 托特</span>
+            🌌<span className="text-[10px] sm:text-xs"> 托特</span>
           </button>
           <button
             onClick={() => { setMode('lenormand'); setView('home'); setSelectedSpread(null); }}
@@ -571,7 +543,7 @@ export default function App() {
                 : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
             }`}
           >
-            🃏<span className="hidden sm:inline"> 雷諾曼</span>
+            🃏<span className="text-[10px] sm:text-xs"> 雷諾曼</span>
           </button>
         </div>
         <div className="flex items-center gap-1 sm:gap-2">
@@ -646,35 +618,36 @@ export default function App() {
                 </section>
               )}
 
-              {/* Built-in Spreads (Tarot & Thoth) */}
-              {(mode === 'tarot' || mode === 'thoth') && (
+              {/* Built-in Spreads — all modes show the same combined list */}
               <section>
                 <div className="flex items-center gap-3 mb-2">
                   <Wand2 className="text-stone-600 dark:text-mystic-500" size={24} />
-                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">{mode === 'thoth' ? '托特專屬牌陣' : '內建牌陣'}</h2>
+                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">内建牌陣</h2>
                 </div>
                 <p className="text-sm text-slate-500 dark:text-mystic-400 mb-6">
-                  {mode === 'thoth'
-                    ? '共 78 張・無逆位・克勞利體系・深層象徵與鍊金術詮釋'
-                    : '共 78 張・支援正逆位・萊德偉特體系・靈性成長與心理洞察'}
+                  {mode === 'lenormand'
+                    ? '共 36 張・無正逆位・雷諾曼體系'
+                    : mode === 'thoth'
+                    ? '共 78 張・無逆位・克勞利體系'
+                    : '共 78 張・支援正逆位・萊德偉特體系'}
                 </p>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6 mx-auto">
-                  {(mode === 'thoth' ? THOTH_SPREADS : WAITE_SPREADS).map((spread) => (
-                    <SpreadCard 
-                      key={spread.id} 
-                      spread={spread} 
+                  {[...THOTH_SPREADS, ...WAITE_SPREADS.filter(s => !THOTH_SPREADS.some(t => t.id === s.id))]
+                    .map((spread) => (
+                    <SpreadCard
+                      key={spread.id}
+                      spread={spread}
                       onClick={() => {
                         setSelectedSpread(spread);
                         if (spread.id === 'choice') setChoiceCount(2);
                         if (spread.id === 'mirror') setPeopleCount(2);
                         setView('draw');
                         setQuestion('');
-                      }} 
+                      }}
                     />
                   ))}
                 </div>
               </section>
-              )}
 
               {/* Custom Spreads (Tarot & Thoth) */}
               {(mode === 'tarot' || mode === 'thoth') && (
@@ -903,7 +876,12 @@ export default function App() {
                     lenormandDrawnCards.length === 9 ? 'grid-cols-3' :
                     lenormandDrawnCards.length === 5 ? 'grid-cols-3 sm:grid-cols-5' :
                     lenormandDrawnCards.length === 3 ? 'grid-cols-3' :
-                    'grid-cols-1'
+                    lenormandDrawnCards.length === 1 ? 'grid-cols-1' :
+                    lenormandDrawnCards.length === 4 ? 'grid-cols-2' :
+                    lenormandDrawnCards.length === 6 ? 'grid-cols-3' :
+                    lenormandDrawnCards.length === 7 ? 'grid-cols-4' :
+                    lenormandDrawnCards.length === 10 ? 'grid-cols-3 sm:grid-cols-5' :
+                    'grid-cols-3 sm:grid-cols-4'
                   }`}>
                     {lenormandDrawnCards.map((card, index) => (
                       <LenormandCardDisplay key={index} card={card} index={index} isCenter={lenormandDrawnCards.length === 9 && index === 4} />
@@ -1339,7 +1317,7 @@ function SpreadCard({ spread, isCustom, onClick, onEdit, onDelete }: {
   return (
     <div 
       onClick={onClick}
-      className="relative bg-white/70 dark:bg-mystic-900/60 p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] border border-amber-100 dark:border-mystic-800 hover:border-amber-300 dark:hover:border-mystic-600 shadow-sm hover:shadow-[0_8px_30px_rgb(251,191,36,0.1)] dark:hover:shadow-[0_8px_30px_rgba(99,102,241,0.05)] transition-all cursor-pointer group flex flex-col min-h-[160px] sm:h-[220px] overflow-hidden backdrop-blur-sm hover:-translate-y-1 active:scale-[0.98]"
+      className="relative bg-white/70 dark:bg-mystic-900/60 p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] border border-amber-100 dark:border-mystic-800 hover:border-amber-300 dark:hover:border-mystic-600 shadow-sm hover:shadow-md transition-all cursor-pointer group flex flex-col min-h-[160px] sm:h-[220px] overflow-hidden"
     >
       <div className="flex justify-between items-start mb-2 sm:mb-4 relative z-10 gap-2">
         <h3 className="text-base sm:text-xl font-bold text-amber-900 dark:text-mystic-100 group-hover:text-amber-600 dark:group-hover:text-indigo-400 transition-colors drop-shadow-sm leading-tight line-clamp-2">
@@ -1587,25 +1565,25 @@ function TarotCardDisplay({ card, index, isExtra }: { card: DrawnCard; index: nu
 
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.1 }}
-      className="flex flex-col items-center gap-3 shrink-0 mx-auto"
+      transition={{ delay: Math.min(index * 0.08, 0.32), duration: 0.3 }}
+      className="flex flex-col items-center gap-2 shrink-0 mx-auto"
     >
       {!isExtra && (
-        <div className="relative w-[130px] sm:w-[150px]">
-          <div className="overflow-x-auto whitespace-nowrap [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] text-xs font-bold text-amber-700 dark:text-mystic-400 uppercase tracking-widest text-center drop-shadow-sm pr-4">
+        <div className="relative w-[110px] sm:w-[130px]">
+          <div className="overflow-x-auto whitespace-nowrap [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] text-[10px] sm:text-xs font-bold text-amber-700 dark:text-mystic-400 uppercase tracking-wide text-center drop-shadow-sm pr-4">
             {index + 1}. {card.positionName}
           </div>
           <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-white dark:from-mystic-950 to-transparent" />
         </div>
       )}
       
-      <div className={`relative aspect-square w-[130px] sm:w-[150px] rounded-2xl overflow-hidden border-4 transition-all duration-500 ${
+      <div className={`relative aspect-square w-[110px] sm:w-[130px] rounded-2xl overflow-hidden border-4 ${
         card.isReversed ? 'border-red-400/80 dark:border-red-500/50 shadow-red-500/20' : 
         isExtra ? 'border-amber-400/80 dark:border-mystic-500/50 shadow-amber-500/20 dark:shadow-mystic-500/20' : 
         'border-amber-300/80 dark:border-gold-500/50 shadow-amber-500/20 dark:shadow-gold-500/20'
-      } shadow-xl backdrop-blur-sm`}>
+      } shadow-lg`}>
         {/* Card Background Decoration */}
         <div className={`absolute inset-0 flex flex-col items-center justify-center p-4 transition-colors ${
           isMajor ? 'bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-100/80 via-orange-50/50 to-white dark:from-mystic-800/80 dark:via-mystic-900 dark:to-mystic-950' : 'bg-white/90 dark:bg-mystic-900'
@@ -1631,11 +1609,11 @@ function TarotCardDisplay({ card, index, isExtra }: { card: DrawnCard; index: nu
           {/* Card Content */}
           <div className={`flex flex-col items-center justify-center text-center transition-transform duration-700 h-full w-full p-2 ${card.isReversed ? 'rotate-180' : ''}`}>
             <div className="text-4xl sm:text-5xl mb-2">{emoji}</div>
-            <div className={`font-extrabold text-lg sm:text-xl mb-1 tracking-wider leading-tight ${
-              isMajor ? 'text-amber-900 dark:text-amber-50 drop-shadow-sm dark:drop-shadow-md' : 'text-slate-800 dark:text-mystic-100'
+            <div className={`font-extrabold text-sm sm:text-base mb-0.5 leading-tight ${
+              isMajor ? 'text-amber-900 dark:text-amber-50 drop-shadow-sm' : 'text-slate-800 dark:text-mystic-100'
             }`}>{card.nameCN}</div>
-            <div className={`text-[10px] sm:text-[11px] tracking-widest uppercase leading-tight scale-90 ${
-              isMajor ? 'text-amber-600 font-bold dark:text-gold-400/80 dark:font-semibold' : 'text-amber-700/60 dark:text-mystic-400 font-semibold'
+            <div className={`text-[9px] sm:text-[10px] tracking-wide uppercase leading-tight max-w-full line-clamp-1 ${
+              isMajor ? 'text-amber-600 font-bold dark:text-gold-400/80' : 'text-amber-700/60 dark:text-mystic-400 font-semibold'
             }`}>{card.nameEN}</div>
           </div>
         </div>
@@ -1648,8 +1626,8 @@ function TarotCardDisplay({ card, index, isExtra }: { card: DrawnCard; index: nu
         )}
       </div>
 
-      <div className="text-center">
-        <div className="font-bold text-slate-800 dark:text-mystic-100">{card.nameCN}</div>
+      <div className="text-center w-[110px] sm:w-[130px]">
+        <div className="font-bold text-sm text-slate-800 dark:text-mystic-100 truncate">{card.nameCN}</div>
         <div className={`text-xs font-bold ${card.isReversed ? 'text-red-500 dark:text-red-400' : 'text-amber-600 dark:text-mystic-400'}`}>
           {card.isReversed ? '逆位' : '正位'}
         </div>
