@@ -600,6 +600,25 @@ export default function App() {
               exit={{ opacity: 0, y: -20 }}
               className="space-y-12"
             >
+              {/* How-to flow */}
+              <div className="flex items-center justify-center flex-wrap gap-1.5 text-[11px] font-medium text-slate-500 dark:text-mystic-500">
+                {[
+                  { n: '1', label: '選系統' },
+                  { n: '2', label: '選牌陣' },
+                  { n: '3', label: '輸入問題' },
+                  { n: '4', label: '抽牌' },
+                  { n: '5', label: '複製給 AI 解讀' },
+                ].map(({ n, label }, i, arr) => (
+                  <React.Fragment key={n}>
+                    <span className="flex items-center gap-1">
+                      <span className="w-4 h-4 rounded-full bg-amber-100 dark:bg-mystic-800 text-amber-700 dark:text-mystic-400 flex items-center justify-center text-[9px] font-bold shrink-0">{n}</span>
+                      {label}
+                    </span>
+                    {i < arr.length - 1 && <span className="text-slate-300 dark:text-mystic-700">›</span>}
+                  </React.Fragment>
+                ))}
+              </div>
+
               {/* Lenormand Home */}
               {mode === 'lenormand' && (
                 <section>
@@ -697,6 +716,13 @@ export default function App() {
                 )}
               </section>
               )}
+
+              {/* Legal Disclaimer */}
+              <div className="mt-4 pt-6 border-t border-stone-200/60 dark:border-mystic-800/40 text-center">
+                <p className="text-[11px] leading-relaxed text-slate-400 dark:text-mystic-600 max-w-2xl mx-auto">
+                  ⚖️ 本網站提供之塔羅牌陣與解讀內容僅供娛樂與自我探索參考，不構成任何醫療、心理、法律或財務建議。請勿依據占卜結果做出重大決定。
+                </p>
+              </div>
             </motion.div>
           )}
 
@@ -746,6 +772,9 @@ export default function App() {
                   >
                     <Compass size={20} /> 開始抽牌
                   </button>
+                  <p className="text-center text-[11px] text-slate-400 dark:text-mystic-600">
+                    ✨ 抽牌後可一鍵複製 AI 解讀 Prompt，貼入 ChatGPT・Claude・Gemini 獲得深度解讀
+                  </p>
 
                   {selectedSpread.id === 'choice' && (
                     <div className="bg-indigo-50/50 dark:bg-mystic-800/30 p-4 rounded-xl border border-indigo-100 dark:border-mystic-700/50">
@@ -806,7 +835,7 @@ export default function App() {
                       <p className="text-xs text-amber-700/70 dark:text-mystic-500 mb-2">將抽取 {selectedSpread.count} 張牌，位置如下：</p>
                       {/* Scrollable pill row with fade mask */}
                       <div className="relative">
-                        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+                        <div className="flex gap-2 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                           {selectedSpread.positions.map((pos, i) => (
                             <span
                               key={i}
@@ -817,7 +846,7 @@ export default function App() {
                           ))}
                         </div>
                         {/* Right fade-out hint */}
-                        <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-amber-50 dark:from-mystic-800 to-transparent rounded-r-full" />
+                        <div className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-amber-50/95 dark:from-[#1e1a36]/95 to-transparent" />
                       </div>
                     </div>
                   </div>
@@ -961,7 +990,7 @@ export default function App() {
                         onClick={() => copyToClipboard('all')}
                         className="px-5 py-2.5 rounded-xl bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 hover:dark:from-mystic-500 hover:dark:to-mystic-400 text-stone-50 dark:text-white shadow-lg shadow-stone-800/10 dark:shadow-mystic-500/20 transition-all hover:-translate-y-1 active:scale-95 font-bold flex items-center gap-2 text-sm"
                       >
-                        <Copy size={16} /> 複製全部
+                        <Copy size={16} /> 複製全部 Prompt
                       </button>
                       <button 
                         onClick={() => copyToClipboard('main')}
@@ -981,10 +1010,41 @@ export default function App() {
                       onClick={() => copyToClipboard('all')}
                       className="px-8 py-3 rounded-xl bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 dark:hover:from-mystic-500 dark:hover:to-mystic-400 text-stone-50 dark:text-white shadow-lg shadow-stone-800/10 dark:shadow-mystic-500/20 transition-all hover:-translate-y-1 active:scale-95 font-bold flex items-center gap-2"
                     >
-                      <Copy size={18} /> 📋 一鍵複製結果
+                      <Copy size={18} /> 複製 AI 解讀 Prompt
                     </button>
                   )}
                 </div>
+
+                {/* AI Quick-open shortcuts */}
+                {showCopySuccess && (
+                  <div className="flex items-center gap-2 flex-wrap justify-center">
+                    <span className="text-xs text-slate-500 dark:text-mystic-500 font-medium">貼入 AI 開始解讀 →</span>
+                    <a
+                      href="https://chat.openai.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#10a37f]/10 hover:bg-[#10a37f]/20 text-[#10a37f] dark:text-emerald-400 border border-[#10a37f]/30 text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95"
+                    >
+                      <span>🤖</span> ChatGPT
+                    </a>
+                    <a
+                      href="https://claude.ai"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-500/10 hover:bg-orange-500/20 text-orange-600 dark:text-orange-400 border border-orange-400/30 text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95"
+                    >
+                      <span>🧠</span> Claude
+                    </a>
+                    <a
+                      href="https://gemini.google.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-400/30 text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95"
+                    >
+                      <span>✨</span> Gemini
+                    </a>
+                  </div>
+                )}
               </div>
             </motion.div>
           )}
@@ -1532,7 +1592,7 @@ function TarotCardDisplay({ card, index, isExtra }: { card: DrawnCard; index: nu
     >
       {!isExtra && (
         <div className="relative w-[130px] sm:w-[150px]">
-          <div className="overflow-x-auto whitespace-nowrap scrollbar-none text-xs font-bold text-amber-700 dark:text-mystic-400 uppercase tracking-widest text-center drop-shadow-sm pr-4">
+          <div className="overflow-x-auto whitespace-nowrap [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] text-xs font-bold text-amber-700 dark:text-mystic-400 uppercase tracking-widest text-center drop-shadow-sm pr-4">
             {index + 1}. {card.positionName}
           </div>
           <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-white dark:from-mystic-950 to-transparent" />
