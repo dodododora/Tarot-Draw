@@ -386,12 +386,24 @@ export default function App() {
         case 'celtic':
           analysisPrompt = `\n\n請從以下角度為我深入解讀這個牌陣：\n（一）核心狀況：分析【現況】與【挑戰】的交鋒。\n（二）深層心理：對比【顯意識】與【潛意識】的拉扯。\n（三）時間流向：從【過去】看往【近未來】的演化趨勢。\n（四）內外解析：結合【自我認知】與【環境變數】的互動。\n（五）最終走向：綜觀【焦慮與渴望】，推演【最終演化】。`;
           break;
-        case 'choice':
-          analysisPrompt = `\n\n請從以下角度為我深入解讀這個牌陣：\n（一）底層邏輯：評估【當下局勢的底層邏輯】。\n（二）路徑推演：分別解讀選擇A與B的【隱藏成本】與【最終演化】。\n（三）決策指引：超越單純的好壞，分析這兩個選擇本質上的機會成本差異，給予高維度的決策建議。`;
+        case 'choice': {
+          const numChoices = (mainCards.length - 1) / 2;
+          const letters = Array.from({length: numChoices}, (_, i) => String.fromCharCode(65 + i));
+          const pathDesc = letters.map(l => `選擇${l}（發展軌跡→結果）`).join('、');
+          analysisPrompt = `\n\n請從以下角度為我深入解讀這個 ${numChoices} 選項的決策牌陣：\n（一）底層邏輯：評估【決策當下的現況】揭示的核心變數與限制條件。\n（二）路徑推演：分別解讀 ${pathDesc} 的發展軌跡與機會成本差異。\n（三）決策指引：綜合 ${numChoices} 條路徑，給予具體且高維度的決策建議，並明確指出你認為最值得關注的選擇及原因。`;
           break;
-        case 'mirror':
-          analysisPrompt = `\n\n請從以下角度為我深入解讀這段關係的系統性結構：\n（一）認知落差：比較雙方的【投射與執念】及【真實底線】，點出彼此的盲點。\n（二）互動動力學：分析【系統性摩擦】的根源，以及隱藏的【潛在共振點】。\n（三）破冰策略：基於上述洞察，給出具體且成熟的互動建議。`;
+        }
+        case 'mirror': {
+          const numPeople = Math.round(mainCards.length / 3);
+          if (numPeople <= 2) {
+            analysisPrompt = `\n\n請從以下角度為我深入解讀這段雙方關係的系統性結構：\n（一）認知落差：對比雙方視角——【對象眼中的主角】vs【主角眼中的對象】——點出彼此的投射與盲點。\n（二）自我定位：分析【主角眼中的自己】與【對象眼中的自己】各自揭示的深層狀態。\n（三）互動動力：深挖【互動產生的誤解】的根源，以及雙方之間的隱形拉力。\n（四）破冰策略：基於上述洞察，給出具體且成熟的互動建議。`;
+          } else {
+            const chars = Array.from({length: numPeople - 1}, (_, i) => String.fromCharCode(65 + i));
+            const peopleList = chars.map(c => `對象${c}`).join('、');
+            analysisPrompt = `\n\n請從以下角度為我深入解讀這個 ${numPeople} 人局的關係系統：\n（一）自我視角：分析【主角眼中的自己】揭示的核心自我認知。\n（二）多方關係：逐一解讀 ${peopleList} 各自的視角差異（他眼中的主角、主角眼中的他、他眼中的自己），找出最關鍵的感知落差。\n（三）系統盲點：分析【多方互動的盲點】與整體關係網絡的張力來源。\n（四）群體建議：基於全局視角，給出在 ${numPeople} 人關係中找到平衡的具體建議。`;
+          }
           break;
+        }
         case 'johari':
           analysisPrompt = `\n\n請依據周哈里窗模型為我深入解讀，特別點出【盲目區】與【隱藏區】揭示的認知盲點，並說明如何探索【未知區】的潛能以達成自我整合。`;
           break;
@@ -994,7 +1006,7 @@ export default function App() {
                         onClick={() => copyToClipboard('all')}
                         className="px-5 py-2.5 rounded-xl bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 hover:dark:from-mystic-500 hover:dark:to-mystic-400 text-stone-50 dark:text-white shadow-lg shadow-stone-800/10 dark:shadow-mystic-500/20 transition-all hover:-translate-y-1 active:scale-95 font-bold flex items-center gap-2 text-sm"
                       >
-                        <Copy size={16} /> 複製全部 Prompt
+                        <Copy size={16} /> 複製全部
                       </button>
                       <button 
                         onClick={() => copyToClipboard('main')}
