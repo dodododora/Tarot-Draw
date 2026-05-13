@@ -331,16 +331,22 @@ export default function App() {
     setExtraQuestion('');
   };
 
-  const copyToClipboard = (type: 'all' | 'main' | 'extra' = 'all') => {
-    if (!selectedSpread) return;
+  const copyToClipboard = (type: 'all' | 'main' | 'extra' = 'all', record?: DrawHistory) => {
+    const targetSpread = record ? record.spread : selectedSpread;
+    const targetQuestion = record ? record.question : question;
+    const targetMode = record ? (record.mode || 'tarot') : mode;
+    const targetCards = record ? record.cards : drawnCards;
+    const targetLenormandCards = record ? (record.lenormandCards || []) : lenormandDrawnCards;
 
-    if (mode === 'lenormand') {
-      const cards = lenormandDrawnCards;
+    if (!targetSpread) return;
+
+    if (targetMode === 'lenormand') {
+      const cards = targetLenormandCards;
       const cardList = cards.map((card, i) =>
         `  ${i + 1}. ${card.positionName}：${card.nameCN} (${card.nameEN})`
       ).join('\n');
 
-      let prompt = `我想透過 Lenormand 卡牌占卜以下問題：\n\n【問題】${question || '（未輸入問題）'}\n\n【牌陣】${selectedSpread.name}\n\n抽出的牌：\n${cardList}`;
+      let prompt = `我想透過 Lenormand 卡牌占卜以下問題：\n\n【問題】${targetQuestion.trim() || '探索當下整體狀態'}\n\n【牌陣】${targetSpread.name}\n\n抽出的牌：\n${cardList}`;
 
       if (cards.length === 9) {
         const [c1, c2, c3, c4, c5, c6, c7, c8, c9] = cards;
@@ -378,14 +384,18 @@ export default function App() {
       }
 
       navigator.clipboard.writeText(prompt).then(() => {
-        setShowCopySuccess('all');
-        setTimeout(() => setShowCopySuccess(null), 2000);
+        if (record) {
+          showToast('已複製 AI 解讀 Prompt！');
+        } else {
+          setShowCopySuccess('all');
+          setTimeout(() => setShowCopySuccess(null), 2000);
+        }
       });
       return;
     }
     
-    const mainCards = drawnCards.filter(c => !c.extraQuestion);
-    const extraCards = drawnCards.filter(c => c.extraQuestion);
+    const mainCards = targetCards.filter(c => !c.extraQuestion);
+    const extraCards = targetCards.filter(c => c.extraQuestion);
 
     const mainText = mainCards.map((card, i) => `  ${i + 1}. ${card.positionName}：${card.nameCN} ${card.nameEN}（${card.isReversed ? '逆位' : '正位'}）`).join('\n');
     const extraText = extraCards.length > 0 
@@ -396,10 +406,10 @@ export default function App() {
     
     // Generate AI interpretation guide based on Tarot spread
     let analysisPrompt = '';
-    if (selectedSpread.isCustom) {
+    if (targetSpread.isCustom) {
       analysisPrompt = `\n\n請依據我自訂牌陣中每個位置的定義，結合正逆位牌意，為我進行綜合解讀，並給出具體的建議。`;
     } else {
-      switch (selectedSpread.id) {
+      switch (targetSpread.id) {
         // Thoth Spreads
         case 'celtic':
           analysisPrompt = `\n\n請從以下角度為我深入解讀這個牌陣：\n（一）核心狀況：分析【現況】與【挑戰】的交鋒。\n（二）深層心理：對比【顯意識】與【潛意識】的拉扯。\n（三）時間流向：從【過去】看往【近未來】的演化趨勢。\n（四）內外解析：結合【自我認知】與【環境變數】的互動。\n（五）最終走向：綜觀【焦慮與渴望】，推演【最終演化】。`;
@@ -463,18 +473,22 @@ export default function App() {
       }
     }
 
-    const modeName = mode === 'thoth' ? '托特' : '偉特';
+    const modeName = targetMode === 'thoth' ? '托特' : '偉特';
     if (type === 'all') {
-      text = `我想透過${modeName}塔羅牌占卜以下問題：\n\n【問題】${question || '（未輸入問題）'}\n\n【牌陣】${selectedSpread.name}\n\n抽出的牌：\n${mainText}${extraText}${analysisPrompt}`;
+      text = `我想透過${modeName}塔羅牌占卜以下問題：\n\n【問題】${targetQuestion.trim() || '探索當下整體狀態'}\n\n【牌陣】${targetSpread.name}\n\n抽出的牌：\n${mainText}${extraText}${analysisPrompt}`;
     } else if (type === 'main') {
-      text = `我想透過${modeName}塔羅牌占卜以下問題：\n\n【問題】${question || '（未輸入問題）'}\n\n【牌陣】${selectedSpread.name}（主牌陣）\n\n抽出的牌：\n${mainText}${analysisPrompt}`;
+      text = `我想透過${modeName}塔羅牌占卜以下問題：\n\n【問題】${targetQuestion.trim() || '探索當下整體狀態'}\n\n【牌陣】${targetSpread.name}（主牌陣）\n\n抽出的牌：\n${mainText}${analysisPrompt}`;
     } else if (type === 'extra') {
-      text = `我想針對剛剛的${modeName}塔羅牌占卜結果，進行進一步的提問。請為我解讀以下補抽的牌卡：\n\n【原問題】${question || '（未輸入問題）'}\n\n【衍生自牌陣】${selectedSpread.name}\n\n${extraText.replace('【補充指引（針對後續提問補抽）】\n', '')}\n\n請為我解讀這幾張補抽牌的具體含義，以及它們如何回應我的提問。`;
+      text = `我想針對剛剛的${modeName}塔羅牌占卜結果，進行進一步的提問。請為我解讀以下補抽的牌卡：\n\n【原問題】${targetQuestion.trim() || '探索當下整體狀態'}\n\n【衍生自牌陣】${targetSpread.name}\n\n${extraText.replace('【補充指引（針對後續提問補抽）】\n', '')}\n\n請為我解讀這幾張補抽牌的具體含義，以及它們如何回應我的提問。`;
     }
 
     navigator.clipboard.writeText(text).then(() => {
-      setShowCopySuccess(type);
-      setTimeout(() => setShowCopySuccess(null), 2000);
+      if (record) {
+        showToast('已複製 AI 解讀 Prompt！');
+      } else {
+        setShowCopySuccess(type);
+        setTimeout(() => setShowCopySuccess(null), 2000);
+      }
     });
   };
 
@@ -614,10 +628,15 @@ export default function App() {
               {/* Built-in Spreads (Tarot & Thoth) */}
               {(mode === 'tarot' || mode === 'thoth') && (
               <section>
-                <div className="flex items-center gap-3 mb-6">
+                <div className="flex items-center gap-3 mb-2">
                   <Wand2 className="text-stone-600 dark:text-mystic-500" size={24} />
                   <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">{mode === 'thoth' ? '托特專屬牌陣' : '內建牌陣'}</h2>
                 </div>
+                <p className="text-sm text-slate-500 dark:text-mystic-400 mb-6">
+                  {mode === 'thoth'
+                    ? '共 78 張・無逆位・克勞利體系・深層象徵與鍊金術詮釋'
+                    : '共 78 張・支援正逆位・萊德偉特體系・靈性成長與心理洞察'}
+                </p>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6 mx-auto">
                   {(mode === 'thoth' ? THOTH_SPREADS : WAITE_SPREADS).map((spread) => (
                     <SpreadCard 
@@ -713,6 +732,12 @@ export default function App() {
                       placeholder={selectedSpread.exampleQuestion ? `例如：${selectedSpread.exampleQuestion}` : "請輸入你的困惑或想了解的事情..."}
                       className="w-full h-32 px-4 py-3 rounded-xl border border-amber-200 dark:border-mystic-800 bg-white/80 dark:bg-mystic-950 focus:ring-2 focus:ring-amber-400 dark:focus:ring-mystic-500 outline-none transition-all resize-none shadow-inner"
                     />
+                    {question.trim().length > 0 && question.trim().length < 10 && (
+                      <p className="mt-2 text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
+                        <span className="text-base">💡</span>
+                        問題越具體，AI 解讀越準確——試著加上時間、情境或對象
+                      </p>
+                    )}
                   </div>
 
                   <button 
@@ -776,11 +801,24 @@ export default function App() {
 
                   <div className="bg-amber-50 dark:bg-mystic-800/50 p-4 sm:px-5 rounded-2xl border border-amber-100/80 dark:border-mystic-700 flex items-start gap-3">
                     <Info className="text-amber-500/80 dark:text-mystic-400 mt-0.5 flex-shrink-0" size={18} />
-                    <div>
-                      <p className="text-sm font-bold text-amber-900 dark:text-mystic-100 mb-1.5 tracking-wide">牌陣資訊</p>
-                      <p className="text-sm text-amber-800/80 dark:text-mystic-400 leading-relaxed">
-                        將抽取 {selectedSpread.count} 張牌，依序代表：{selectedSpread.positions.join('、')}
-                      </p>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-bold text-amber-900 dark:text-mystic-100 mb-2 tracking-wide">牌陣資訊</p>
+                      <p className="text-xs text-amber-700/70 dark:text-mystic-500 mb-2">將抽取 {selectedSpread.count} 張牌，位置如下：</p>
+                      {/* Scrollable pill row with fade mask */}
+                      <div className="relative">
+                        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+                          {selectedSpread.positions.map((pos, i) => (
+                            <span
+                              key={i}
+                              className="shrink-0 text-[11px] font-semibold text-amber-800 dark:text-mystic-300 bg-amber-100/80 dark:bg-mystic-700/60 border border-amber-200 dark:border-mystic-600 px-2.5 py-1 rounded-full whitespace-nowrap"
+                            >
+                              <span className="text-amber-500 dark:text-mystic-500 mr-1">{i + 1}.</span>{pos}
+                            </span>
+                          ))}
+                        </div>
+                        {/* Right fade-out hint */}
+                        <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-amber-50 dark:from-mystic-800 to-transparent rounded-r-full" />
+                      </div>
                     </div>
                   </div>
 
@@ -809,7 +847,7 @@ export default function App() {
                 <div>
                   {mode === 'lenormand' && <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800 mb-1 inline-block">雷諾曼</span>}
                   <h2 className="text-2xl font-bold bg-gradient-to-r from-mystic-700 to-indigo-500 bg-clip-text text-transparent dark:from-mystic-200 dark:to-indigo-300 drop-shadow-sm">{selectedSpread.name}</h2>
-                  <p className="text-slate-500 dark:text-mystic-400">問題：{question || '未輸入'}</p>
+                  <p className="text-slate-500 dark:text-mystic-400">問題：{question.trim() || '探索當下整體狀態'}</p>
                 </div>
                 <div className="flex gap-3">
                   <button 
@@ -1018,7 +1056,7 @@ export default function App() {
                           </span>
                         </div>
                         <p className="text-sm text-slate-600 dark:text-mystic-300 line-clamp-2 min-h-[2.5rem] mb-3">
-                          {record.question || '（未輸入問題）'}
+                          {record.question?.trim() || '探索當下整體狀態'}
                         </p>
                         <div className="flex items-center justify-between text-xs font-semibold text-stone-600 dark:text-mystic-400">
                           {record.mode === 'lenormand' && <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-1.5 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800">雷諾曼</span>}
@@ -1046,9 +1084,20 @@ export default function App() {
                             setIsHistoryOpen(false);
                             setView('result');
                           }}
-                          className="flex-[4] py-3.5 bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 dark:hover:from-mystic-500 dark:hover:to-mystic-400 text-stone-50 dark:text-white rounded-xl shadow-lg shadow-stone-800/10 dark:shadow-mystic-500/20 transition-all active:scale-95 text-[15px] font-bold flex items-center justify-center gap-2"
+                          className="flex-[3] py-3.5 bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 dark:hover:from-mystic-500 dark:hover:to-mystic-400 text-stone-50 dark:text-white rounded-xl shadow-lg shadow-stone-800/10 dark:shadow-mystic-500/20 transition-all active:scale-95 text-[15px] font-bold flex items-center justify-center gap-2"
                         >
-                          👁️ 前往查看
+                          👁️ 查看
+                        </button>
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            copyToClipboard('all', record);
+                          }}
+                          className="flex-[3] py-3.5 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-all rounded-xl active:scale-95 text-[15px] font-bold flex items-center justify-center gap-2"
+                          title="直接複製完整 AI 解讀 Prompt"
+                        >
+                          <Copy size={18} />
+                          <span>複製解讀</span>
                         </button>
                         <button 
                           onClick={(e) => {
@@ -1482,8 +1531,11 @@ function TarotCardDisplay({ card, index, isExtra }: { card: DrawnCard; index: nu
       className="flex flex-col items-center gap-3 shrink-0 mx-auto"
     >
       {!isExtra && (
-        <div className="text-xs font-bold text-amber-700 dark:text-mystic-400 uppercase tracking-widest text-center h-4 drop-shadow-sm">
-          {index + 1}. {card.positionName}
+        <div className="relative w-[130px] sm:w-[150px]">
+          <div className="overflow-x-auto whitespace-nowrap scrollbar-none text-xs font-bold text-amber-700 dark:text-mystic-400 uppercase tracking-widest text-center drop-shadow-sm pr-4">
+            {index + 1}. {card.positionName}
+          </div>
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-white dark:from-mystic-950 to-transparent" />
         </div>
       )}
       
