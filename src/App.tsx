@@ -1327,7 +1327,20 @@ export default function App() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Global Footer */}
+      <footer className="text-center py-4 border-t border-stone-100/60 dark:border-mystic-900/60 bg-white/30 dark:bg-mystic-950/30 backdrop-blur-sm">
+        <a
+          href="https://forms.gle/你的GoogleForms連結"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs text-slate-400 dark:text-mystic-600 hover:text-amber-600 dark:hover:text-mystic-400 transition-colors"
+        >
+          有想反饋的嗎？點這裡 →
+        </a>
+      </footer>
     </div>
+
   );
 }
 
