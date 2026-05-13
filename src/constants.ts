@@ -73,39 +73,227 @@ export const MINOR_ARCANA: TarotCard[] = SUITS.flatMap((suit, sIdx) =>
 
 export const ALL_CARDS = [...MAJOR_ARCANA, ...MINOR_ARCANA];
 
-export const BUILTIN_SPREADS: Spread[] = [
+// ─── Thoth Tarot ───────────────────────────────────────────────────────────────
+
+export const THOTH_MAJOR_ARCANA: TarotCard[] = [
+  { id: 0, nameCN: "愚者", nameEN: "The Fool" },
+  { id: 1, nameCN: "魔術師", nameEN: "The Magus" },
+  { id: 2, nameCN: "女祭司", nameEN: "The Priestess" },
+  { id: 3, nameCN: "皇后", nameEN: "The Empress" },
+  { id: 4, nameCN: "皇帝", nameEN: "The Emperor" },
+  { id: 5, nameCN: "教皇", nameEN: "The Hierophant" },
+  { id: 6, nameCN: "戀人", nameEN: "The Lovers" },
+  { id: 7, nameCN: "戰車", nameEN: "The Chariot" },
+  { id: 8, nameCN: "調節", nameEN: "Adjustment" },
+  { id: 9, nameCN: "隱者", nameEN: "The Hermit" },
+  { id: 10, nameCN: "命運", nameEN: "Fortune" },
+  { id: 11, nameCN: "慾望", nameEN: "Lust" },
+  { id: 12, nameCN: "倒吊人", nameEN: "The Hanged Man" },
+  { id: 13, nameCN: "死亡", nameEN: "Death" },
+  { id: 14, nameCN: "藝術", nameEN: "Art" },
+  { id: 15, nameCN: "惡魔", nameEN: "The Devil" },
+  { id: 16, nameCN: "高塔", nameEN: "The Tower" },
+  { id: 17, nameCN: "星星", nameEN: "The Star" },
+  { id: 18, nameCN: "月亮", nameEN: "The Moon" },
+  { id: 19, nameCN: "太陽", nameEN: "The Sun" },
+  { id: 20, nameCN: "新紀元", nameEN: "The Aeon" },
+  { id: 21, nameCN: "宇宙", nameEN: "The Universe" },
+];
+
+const THOTH_SUITS = [
+  { cn: "權杖", en: "Wands" },
+  { cn: "聖杯", en: "Cups" },
+  { cn: "寶劍", en: "Swords" },
+  { cn: "圓盤", en: "Disks" },
+];
+
+const THOTH_RANKS = [
+  { cn: "一", en: "Ace" },
+  { cn: "二", en: "Two" },
+  { cn: "三", en: "Three" },
+  { cn: "四", en: "Four" },
+  { cn: "五", en: "Five" },
+  { cn: "六", en: "Six" },
+  { cn: "七", en: "Seven" },
+  { cn: "八", en: "Eight" },
+  { cn: "九", en: "Nine" },
+  { cn: "十", en: "Ten" },
+  { cn: "公主", en: "Princess" },
+  { cn: "王子", en: "Prince" },
+  { cn: "皇后", en: "Queen" },
+  { cn: "騎士", en: "Knight" },
+];
+
+export const THOTH_MINOR_ARCANA: TarotCard[] = THOTH_SUITS.flatMap((suit, sIdx) =>
+  THOTH_RANKS.map((rank, rIdx) => ({
+    id: 22 + sIdx * 14 + rIdx,
+    nameCN: `${suit.cn}${rank.cn}`,
+    nameEN: `${rank.en} of ${suit.en}`,
+  }))
+);
+
+export const THOTH_ALL_CARDS = [...THOTH_MAJOR_ARCANA, ...THOTH_MINOR_ARCANA];
+
+export const THOTH_TRIVIA: string[] = [
+  "托特塔羅牌由阿萊斯特·克勞利 (Aleister Crowley) 與畫家芙瑞達·哈里斯 (Frieda Harris) 女士共同創作，耗時五年完成。",
+  "托特牌融入了占星學、卡巴拉生命之樹、鍊金術、古埃及神話與易經，是符號學與神祕學密度最高的塔羅牌。",
+  "與偉特牌不同，托特牌的「正義」與「力量」分別改名為「調節 (Adjustment)」與「慾望 (Lust)」，且排在第 8 與第 11 的位置。",
+  "托特牌的小秘儀宮廷牌結構與傳統不同，分別是：公主 (Princess)、王子 (Prince)、皇后 (Queen)、騎士 (Knight)。",
+  "在托特系統中，錢幣 (Pentacles) 被替換為圓盤 (Disks)，象徵物質界更為動態與宇宙尺度的能量。",
+  "克勞利認為舊時代（奧西里斯時代）已經結束，世界進入了荷魯斯的新紀元，因此將第 20 張牌「審判」改名為「新紀元 (The Aeon)」。",
+  "傳統的「節制 (Temperance)」在托特牌中被改為「藝術 (Art)」，強調鍊金術中火與水結合的轉化與昇華過程。",
+];
+
+// ─── Lenormand ───────────────────────────────────────────────────────────────
+
+export interface LenormandCard {
+  id: number;      // 1–36
+  nameCN: string;
+  nameEN: string;
+  suit: string;    // playing card correspondence, e.g. "♥9"
+  emoji: string;   // visual symbol
+  keywords: string[];
+}
+
+export const LENORMAND_CARDS: LenormandCard[] = [
+  { id: 1,  nameCN: "騎士",   nameEN: "Rider",       suit: "♥9",  emoji: "🏇", keywords: ["好消息", "使者", "速度"] },
+  { id: 2,  nameCN: "三葉草", nameEN: "Clover",      suit: "♣6",  emoji: "🍀", keywords: ["小確幸", "機遇", "幸運"] },
+  { id: 3,  nameCN: "船",     nameEN: "Ship",        suit: "♠10", emoji: "⛵", keywords: ["旅行", "遠方", "冒險"] },
+  { id: 4,  nameCN: "房屋",   nameEN: "House",       suit: "♥K",  emoji: "🏠", keywords: ["家庭", "安全", "根基"] },
+  { id: 5,  nameCN: "樹",     nameEN: "Tree",        suit: "♥7",  emoji: "🌳", keywords: ["健康", "成長", "根源"] },
+  { id: 6,  nameCN: "雲",     nameEN: "Clouds",      suit: "♣K",  emoji: "☁️", keywords: ["混亂", "困惑", "不確定"] },
+  { id: 7,  nameCN: "蛇",     nameEN: "Snake",       suit: "♣Q",  emoji: "🐍", keywords: ["複雜", "誘惑", "迂迴"] },
+  { id: 8,  nameCN: "棺材",   nameEN: "Coffin",      suit: "♠9",  emoji: "⚰️", keywords: ["結束", "轉化", "靜止"] },
+  { id: 9,  nameCN: "花束",   nameEN: "Bouquet",     suit: "♠Q",  emoji: "💐", keywords: ["禮物", "驚喜", "感謝"] },
+  { id: 10, nameCN: "大鐮刀", nameEN: "Scythe",      suit: "♦J",  emoji: "⚔️", keywords: ["切斷", "危險", "果斷"] },
+  { id: 11, nameCN: "鞭子",   nameEN: "Whip",        suit: "♣J",  emoji: "🪢", keywords: ["衝突", "重複", "磨練"] },
+  { id: 12, nameCN: "鳥",     nameEN: "Birds",       suit: "♥7",  emoji: "🐦", keywords: ["談話", "焦慮", "溝通"] },
+  { id: 13, nameCN: "小孩",   nameEN: "Child",       suit: "♠J",  emoji: "👶", keywords: ["新開始", "純真", "小事"] },
+  { id: 14, nameCN: "狐狸",   nameEN: "Fox",         suit: "♣9",  emoji: "🦊", keywords: ["謹慎", "欺騙", "策略"] },
+  { id: 15, nameCN: "熊",     nameEN: "Bear",        suit: "♣10", emoji: "🐻", keywords: ["力量", "權威", "財富"] },
+  { id: 16, nameCN: "星星",   nameEN: "Stars",       suit: "♠6",  emoji: "⭐", keywords: ["希望", "靈感", "方向"] },
+  { id: 17, nameCN: "鸛鳥",   nameEN: "Stork",       suit: "♥Q",  emoji: "🦢", keywords: ["變化", "遷移", "升級"] },
+  { id: 18, nameCN: "狗",     nameEN: "Dog",         suit: "♥10", emoji: "🐕", keywords: ["友誼", "忠誠", "信任"] },
+  { id: 19, nameCN: "塔",     nameEN: "Tower",       suit: "♠6",  emoji: "🗼", keywords: ["機構", "孤立", "官方"] },
+  { id: 20, nameCN: "花園",   nameEN: "Garden",      suit: "♠8",  emoji: "🌷", keywords: ["社交", "公眾", "聚會"] },
+  { id: 21, nameCN: "山",     nameEN: "Mountain",    suit: "♣8",  emoji: "⛰️", keywords: ["阻礙", "挑戰", "堅持"] },
+  { id: 22, nameCN: "十字路口",nameEN: "Crossroads",  suit: "♦Q",  emoji: "🔀", keywords: ["選擇", "岔路", "自由"] },
+  { id: 23, nameCN: "老鼠",   nameEN: "Mice",        suit: "♣7",  emoji: "🐭", keywords: ["流失", "焦慮", "損耗"] },
+  { id: 24, nameCN: "心",     nameEN: "Heart",       suit: "♥J",  emoji: "❤️", keywords: ["愛情", "情感", "善意"] },
+  { id: 25, nameCN: "戒指",   nameEN: "Ring",        suit: "♣A",  emoji: "💍", keywords: ["承諾", "合約", "循環"] },
+  { id: 26, nameCN: "書",     nameEN: "Book",        suit: "♠10", emoji: "📖", keywords: ["秘密", "知識", "學習"] },
+  { id: 27, nameCN: "信",     nameEN: "Letter",      suit: "♠7",  emoji: "📬", keywords: ["消息", "文件", "溝通"] },
+  { id: 28, nameCN: "男人",   nameEN: "Man",         suit: "♥A",  emoji: "🧑", keywords: ["男性主角", "他", "主角"] },
+  { id: 29, nameCN: "女人",   nameEN: "Woman",       suit: "♠A",  emoji: "👩", keywords: ["女性主角", "她", "主角"] },
+  { id: 30, nameCN: "百合",   nameEN: "Lily",        suit: "♠K",  emoji: "🌸", keywords: ["成熟", "純潔", "平靜"] },
+  { id: 31, nameCN: "太陽",   nameEN: "Sun",         suit: "♦10", emoji: "☀️", keywords: ["成功", "活力", "光明"] },
+  { id: 32, nameCN: "月亮",   nameEN: "Moon",        suit: "♥8",  emoji: "🌙", keywords: ["名聲", "直覺", "潛意識"] },
+  { id: 33, nameCN: "鑰匙",   nameEN: "Key",         suit: "♦8",  emoji: "🗝️", keywords: ["解答", "成就", "開啟"] },
+  { id: 34, nameCN: "魚",     nameEN: "Fish",        suit: "♦K",  emoji: "🐟", keywords: ["財務", "流動", "豐盛"] },
+  { id: 35, nameCN: "錨",     nameEN: "Anchor",      suit: "♠9",  emoji: "⚓", keywords: ["穩定", "堅持", "長期"] },
+  { id: 36, nameCN: "十字架", nameEN: "Cross",       suit: "♣6",  emoji: "✝️", keywords: ["命運", "負擔", "信念"] },
+];
+
+export const LENORMAND_SPREADS: Spread[] = [
+  {
+    id: "len-1",
+    name: "單張速覽",
+    count: 1,
+    positions: ["指引"],
+    hint: "一張牌，快速獲得今日或當下的指引",
+    exampleQuestion: "今天與這位客戶的會面結果如何？"
+  },
+  {
+    id: "len-3",
+    name: "過去現在未來",
+    count: 3,
+    positions: ["過去的影響", "現在的狀態", "未來的走向"],
+    hint: "三張連讀，看清事件的時間脈絡",
+    exampleQuestion: "這段感情的過去、現在、未來走向？"
+  },
+  {
+    id: "len-5",
+    name: "五牌線陣",
+    count: 5,
+    positions: ["遠因", "近因", "核心現況", "近期走向", "最終結果"],
+    hint: "五張成一線，從根源到結果的完整推演",
+    exampleQuestion: "這份工作機會對我而言的整體發展？"
+  },
+  {
+    id: "len-9",
+    name: "九宮格全局",
+    count: 9,
+    positions: [
+      "左上·過去背景", "上方·近期影響", "右上·外在環境",
+      "左側·隱藏因素", "中心·核心主題", "右側·他人視角",
+      "左下·內在感受", "下方·近期行動", "右下·最終走向"
+    ],
+    hint: "九張牌環繞中心，全方位透視問題的所有面向",
+    exampleQuestion: "我目前這段關係的整體能量與走向如何？"
+  },
+];
+
+export const LENORMAND_TRIVIA: string[] = [
+  "雷諾曼牌以法國占卜師瑪麗·安·雷諾曼（Marie Anne Lenormand，1772-1843）命名，她曾為拿破崙皇后約瑟芬占卜。",
+  "雷諾曼牌只有 36 張，遠少於塔羅牌的 78 張，每張牌都對應一張標準撲克牌花色，起源可追溯到德國遊戲牌。",
+  "雷諾曼牌的解讀方式與塔羅截然不同——重點不在單張牌義，而在於「相鄰牌的組合」所產生的故事脈絡。",
+  "雷諾曼牌沒有正逆位的概念，每張牌都以正立方式解讀，牌義傾向具體的日常事件而非抽象的心理狀態。",
+  "第 28 號「男人」與第 29 號「女人」是雷諾曼牌中的「指示牌」，代表問事者本人，是牌陣中的基準點。",
+  "九宮格（Grand Tableau 的縮版）是雷諾曼最經典的牌陣，透過中心牌與四周牌的位置關係進行整體解讀。",
+  "雷諾曼牌中的「棺材（Coffin）」不一定代表死亡，更常見的牌義是結束、休眠或某件事物的轉化與暫停。",
+  "「三葉草（Clover）」是雷諾曼牌中最輕快的牌之一，代表小小的好運與意外之喜，通常是短暫但真實的機會。",
+  "「鑰匙（Key）」在雷諾曼體系中代表「是」或「必然」，通常是整張牌陣中最確定且正向的指示之一。",
+  "「魚（Fish）」代表流動、財務與豐盛，最初源自占卜師將牌義與日耳曼民間傳說中「魚帶來財富」的信仰結合。",
+  "完整版的大展開牌陣（Grand Tableau）需要全部 36 張牌，一次性鋪開排成 4 行 9 列，是雷諾曼最複雜的讀法。",
+  "雷諾曼牌在德語系國家（德國、奧地利、瑞士）至今仍非常盛行，甚至比塔羅牌更廣泛地出現在日常占卜場合。",
+];
+
+export const THOTH_SPREADS: Spread[] = [
   // 1 card
-  { id: "single", name: "單張牌指引", count: 1, positions: ["指引"], hint: "一張牌，一個方向", exampleQuestion: "請給我一個針對今天工作挑戰的簡單指引？" },
+  { id: "single", name: "單張神諭 (支援是非題)", count: 1, positions: ["當下最需關注的變數 / 是非結論"], hint: "在紛擾中提取唯一焦點，或用於明確的是非/選擇提問", exampleQuestion: "針對今天的重要會議，我最該穩住的心態是什麼？" },
 
   // 4 cards
-  { id: "elements", name: "四元素全貌", count: 4, positions: ["火元素 (行動與熱情)", "水元素 (潛意識與情感)", "風元素 (思維與溝通)", "土元素 (物質與現實)"], hint: "從四大元素看清問題的全貌", exampleQuestion: "面對即將到來的面試，我目前的整體狀態如何？" },
+  { id: "johari", name: "盲點矩陣", count: 4, positions: ["公開區 (皆知)", "盲目區 (人知我不知)", "隱藏區 (我知人不知)", "未知區 (皆不知的潛能)"], hint: "基於周哈里窗模型，解構認知落差", exampleQuestion: "在目前的工作團隊中，我對自己角色的認知與實際情況有何落差？" },
+  { id: "breakthrough", name: "破局策略", count: 4, positions: ["核心限制 (真正的瓶頸)", "錯誤的發力點 (沉沒成本)", "隱藏的槓桿 (事半功倍之處)", "關鍵行動 (第一步)"], hint: "當陷入僵局時，尋找最具性價比的突破口", exampleQuestion: "這個專案推動不下去，我該如何調整策略來破局？" },
+  { id: "cycle", name: "週期蛻變", count: 4, positions: ["正在消亡的 (應讓其結束)", "正在萌芽的 (需悉心呵護)", "必須放下的 (歷史包袱)", "必須帶走的 (核心資產)"], hint: "在過渡期或生命轉折點，釐清能量的生滅", exampleQuestion: "邁入 30 歲的轉折點，我該如何看待目前的職涯過渡期？" },
 
   // 5 cards
-  { id: "blindspot", name: "盲點洞察", count: 5, positions: ["公開表現的面貌", "沒被察覺的盲點", "刻意隱藏的秘密", "尚未發掘的潛能", "破除盲點的建議"], hint: "揭露認知落差的盲點與潛藏能量", exampleQuestion: "為什麼最近總是和伴侶起衝突，有什麼是我們都沒注意到的？" },
-  { id: "choice", name: "命運二擇一", count: 5, positions: ["決策當下的現況", "選擇A的發展軌跡", "選擇A的結果", "選擇B的發展軌跡", "選擇B的結果"], hint: "面對岔路時，推演不同選擇的發展與結果（可擴展至十擇一）", exampleQuestion: "我該留在原公司，還是接受獵頭提供的新 offer？" },
-  { id: "karma", name: "靈魂業力課題", count: 5, positions: ["過去糾結的舊業", "反覆出現的課題", "隱藏的珍貴禮物", "打破迴圈的行動", "成長後的最終局"], hint: "探索生命中不斷重複的深層課題與解法", exampleQuestion: "為什麼總是重複遇到同一種類型的主管？" },
+  { id: "choice", name: "決策推演", count: 5, positions: ["當下局勢的底層邏輯", "選擇 A 的隱藏成本", "選擇 A 的最終演化", "選擇 B 的隱藏成本", "選擇 B 的最終演化"], hint: "超越單純好壞，推演不同選擇的機會成本與演化路徑", exampleQuestion: "我該選擇去大企業求穩，還是加入新創團隊承擔風險？" },
+  { id: "pattern", name: "模式解構", count: 5, positions: ["觸發機制 (何時發作)", "表層防禦 (我的慣性反應)", "核心恐懼 (真正在怕什麼)", "舒適圈的代價 (為何不願改)", "阻斷慣性的行動 (如何終止)"], hint: "深入心理分析，釐清為何反覆陷入相同的困境或關係模式", exampleQuestion: "為什麼我總是在關係深入時，會下意識地想逃避？" },
 
   // 6 cards
-  { id: "subconscious", name: "潛意識深探", count: 6, positions: ["表層的想法認知", "被壓抑的舊經驗", "深層渴望原動力", "道德與自我批評", "潛意識防衛機制", "自我療癒的建議"], hint: "像冰山一樣，挖掘沒有被察覺的內心", exampleQuestion: "對於更換跑道這件事情，我總是猶豫不決的深層原因是什麼？" },
-  { id: "lovers", name: "戀人三角", count: 6, positions: ["雙方親密與信任", "感情激情與吸引", "未來承諾與責任", "目前的關係挑戰", "改善關係的建議", "未來的走向預測"], hint: "從親密、激情、承諾，為感情狀態把脈", exampleQuestion: "我和目前的曖昧對象，這段關係是否有機會晉升為戀人？" },
-  { id: "mirror", name: "雙方鏡像關係", count: 6, positions: ["主角眼中的自己", "對象眼中的主角", "主角眼中的對象", "對象眼中的自己", "互動產生的誤解", "關係發展的建議"], hint: "跳脫主觀本位，看清雙方或多方的真實想法落差（最高支援六人局）", exampleQuestion: "我跟前任目前各自對彼此真實的看法是什麼？" },
+  { id: "iceberg", name: "冰山深探", count: 6, positions: ["表層行為 (展現出來的)", "理性認知 (我以為的理由)", "真實情緒 (壓抑的感受)", "核心價值觀 (底層信念)", "防衛機制 (如何保護自己)", "整合策略 (如何表裡如一)"], hint: "向下挖掘，看見冰山底下的真實驅動力與防衛機制", exampleQuestion: "我明明想追求事業成功，卻總是提不起勁的深層原因是什麼？" },
+  { id: "mirror", name: "關係鏡像", count: 6, positions: ["我的投射與執念", "我的真實底線", "對方的投射與防備", "對方的真實需求", "系統性摩擦 (為何衝突)", "潛在共振點 (如何破冰)"], hint: "超越誰對誰錯，透視雙方互動的系統性結構", exampleQuestion: "我與合夥人最近摩擦頻繁，這段合作關係底層的問題出在哪？" },
+  { id: "resource", name: "局勢盤點", count: 6, positions: ["當前北極星目標", "內部可用資源", "外部不可控變數", "系統性阻力", "隱藏的推力", "下階段里程碑"], hint: "如同商業審計般，盤點人生或專案的籌碼與風險", exampleQuestion: "對於明年的創業計畫，我目前整體的資源與風險盤點為何？" },
 
   // 7 cards
-  { id: "hero", name: "英雄之旅", count: 7, positions: ["現狀與出發點", "冒險的召喚", "越過門檻的考驗", "指引導師與盟友", "墜入深淵與試煉", "獲得啟示與轉化", "帶著恩賜歸來"], hint: "把旅途化作一場冒險，看看正處於哪一章", exampleQuestion: "我決定離職去旅行，這段人生的新旅程將如何展開？" },
-  { id: "hexagram", name: "六芒星指引", count: 7, positions: ["過去的軌跡", "現在的處境", "未來的趨勢", "潛意識的拉扯", "客觀環境", "最佳的應對策略", "最終的因果歸宿"], hint: "測吉凶、問對策，看清內外環境的百搭牌陣", exampleQuestion: "這份新的事業計畫整體的吉凶與走向如何？" },
-  { id: "horseshoe", name: "馬蹄鐵牌陣", count: 7, positions: ["過去狀況", "當前問題點", "可預期的未來", "建議付出的行動", "外界的客觀干擾", "無法預知的障礙", "最後的結局發展"], hint: "針對單一具體難題，掃描前方阻礙與解決方案", exampleQuestion: "我想在下個月搬家換城市生活，這會是正確的決定嗎？" },
-
-  // 8 cards
-  { id: "octagon", name: "八方全覽", count: 8, positions: ["提問核心", "精神與思維狀態", "情感與內心世界", "金錢與現實資源", "專長與隱藏潛能", "被忽略的危機", "破局的轉機", "最後的收穫歸宿"], hint: "遇到十字路口？一次盤點所有現況", exampleQuestion: "我最近面臨人生十字路口，不知該怎麼全盤整理生活並找到方向？" },
-
-  // 9 cards
-  { id: "matrix", name: "九宮格全局觀", count: 9, positions: ["目前心境", "潛意識動機", "外界觀感", "舊有基礎", "核心干擾", "意外助力", "預期發展", "意外轉折", "最終成就"], hint: "拉遠視角，看懂未來的長遠局勢與變化", exampleQuestion: "未來半年內，我若開啟新副業的整體局勢會是如何？" },
+  { id: "hero", name: "英雄之旅", count: 7, positions: ["現狀與舒適圈", "冒險的召喚", "拒絕與內在阻力", "關鍵的導師與工具", "最深的試煉與深淵", "獲得的啟示與轉化", "帶著恩賜歸來"], hint: "以神話學框架，定位你目前處於人生哪一個敘事階段", exampleQuestion: "我決定徹底轉換跑道，這段未知的旅程將會面臨什麼樣的挑戰與成長？" },
 
   // 10 cards
-  { id: "celtic", name: "凱爾特十字", count: 10, positions: ["現況", "挑戰與阻礙", "顯意識目標", "潛意識與過去", "可能預期結果", "近未來", "自我認知", "外在環境影響", "希望與恐懼", "最終結果"], hint: "塔羅最經典！像剝洋蔥般，把複雜問題看到透", exampleQuestion: "我目前深陷生活與財務壓力中，我該如何看清全局並突破現狀？" },
+  { id: "celtic", name: "凱爾特十字", count: 10, positions: ["現況 (問題核心)", "挑戰 (交叉影響力)", "顯意識 (你能意識到的)", "潛意識 (深層驅動力)", "過去 (歷史軌跡)", "近未來 (初步趨勢)", "自我認知 (你的視角)", "環境變數 (他人/外界影響)", "焦慮與渴望 (情緒拉扯)", "最終演化 (自然發展結果)"], hint: "最經典的全景掃描，層層剝開複雜局勢的因果鏈", exampleQuestion: "我目前面臨人生的巨大低潮，請幫我全盤檢視各個維度的問題與解法。" },
+];
 
-  // 12 cards
-  { id: "astrology", name: "黃道十二宮", count: 12, positions: ["本命自我(一)", "財富資源(二)", "溝通學習(三)", "家庭根基(四)", "愛情創造(五)", "健康服務(六)", "伴侶合作(七)", "變革與深層恐懼(八)", "理想與遠行(九)", "事業成就(十)", "人際願景(十一)", "潛意識與秘密(十二)"], hint: "結合占星宮位，進行全面大體檢", exampleQuestion: "請幫我看看明年整年度在十二個生活領域中，各別的運勢發展？" },
+export const WAITE_SPREADS: Spread[] = [
+  // 1 card
+  { id: "single", name: "單張神諭 (支援是非題)", count: 1, positions: ["當下的最高指引 / 是非結論"], hint: "一張牌，一個方向。可用於快速釐清狀態或詢問明確的是非題", exampleQuestion: "這份工作對我目前的靈性發展是否有益？" },
+
+  // 3 cards
+  { id: "waite-triangle", name: "身心靈對話", count: 3, positions: ["身體的感受 (物質與行動)", "心智的邏輯 (思維與焦慮)", "靈魂的渴望 (內在指引)"], hint: "當思緒混亂時，重新對齊你三個維度的真實狀態", exampleQuestion: "我最近常常感到疲憊且提不起勁，我的身心靈分別在傳遞什麼訊息？" },
+
+  // 4 cards
+  { id: "waite-clarity", name: "迷霧指引", count: 4, positions: ["你以為的問題", "真正的核心問題", "你正在逃避的恐懼", "宇宙給予的建議"], hint: "打破主觀濾鏡，看清日常困境背後的真實考驗", exampleQuestion: "我一直覺得專案卡關是因為主管，但實際上真正的問題是什麼？" },
+  { id: "waite-healing", name: "情緒釋放", count: 4, positions: ["當前糾結的情緒結", "情緒背後未被滿足的需求", "錯誤的索求或防禦方式", "正確的情緒釋放管道"], hint: "將卡住的情緒能量轉化為成長的養分", exampleQuestion: "我最近對伴侶的某些行為感到極度憤怒，我該如何處理這個情緒？" },
+
+  // 5 cards
+  { id: "waite-focus", name: "焦點校準", count: 5, positions: ["目前浪費能量的地方", "真正該專注的核心", "被忽略的隱藏動力", "近期即將遇到的考驗", "最終的最高指引"], hint: "找回生活主導權，將精力集中在真正重要的事情上", exampleQuestion: "我每天都很忙卻覺得沒有進展，我到底把能量耗在哪裡了？" },
+  { id: "waite-shadow", name: "陰影整合", count: 5, positions: ["我極力隱藏的特質", "陰影帶給我的保護機制", "陰影造成的破壞與代價", "如何溫柔地接納它", "整合後的完整力量"], hint: "面對內心不願承認的陰暗面，將其轉化為天賦", exampleQuestion: "為什麼我總是嫉妒身邊成功的朋友，這個情緒背後隱藏了我的什麼特質？" },
+  { id: "waite-connection", name: "關係滋養", count: 5, positions: ["我在關係中感到的匱乏", "對方目前的真實狀態", "關係當下的能量流動", "我們共同需要學習的課題", "如何給予彼此對等的滋養"], hint: "將焦點從「要求」轉向「理解」，為關係注入活水", exampleQuestion: "我跟伴侶最近覺得越來越疏離，我們該如何重新滋養這段關係？" },
+
+  // 6 cards
+  { id: "waite-crossroad", name: "十字路口", count: 6, positions: ["過去未解的遺憾", "當下手裡握有的籌碼", "內心深處的真實渴望", "走向未來的潛在可能性", "沿途隱藏的成長危機", "邁出下一步的關鍵行動"], hint: "站在人生的分岔路口，整理行囊並找到前進的勇氣", exampleQuestion: "我在考慮結束目前的副業，我該如何評估這個決定的下一步？" },
+
+  // 7 cards
+  { id: "waite-year", name: "階段總結", count: 7, positions: ["本階段的核心主題", "已經學會的靈性教訓", "尚未跨越的世俗障礙", "物質與事業的發展", "情感與內在的進化", "潛在的宇宙資源/貴人", "最終將收穫的果實"], hint: "用於生日、年末或重大專案結束時的深度能量盤點", exampleQuestion: "今年已經過了一半，請幫我總結目前的成長軌跡與下半年的重點？" },
 ];
 
 export function getCardEmoji(cardId: number): string {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, type MouseEvent, type FormEvent } from 'react';
 import { Moon, Sun, Plus, Trash2, Edit2, Copy, ArrowLeft, Sparkles, Wand2, Info, X, History, CheckCircle2, Compass, Lightbulb } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ALL_CARDS, BUILTIN_SPREADS, getCardEmoji, TAROT_TRIVIA, type Spread, type TarotCard } from './constants';
+import { ALL_CARDS, THOTH_SPREADS, WAITE_SPREADS, getCardEmoji, TAROT_TRIVIA, LENORMAND_CARDS, LENORMAND_SPREADS, LENORMAND_TRIVIA, THOTH_ALL_CARDS, THOTH_TRIVIA, type Spread, type TarotCard, type LenormandCard } from './constants';
 
 export interface DrawHistory {
   id: string;
@@ -9,12 +9,18 @@ export interface DrawHistory {
   question: string;
   spread: Spread;
   cards: DrawnCard[];
+  lenormandCards?: DrawnLenormandCard[];
+  mode?: 'tarot' | 'lenormand' | 'thoth';
 }
 
 interface DrawnCard extends TarotCard {
   isReversed: boolean;
   positionName: string;
   extraQuestion?: string;
+}
+
+interface DrawnLenormandCard extends LenormandCard {
+  positionName: string;
 }
 const TarotLogoSVG = () => (
   <svg viewBox="0 0 100 100" className="w-8 h-8 sm:w-9 sm:h-9 drop-shadow-sm rounded-[10px] overflow-hidden group-hover:scale-105 group-hover:shadow-[0_0_15px_rgba(252,211,77,0.4)] transition-all duration-300 flex-shrink-0" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -112,7 +118,9 @@ const GlobalBackground = ({ theme }: { theme: 'light' | 'dark' }) => (
 );
 
 export default function App() {
+  const [mode, setMode] = useState<'tarot' | 'lenormand' | 'thoth'>('tarot');
   const [view, setView] = useState<'home' | 'draw' | 'result'>('home');
+  const [lenormandDrawnCards, setLenormandDrawnCards] = useState<DrawnLenormandCard[]>([]);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
@@ -132,8 +140,11 @@ export default function App() {
   const [peopleCount, setPeopleCount] = useState(2);
 
   const currentTrivia = React.useMemo(() => {
-    return TAROT_TRIVIA[Math.floor(Math.random() * TAROT_TRIVIA.length)];
-  }, [view, selectedSpread]);
+    let pool = TAROT_TRIVIA;
+    if (mode === 'lenormand') pool = LENORMAND_TRIVIA;
+    if (mode === 'thoth') pool = THOTH_TRIVIA;
+    return pool[Math.floor(Math.random() * pool.length)];
+  }, [view, selectedSpread, mode]);
 
   // Dynamic choice spread modifier
   useEffect(() => {
@@ -240,9 +251,28 @@ export default function App() {
 
   const handleDraw = () => {
     if (!selectedSpread) return;
+
+    if (mode === 'lenormand') {
+      // Lenormand draw — no reversed
+      const deck = [...LENORMAND_CARDS];
+      for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+      }
+      const lenResults: DrawnLenormandCard[] = deck.slice(0, selectedSpread.count).map((card, index) => ({
+        ...card,
+        positionName: selectedSpread.positions[index] || `位置 ${index + 1}`,
+      }));
+      setLenormandDrawnCards(lenResults);
+      setView('result');
+      const newHistoryId = Date.now().toString() + Math.random().toString(36).substring(2, 9);
+      setCurrentHistoryId(newHistoryId);
+      setHistory(prev => [{ id: newHistoryId, date: Date.now(), question: question || '', spread: selectedSpread, cards: [], lenormandCards: lenResults, mode: 'lenormand' as const }, ...prev]);
+      return;
+    }
     
-    // Fisher-Yates Shuffle
-    const deck = [...ALL_CARDS];
+    // Fisher-Yates Shuffle (Tarot & Thoth)
+    const deck = mode === 'thoth' ? [...THOTH_ALL_CARDS] : [...ALL_CARDS];
     for (let i = deck.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [deck[i], deck[j]] = [deck[j], deck[i]];
@@ -250,7 +280,7 @@ export default function App() {
 
     const results: DrawnCard[] = deck.slice(0, selectedSpread.count).map((card, index) => ({
       ...card,
-      isReversed: Math.random() > 0.5,
+      isReversed: mode === 'thoth' ? false : Math.random() > 0.5,
       positionName: selectedSpread.positions[index] || `位置 ${index + 1}`,
     }));
 
@@ -266,6 +296,7 @@ export default function App() {
       question: question || '',
       spread: selectedSpread,
       cards: results,
+      mode: mode,
     };
     
     setHistory(prev => [newHistoryEntry, ...prev]);
@@ -277,14 +308,14 @@ export default function App() {
       showToast('請先輸入補抽想問的問題');
       return;
     }
-    const availableCards = ALL_CARDS.filter(c => !drawnCards.some(dc => dc.id === c.id));
+    const availableCards = (mode === 'thoth' ? THOTH_ALL_CARDS : ALL_CARDS).filter(c => !drawnCards.some(dc => dc.id === c.id));
     if (availableCards.length === 0) return;
     
     const randomIndex = Math.floor(Math.random() * availableCards.length);
     const newCard = availableCards[randomIndex];
     const extraCard: DrawnCard = {
       ...newCard,
-      isReversed: Math.random() > 0.5,
+      isReversed: mode === 'thoth' ? false : Math.random() > 0.5,
       positionName: `補充指引`,
       extraQuestion: extraQuestion.trim(),
     };
@@ -302,22 +333,143 @@ export default function App() {
 
   const copyToClipboard = (type: 'all' | 'main' | 'extra' = 'all') => {
     if (!selectedSpread) return;
+
+    if (mode === 'lenormand') {
+      const cards = lenormandDrawnCards;
+      const cardList = cards.map((card, i) =>
+        `  ${i + 1}. ${card.positionName}：${card.nameCN} (${card.nameEN})`
+      ).join('\n');
+
+      let prompt = `我想透過 Lenormand 卡牌占卜以下問題：\n\n【問題】${question || '（未輸入問題）'}\n\n【牌陣】${selectedSpread.name}\n\n抽出的牌：\n${cardList}`;
+
+      if (cards.length === 9) {
+        const [c1, c2, c3, c4, c5, c6, c7, c8, c9] = cards;
+        const f = (c: DrawnLenormandCard) => `${c.nameCN} (${c.nameEN})`;
+        prompt += `
+
+請從以下三個角度為我解讀這個牌陣：
+
+（一）時間軸（直欄）
+  - 過去（左欄）：${f(c1)}、${f(c4)}、${f(c7)}
+  - 現在（中欄）：${f(c2)}、${f(c5)}、${f(c8)}
+  - 未來（右欄）：${f(c3)}、${f(c6)}、${f(c9)}
+  分別解讀每欄的時段主題。
+
+（二）三層意識（橫列）
+  - 意識層（上列）：${f(c1)}、${f(c2)}、${f(c3)}
+  - 現實層（中列）：${f(c4)}、${f(c5)}、${f(c6)}
+  - 潛意識層（下列）：${f(c7)}、${f(c8)}、${f(c9)}
+  探索每一層次想揭示的訊息。
+
+（三）十字法
+  - 核心（位置 5）：${f(c5)}
+  - 十字（位置 2、4、6、8）：${f(c2)}、${f(c4)}、${f(c6)}、${f(c8)}
+  - 四角（位置 1、3、7、9）：${f(c1)}、${f(c3)}、${f(c7)}、${f(c9)}
+
+最後，點出值得注意的卡牌組合，以及 9 張牌整體的意義。`;
+      } else if (cards.length === 5) {
+        prompt += `\n\n請逐一解讀五張牌的意義，再整合五牌的整體訊息，點出關鍵轉折點。`;
+      } else if (cards.length === 3) {
+        const [c1, c2, c3] = cards;
+        const f = (c: DrawnLenormandCard) => `${c.nameCN} (${c.nameEN})`;
+        prompt += `\n\n請分別解讀三張牌（${f(c1)} → ${f(c2)} → ${f(c3)}）所描述的時間脈絡，再說明三張組合在一起的整體含義。`;
+      } else {
+        prompt += `\n\n請為我解讀這張牌的含義。`;
+      }
+
+      navigator.clipboard.writeText(prompt).then(() => {
+        setShowCopySuccess('all');
+        setTimeout(() => setShowCopySuccess(null), 2000);
+      });
+      return;
+    }
     
     const mainCards = drawnCards.filter(c => !c.extraQuestion);
     const extraCards = drawnCards.filter(c => c.extraQuestion);
 
-    const mainText = mainCards.map((card, i) => `${i + 1}. ${card.positionName}：${card.nameCN} ${card.nameEN}（${card.isReversed ? '逆位' : '正位'}）`).join('\n');
+    const mainText = mainCards.map((card, i) => `  ${i + 1}. ${card.positionName}：${card.nameCN} ${card.nameEN}（${card.isReversed ? '逆位' : '正位'}）`).join('\n');
     const extraText = extraCards.length > 0 
-      ? `${extraCards.map(card => `Q: ${card.extraQuestion}\n👉 ${card.nameCN} ${card.nameEN}（${card.isReversed ? '逆位' : '正位'}）`).join('\n\n')}`
+      ? `\n\n【補充指引（針對後續提問補抽）】\n${extraCards.map(card => `  Q: ${card.extraQuestion}\n  👉 ${card.nameCN} ${card.nameEN}（${card.isReversed ? '逆位' : '正位'}）`).join('\n\n')}`
       : '';
 
     let text = '';
+    
+    // Generate AI interpretation guide based on Tarot spread
+    let analysisPrompt = '';
+    if (selectedSpread.isCustom) {
+      analysisPrompt = `\n\n請依據我自訂牌陣中每個位置的定義，結合正逆位牌意，為我進行綜合解讀，並給出具體的建議。`;
+    } else {
+      switch (selectedSpread.id) {
+        // Thoth Spreads
+        case 'celtic':
+          analysisPrompt = `\n\n請從以下角度為我深入解讀這個牌陣：\n（一）核心狀況：分析【現況】與【挑戰】的交鋒。\n（二）深層心理：對比【顯意識】與【潛意識】的拉扯。\n（三）時間流向：從【過去】看往【近未來】的演化趨勢。\n（四）內外解析：結合【自我認知】與【環境變數】的互動。\n（五）最終走向：綜觀【焦慮與渴望】，推演【最終演化】。`;
+          break;
+        case 'choice':
+          analysisPrompt = `\n\n請從以下角度為我深入解讀這個牌陣：\n（一）底層邏輯：評估【當下局勢的底層邏輯】。\n（二）路徑推演：分別解讀選擇A與B的【隱藏成本】與【最終演化】。\n（三）決策指引：超越單純的好壞，分析這兩個選擇本質上的機會成本差異，給予高維度的決策建議。`;
+          break;
+        case 'mirror':
+          analysisPrompt = `\n\n請從以下角度為我深入解讀這段關係的系統性結構：\n（一）認知落差：比較雙方的【投射與執念】及【真實底線】，點出彼此的盲點。\n（二）互動動力學：分析【系統性摩擦】的根源，以及隱藏的【潛在共振點】。\n（三）破冰策略：基於上述洞察，給出具體且成熟的互動建議。`;
+          break;
+        case 'johari':
+          analysisPrompt = `\n\n請依據周哈里窗模型為我深入解讀，特別點出【盲目區】與【隱藏區】揭示的認知盲點，並說明如何探索【未知區】的潛能以達成自我整合。`;
+          break;
+        case 'breakthrough':
+          analysisPrompt = `\n\n請為我深入解讀目前的僵局，殘酷地指出我的【錯誤的發力點】，並告訴我如何利用【隱藏的槓桿】作為【關鍵行動】來突破【核心限制】。`;
+          break;
+        case 'cycle':
+          analysisPrompt = `\n\n請為我深入解讀這段生命週期的能量代謝，明確指出什麼是【正在消亡的】與【必須放下的】，並指導我如何將【必須帶走的】資產投入到【正在萌芽的】事物中。`;
+          break;
+        case 'pattern':
+          analysisPrompt = `\n\n請為我進行深度的心理模式解構，分析【觸發機制】與【表層防禦】背後的【核心恐懼】，點出我留在【舒適圈的代價】，並給出【阻斷慣性的行動】建議。`;
+          break;
+        case 'iceberg':
+          analysisPrompt = `\n\n請依據薩提爾冰山理論為我深入解讀，穿透【表層行為】與【理性認知】，看見底下的【真實情緒】與【核心價值觀】，分析我的【防衛機制】，並給出【整合策略】。`;
+          break;
+        case 'resource':
+          analysisPrompt = `\n\n請為我進行全盤的局勢審計。分析【內部可用資源】與【隱藏的推力】如何對抗【外部不可控變數】與【系統性阻力】，並評估這是否能帶領我達成【當前北極星目標】與【下階段里程碑】。`;
+          break;
+        case 'hero':
+          analysisPrompt = `\n\n請將這段經歷視作一場「英雄之旅」，為我解讀目前所在的階段。分析我面臨的【冒險的召喚】與【最深的試煉】，以及我將如何透過【關鍵的導師與工具】獲得啟示，最終【帶著恩賜歸來】。`;
+          break;
+          
+        // Waite Spreads
+        case 'waite-triangle':
+          analysisPrompt = `\n\n請為我解讀這三張牌如何分別反映出我目前【身體的感受】、【心智的邏輯】與【靈魂的渴望】。幫助我釐清這三個維度是否有衝突，並給我整合身心靈的建議。`;
+          break;
+        case 'waite-clarity':
+          analysisPrompt = `\n\n請幫我穿透迷霧，對比【我以為的問題】與【真正的核心問題】，點出我正在【逃避的恐懼】，並解析【宇宙給予的建議】來幫助我破局。`;
+          break;
+        case 'waite-healing':
+          analysisPrompt = `\n\n請引導我進行情緒釋放。分析【當前糾結的情緒結】背後【未被滿足的需求】，指出我目前【錯誤的索求或防禦方式】，並給予【正確的情緒釋放管道】的具體建議。`;
+          break;
+        case 'waite-focus':
+          analysisPrompt = `\n\n請為我校準焦點。指出我【浪費能量的地方】與【真正該專注的核心】，揭示【隱藏的內在動力】與【即將面臨的考驗】，並給予【最高指引】。`;
+          break;
+        case 'waite-shadow':
+          analysisPrompt = `\n\n請帶領我進行陰影整合。探索【我極力隱藏的特質】與它帶給我的【保護機制】。分析這份陰影【造成的破壞】，並指導我【如何溫柔地接納它】，以獲得【整合後的完整力量】。`;
+          break;
+        case 'waite-connection':
+          analysisPrompt = `\n\n請為這段關係提供滋養的指引。分析【我在關係中的匱乏】與【對方的真實狀態】，透視【當下的能量流動】與【共同的學習課題】，最後給予【如何給予彼此對等滋養】的建議。`;
+          break;
+        case 'waite-crossroad':
+          analysisPrompt = `\n\n請為站在十字路口的我提供指引。盤點【過去未解的遺憾】與【當下的籌碼】，對齊【內心的真實渴望】。推演【未來的可能性】與【隱藏的危機】，並指出【邁出下一步的關鍵行動】。`;
+          break;
+        case 'waite-year':
+          analysisPrompt = `\n\n請為我進行深度的階段總結。分析本階段的【核心主題】與【已學會的靈性教訓】。盤點【尚未跨越的世俗障礙】、【物質事業發展】與【情感內在進化】。最後點出【宇宙的潛在資源】與即將【收穫的果實】。`;
+          break;
+        default:
+          analysisPrompt = `\n\n請依據牌陣中每個位置的定義，結合正逆位牌意，為我進行綜合解讀，並點出值得注意的牌組互動與最終建議。`;
+          break;
+      }
+    }
+
+    const modeName = mode === 'thoth' ? '托特' : '偉特';
     if (type === 'all') {
-      text = `🔮 偉特塔羅牌抽牌結果\n\n📌 問題：${question || '未輸入'}\n🃏 牌陣：${selectedSpread.name}（${selectedSpread.count} 張）\n\n${mainText}${extraText ? `\n\n✨ 補充指引\n${extraText}` : ''}`;
+      text = `我想透過${modeName}塔羅牌占卜以下問題：\n\n【問題】${question || '（未輸入問題）'}\n\n【牌陣】${selectedSpread.name}\n\n抽出的牌：\n${mainText}${extraText}${analysisPrompt}`;
     } else if (type === 'main') {
-      text = `🔮 偉特塔羅牌抽牌結果（主牌陣）\n\n📌 問題：${question || '未輸入'}\n🃏 牌陣：${selectedSpread.name}（${selectedSpread.count} 張）\n\n${mainText}`;
+      text = `我想透過${modeName}塔羅牌占卜以下問題：\n\n【問題】${question || '（未輸入問題）'}\n\n【牌陣】${selectedSpread.name}（主牌陣）\n\n抽出的牌：\n${mainText}${analysisPrompt}`;
     } else if (type === 'extra') {
-      text = `✨ 偉特塔羅牌補充指引\n\n📌 原問題：${question || '未輸入'}\n🃏 衍生自：${selectedSpread.name}\n\n${extraText}`;
+      text = `我想針對剛剛的${modeName}塔羅牌占卜結果，進行進一步的提問。請為我解讀以下補抽的牌卡：\n\n【原問題】${question || '（未輸入問題）'}\n\n【衍生自牌陣】${selectedSpread.name}\n\n${extraText.replace('【補充指引（針對後續提問補抽）】\n', '')}\n\n請為我解讀這幾張補抽牌的具體含義，以及它們如何回應我的提問。`;
     }
 
     navigator.clipboard.writeText(text).then(() => {
@@ -375,6 +527,39 @@ export default function App() {
           <TarotLogoSVG />
           <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight gold-text drop-shadow-sm ml-1">Tarot Draw</h1>
         </div>
+        {/* Mode Toggle */}
+        <div className="flex items-center bg-stone-100/80 dark:bg-mystic-900/80 rounded-xl p-1 border border-stone-200 dark:border-mystic-800">
+          <button
+            onClick={() => { setMode('tarot'); setView('home'); setSelectedSpread(null); }}
+            className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${
+              mode === 'tarot'
+                ? 'bg-amber-600 dark:bg-mystic-600 text-white shadow-sm'
+                : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
+            }`}
+          >
+            🔮 偉特
+          </button>
+          <button
+            onClick={() => { setMode('thoth'); setView('home'); setSelectedSpread(null); }}
+            className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${
+              mode === 'thoth'
+                ? 'bg-purple-600 dark:bg-purple-700 text-white shadow-sm'
+                : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
+            }`}
+          >
+            🌌 托特
+          </button>
+          <button
+            onClick={() => { setMode('lenormand'); setView('home'); setSelectedSpread(null); }}
+            className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${
+              mode === 'lenormand'
+                ? 'bg-emerald-600 dark:bg-emerald-700 text-white shadow-sm'
+                : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
+            }`}
+          >
+            🃏 雷諾曼
+          </button>
+        </div>
         <div className="flex items-center gap-1 sm:gap-2">
           <button 
             onClick={() => setIsHistoryOpen(true)}
@@ -401,14 +586,40 @@ export default function App() {
               exit={{ opacity: 0, y: -20 }}
               className="space-y-12"
             >
-              {/* Built-in Spreads */}
+              {/* Lenormand Home */}
+              {mode === 'lenormand' && (
+                <section>
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-2xl">🃏</span>
+                    <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">雷諾曼牌陣</h2>
+                  </div>
+                  <p className="text-sm text-slate-500 dark:text-mystic-400 mb-6">共 36 張牌・無正逆位・著重具體事件與組合連讀</p>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mx-auto">
+                    {LENORMAND_SPREADS.map((spread) => (
+                      <SpreadCard
+                        key={spread.id}
+                        spread={spread}
+                        onClick={() => {
+                          setSelectedSpread(spread);
+                          setLenormandDrawnCards([]);
+                          setView('draw');
+                          setQuestion('');
+                        }}
+                      />
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* Built-in Spreads (Tarot & Thoth) */}
+              {(mode === 'tarot' || mode === 'thoth') && (
               <section>
                 <div className="flex items-center gap-3 mb-6">
                   <Wand2 className="text-stone-600 dark:text-mystic-500" size={24} />
-                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">內建牌陣</h2>
+                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">{mode === 'thoth' ? '托特專屬牌陣' : '內建牌陣'}</h2>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6 mx-auto">
-                  {BUILTIN_SPREADS.map((spread) => (
+                  {(mode === 'thoth' ? THOTH_SPREADS : WAITE_SPREADS).map((spread) => (
                     <SpreadCard 
                       key={spread.id} 
                       spread={spread} 
@@ -423,8 +634,10 @@ export default function App() {
                   ))}
                 </div>
               </section>
+              )}
 
-              {/* Custom Spreads */}
+              {/* Custom Spreads (Tarot & Thoth) */}
+              {(mode === 'tarot' || mode === 'thoth') && (
               <section>
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
@@ -464,6 +677,7 @@ export default function App() {
                   </div>
                 )}
               </section>
+              )}
             </motion.div>
           )}
 
@@ -593,6 +807,7 @@ export default function App() {
             >
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
+                  {mode === 'lenormand' && <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800 mb-1 inline-block">雷諾曼</span>}
                   <h2 className="text-2xl font-bold bg-gradient-to-r from-mystic-700 to-indigo-500 bg-clip-text text-transparent dark:from-mystic-200 dark:to-indigo-300 drop-shadow-sm">{selectedSpread.name}</h2>
                   <p className="text-slate-500 dark:text-mystic-400">問題：{question || '未輸入'}</p>
                 </div>
@@ -602,6 +817,7 @@ export default function App() {
                       setView('draw');
                       setCurrentHistoryId(null);
                       setDrawnCards([]);
+                      setLenormandDrawnCards([]);
                     }}
                     className="px-4 py-2 rounded-lg border border-slate-200 dark:border-mystic-800 hover:bg-slate-50 dark:hover:bg-mystic-900 transition-colors text-sm font-medium"
                   >
@@ -610,21 +826,30 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Tablecloth Layout */}
+              {/* Lenormand Result Layout */}
+              {mode === 'lenormand' && lenormandDrawnCards.length > 0 && (
+                <div className="relative bg-white/40 dark:bg-mystic-950 rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-10 shadow-2xl shadow-emerald-900/5 dark:shadow-mystic-900/50 border-4 border-emerald-100/50 dark:border-emerald-900/20 overflow-hidden backdrop-blur-sm">
+                  <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-emerald-50/30 via-white/20 to-teal-50/20 dark:from-emerald-950/30 dark:via-mystic-900/80 dark:to-mystic-950 pointer-events-none" />
+                  <div className={`relative z-10 grid gap-3 sm:gap-5 justify-center w-full max-w-3xl mx-auto ${
+                    lenormandDrawnCards.length === 9 ? 'grid-cols-3' :
+                    lenormandDrawnCards.length === 5 ? 'grid-cols-3 sm:grid-cols-5' :
+                    lenormandDrawnCards.length === 3 ? 'grid-cols-3' :
+                    'grid-cols-1'
+                  }`}>
+                    {lenormandDrawnCards.map((card, index) => (
+                      <LenormandCardDisplay key={index} card={card} index={index} isCenter={lenormandDrawnCards.length === 9 && index === 4} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Tarot Tablecloth Layout */}
+              {(mode === 'tarot' || mode === 'thoth') && (
               <div className="relative bg-white/40 dark:bg-mystic-950 rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-12 shadow-2xl shadow-amber-900/5 dark:shadow-mystic-900/50 border-4 border-amber-100/50 dark:border-mystic-800/30 overflow-hidden backdrop-blur-sm">
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-amber-50/40 via-white/40 to-amber-100/30 dark:from-mystic-800/20 dark:via-mystic-900/80 dark:to-mystic-950 pointer-events-none"></div>
                 
-                <div className={`relative z-10 grid gap-6 sm:gap-10 justify-center w-full max-w-5xl mx-auto ${
-                  drawnCards.filter(c => !c.extraQuestion).length === 1 ? 'grid-cols-1' :
-                  drawnCards.filter(c => !c.extraQuestion).length === 2 ? 'grid-cols-2' :
-                  drawnCards.filter(c => !c.extraQuestion).length === 3 ? 'grid-cols-2 sm:grid-cols-3' :
-                  drawnCards.filter(c => !c.extraQuestion).length === 4 ? 'grid-cols-2 sm:grid-cols-4' :
-                  drawnCards.filter(c => !c.extraQuestion).length === 5 ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-5' :
-                  'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4'
-                }`}>
-                  {drawnCards.filter(c => !c.extraQuestion).map((card, index) => (
-                    <TarotCardDisplay key={index} card={card} index={index} />
-                  ))}
+                <div className="relative z-10 w-full max-w-6xl mx-auto">
+                  <TarotSpreadLayout spread={selectedSpread} cards={drawnCards.filter(c => !c.extraQuestion)} />
                 </div>
 
                 {drawnCards.some(c => c.extraQuestion) && (
@@ -666,10 +891,13 @@ export default function App() {
                   </div>
                 </div>
               </div>
+              )}
 
               <div className="bg-white/80 dark:bg-mystic-900 p-6 rounded-2xl border border-amber-100 dark:border-mystic-800 text-center shadow-sm">
                 <p className="text-amber-800 dark:text-mystic-300 italic font-medium">
-                  「牌卡只是指引，真正的答案在你的內心。」
+                  {mode === 'lenormand'
+                    ? '「雷諾曼牌訴說的是日常的故事，而你才是故事的主角。」'
+                    : '「牌卡只是指引，真正的答案在你的內心。」'}
                 </p>
               </div>
 
@@ -769,7 +997,15 @@ export default function App() {
                         onClick={() => {
                           setSelectedSpread(record.spread);
                           setQuestion(record.question);
-                          setDrawnCards(record.cards);
+                          if (record.mode === 'lenormand' && record.lenormandCards) {
+                            setMode('lenormand');
+                            setLenormandDrawnCards(record.lenormandCards);
+                            setDrawnCards([]);
+                          } else {
+                            setMode('tarot');
+                            setDrawnCards(record.cards);
+                            setLenormandDrawnCards([]);
+                          }
                           setCurrentHistoryId(record.id);
                           setIsHistoryOpen(false);
                           setView('result');
@@ -785,7 +1021,10 @@ export default function App() {
                           {record.question || '（未輸入問題）'}
                         </p>
                         <div className="flex items-center justify-between text-xs font-semibold text-stone-600 dark:text-mystic-400">
-                          <span>{record.cards.length} 張牌卡</span>
+                          {record.mode === 'lenormand' && <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-1.5 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800">雷諾曼</span>}
+                          {record.mode === 'thoth' && <span className="text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 px-1.5 py-0.5 rounded-md border border-purple-200 dark:border-purple-800">托特</span>}
+                          {record.mode === 'tarot' && <span className="text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-1.5 py-0.5 rounded-md border border-amber-200 dark:border-amber-800">偉特</span>}
+                          <span>{(record.lenormandCards?.length ?? record.cards.length)} 張牌卡</span>
                         </div>
                       </div>
 
@@ -794,7 +1033,15 @@ export default function App() {
                           onClick={() => {
                             setSelectedSpread(record.spread);
                             setQuestion(record.question);
-                            setDrawnCards(record.cards);
+                            if (record.mode === 'lenormand' && record.lenormandCards) {
+                              setMode('lenormand');
+                              setLenormandDrawnCards(record.lenormandCards);
+                              setDrawnCards([]);
+                            } else {
+                              setMode(record.mode === 'thoth' ? 'thoth' : 'tarot');
+                              setDrawnCards(record.cards);
+                              setLenormandDrawnCards([]);
+                            }
                             setCurrentHistoryId(record.id);
                             setIsHistoryOpen(false);
                             setView('result');
@@ -1049,6 +1296,180 @@ function SpreadCard({ spread, isCustom, onClick, onEdit, onDelete }: {
   );
 }
 
+function TarotSpreadLayout({ spread, cards }: { spread: Spread; cards: DrawnCard[] }) {
+  const renderCard = (index: number) => {
+    if (index >= cards.length) return null;
+    return <TarotCardDisplay key={index} card={cards[index]} index={index} />;
+  };
+
+  switch (spread.id) {
+    case 'single': {
+      const card = cards[0];
+      if (!card) return null;
+      
+      const isSword = card.id >= 50 && card.id <= 63;
+      const badMajors = [12, 13, 15, 16, 18]; 
+      const neutralMajors = [0, 2, 9, 10, 11, 14, 20];
+      
+      let answer = '是 (Yes)';
+      let theme = 'text-green-600 dark:text-green-400';
+      let bg = 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-800';
+
+      if (isSword || badMajors.includes(card.id)) {
+        answer = '否 (No)';
+        theme = 'text-red-600 dark:text-red-400';
+        bg = 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800';
+      } else if (neutralMajors.includes(card.id)) {
+        answer = '不確定 (Maybe)';
+        theme = 'text-amber-600 dark:text-amber-400';
+        bg = 'bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800';
+      }
+
+      if (card.isReversed) {
+        if (answer.includes('Yes')) {
+          answer = '可能有變數 (Maybe Yes)';
+          theme = 'text-amber-600 dark:text-amber-400';
+          bg = 'bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800';
+        } else if (answer.includes('Maybe')) {
+          answer = '偏向否 (Probably No)';
+          theme = 'text-red-500 dark:text-red-400';
+          bg = 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800';
+        }
+      }
+
+      return (
+        <div className="flex flex-col items-center gap-8 w-full">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3 }}
+            className={`px-6 py-3 rounded-2xl border-2 ${bg} shadow-md flex items-center gap-3 transition-all`}
+          >
+            <span className={`text-sm font-bold ${theme} opacity-80 uppercase tracking-widest`}>神諭指引</span>
+            <span className={`text-xl sm:text-2xl font-black ${theme}`}>{answer}</span>
+          </motion.div>
+          {renderCard(0)}
+        </div>
+      );
+    }
+    
+    case 'johari':
+    case 'cycle':
+    case 'waite-clarity':
+    case 'waite-healing':
+      return (
+        <div className="grid grid-cols-2 gap-8 sm:gap-12 place-items-center w-full max-w-2xl mx-auto">
+          {renderCard(0)} {renderCard(1)}
+          {renderCard(2)} {renderCard(3)}
+        </div>
+      );
+      
+    case 'breakthrough':
+      return (
+        <div className="grid grid-cols-3 gap-6 sm:gap-10 place-items-center w-full max-w-3xl mx-auto">
+          <div className="col-start-2">{renderCard(0)}</div>
+          <div className="col-start-1 row-start-2">{renderCard(1)}</div>
+          <div className="col-start-3 row-start-2">{renderCard(2)}</div>
+          <div className="col-start-2 row-start-3">{renderCard(3)}</div>
+        </div>
+      );
+
+    case 'choice':
+      return (
+        <div className="grid grid-cols-2 gap-x-12 sm:gap-x-32 gap-y-10 place-items-center max-w-2xl mx-auto w-full">
+          <div className="col-start-1">{renderCard(2)}</div>
+          <div className="col-start-2">{renderCard(4)}</div>
+          <div className="col-start-1">{renderCard(1)}</div>
+          <div className="col-start-2">{renderCard(3)}</div>
+          <div className="col-span-2 mt-4">{renderCard(0)}</div>
+        </div>
+      );
+      
+    case 'pattern':
+      return (
+        <div className="flex flex-col md:flex-row gap-6 sm:gap-8 justify-center items-center flex-wrap max-w-4xl mx-auto w-full">
+          {cards.map((_, i) => renderCard(i))}
+        </div>
+      );
+
+    case 'iceberg':
+      return (
+        <div className="flex flex-col gap-6 items-center w-full max-w-3xl mx-auto">
+          <div className="z-10">{renderCard(0)}</div>
+          <div className="w-full h-px bg-cyan-200/50 dark:bg-cyan-900/50 my-2 relative">
+            <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-4 bg-white/40 dark:bg-mystic-950 text-xs text-cyan-600 dark:text-cyan-500 font-bold tracking-widest">水面之下</span>
+          </div>
+          <div className="flex gap-8 justify-center z-0">{renderCard(1)}{renderCard(2)}</div>
+          <div className="flex gap-8 justify-center z-0">{renderCard(3)}{renderCard(4)}</div>
+          <div className="mt-4 z-0">{renderCard(5)}</div>
+        </div>
+      );
+
+    case 'mirror':
+      return (
+        <div className="grid grid-cols-2 gap-x-8 sm:gap-x-24 gap-y-10 place-items-center max-w-2xl mx-auto w-full">
+          {cards.map((_, i) => renderCard(i))}
+        </div>
+      );
+      
+    case 'resource':
+      return (
+        <div className="grid grid-cols-3 gap-6 sm:gap-10 place-items-center max-w-4xl mx-auto w-full">
+          {renderCard(3)} {renderCard(0)} {renderCard(2)}
+          {renderCard(1)} {renderCard(4)} {renderCard(5)}
+        </div>
+      );
+
+    case 'hero':
+      return (
+        <div className="grid grid-cols-3 gap-x-6 sm:gap-x-12 gap-y-10 place-items-center max-w-4xl mx-auto w-full">
+          <div>{renderCard(0)}</div> <div className="invisible"></div> <div>{renderCard(6)}</div>
+          <div>{renderCard(1)}</div> <div className="invisible"></div> <div>{renderCard(5)}</div>
+          <div>{renderCard(2)}</div> <div>{renderCard(3)}</div> <div>{renderCard(4)}</div>
+        </div>
+      );
+
+    case 'celtic':
+      return (
+        <div className="flex flex-col xl:flex-row gap-12 sm:gap-16 items-center justify-center w-full max-w-6xl mx-auto">
+          <div className="grid grid-cols-4 gap-4 sm:gap-8 place-items-center">
+            <div className="col-start-2 col-span-2 row-start-1 flex justify-center w-full">{renderCard(2)}</div>
+            <div className="col-start-1 row-start-2">{renderCard(4)}</div>
+            <div className="col-start-2 row-start-2">{renderCard(0)}</div>
+            <div className="col-start-3 row-start-2">{renderCard(1)}</div>
+            <div className="col-start-4 row-start-2">{renderCard(5)}</div>
+            <div className="col-start-2 col-span-2 row-start-3 flex justify-center w-full">{renderCard(3)}</div>
+          </div>
+          <div className="flex flex-col gap-6 sm:gap-8">
+            {renderCard(9)}
+            {renderCard(8)}
+            {renderCard(7)}
+            {renderCard(6)}
+          </div>
+        </div>
+      );
+
+    default:
+      return (
+        <div className={`grid gap-6 sm:gap-10 justify-center w-full mx-auto ${
+          cards.length === 1 ? 'grid-cols-1' :
+          cards.length === 2 ? 'grid-cols-2' :
+          cards.length === 3 ? 'grid-cols-3' :
+          cards.length === 4 ? 'grid-cols-2 sm:grid-cols-4' :
+          cards.length === 5 ? 'grid-cols-3 sm:grid-cols-5' :
+          cards.length === 6 ? 'grid-cols-3' :
+          cards.length === 7 ? 'grid-cols-3 sm:grid-cols-4' :
+          cards.length === 8 ? 'grid-cols-4' :
+          cards.length === 10 ? 'grid-cols-3 sm:grid-cols-5' :
+          cards.length === 12 ? 'grid-cols-4 sm:grid-cols-6' :
+          'grid-cols-3 sm:grid-cols-4'
+        }`}>
+          {cards.map((_, i) => renderCard(i))}
+        </div>
+      );
+  }
+}
+
 function TarotCardDisplay({ card, index, isExtra }: { card: DrawnCard; index: number; isExtra?: boolean; key?: string | number }) {
   const emoji = getCardEmoji(card.id);
   const isMajor = card.id < 22;
@@ -1117,6 +1538,53 @@ function TarotCardDisplay({ card, index, isExtra }: { card: DrawnCard; index: nu
         <div className="font-bold text-slate-800 dark:text-mystic-100">{card.nameCN}</div>
         <div className={`text-xs font-bold ${card.isReversed ? 'text-red-500 dark:text-red-400' : 'text-amber-600 dark:text-mystic-400'}`}>
           {card.isReversed ? '逆位' : '正位'}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function LenormandCardDisplay({ card, index, isCenter }: { card: DrawnLenormandCard; index: number; isCenter?: boolean }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.85 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay: index * 0.07, type: 'spring', stiffness: 200, damping: 18 }}
+      className="flex flex-col items-center gap-2"
+    >
+      <div className={`text-[10px] sm:text-xs font-bold uppercase tracking-widest text-center leading-tight ${isCenter ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-mystic-400'}`}>
+        {card.positionName}
+      </div>
+
+      <div className={`relative w-[90px] sm:w-[110px] aspect-[2/3] rounded-xl sm:rounded-2xl overflow-hidden border-2 shadow-lg transition-all duration-300 ${
+        isCenter
+          ? 'border-emerald-400 dark:border-emerald-500 shadow-emerald-400/30 scale-110 ring-2 ring-emerald-300/50 dark:ring-emerald-600/30'
+          : 'border-teal-200/80 dark:border-teal-900/50 shadow-teal-600/10'
+      }`}>
+        <div className="absolute inset-0 bg-gradient-to-br from-stone-50 via-teal-50/30 to-emerald-50/50 dark:from-slate-900 dark:via-teal-950/40 dark:to-emerald-950/30" />
+        <div className="absolute top-1.5 left-1.5 text-[10px] font-bold text-slate-600 dark:text-slate-400 bg-white/70 dark:bg-black/40 px-1 py-0.5 rounded leading-none">
+          {card.suit}
+        </div>
+        <div className="absolute top-1.5 right-1.5 text-[10px] font-bold text-teal-700 dark:text-teal-400 bg-teal-50/80 dark:bg-teal-900/50 px-1 py-0.5 rounded leading-none">
+          {card.id}
+        </div>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="text-4xl sm:text-5xl drop-shadow-sm select-none" role="img" aria-label={card.nameEN}>
+            {card.emoji}
+          </span>
+        </div>
+        <div className="absolute bottom-0 inset-x-0 h-10 bg-gradient-to-t from-black/20 to-transparent" />
+      </div>
+
+      <div className="text-center">
+        <div className="font-bold text-sm sm:text-base text-slate-800 dark:text-mystic-100 leading-tight">{card.nameCN}</div>
+        <div className="text-[10px] sm:text-xs text-slate-500 dark:text-mystic-400 leading-snug">{card.nameEN}</div>
+        <div className="flex flex-wrap justify-center gap-1 mt-1">
+          {card.keywords.map((kw, i) => (
+            <span key={i} className="text-[9px] sm:text-[10px] px-1.5 py-0.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900 rounded-full font-medium">
+              {kw}
+            </span>
+          ))}
         </div>
       </div>
     </motion.div>
