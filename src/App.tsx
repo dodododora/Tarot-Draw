@@ -624,7 +624,7 @@ export default function App() {
                   <Wand2 className="text-stone-600 dark:text-mystic-500" size={24} />
                   <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">內建牌陣</h2>
                 </div>
-                <p className="text-sm text-slate-500 dark:text-mystic-400 -mt-6">
+                <p className="text-sm text-slate-500 dark:text-mystic-400 mb-6">
                   {mode === 'lenormand' ? '共 36 張・無正逆位・雷諾曼體系' : mode === 'thoth' ? '共 78 張・無逆位・克勞利體系' : '共 78 張・支援正逆位・萊德偉特體系'}
                 </p>
 
@@ -632,8 +632,8 @@ export default function App() {
                   const allSpreads = [...THOTH_SPREADS, ...WAITE_SPREADS.filter(s => !THOTH_SPREADS.some(t => t.id === s.id))];
                   const cats = [
                     { label: '🌟 經典牌陣', ids: ['single', 'waite-triangle', 'celtic'] },
-                    { label: '💡 洞察探索', ids: ['johari', 'pattern', 'iceberg', 'mirror'] },
-                    { label: '🧭 決策推演', ids: ['breakthrough', 'choice', 'hero'] },
+                    { label: '💡 洞察探索', ids: ['johari', 'cycle', 'pattern', 'iceberg', 'mirror'] },
+                    { label: '🧭 決策與資源', ids: ['breakthrough', 'choice', 'resource', 'hero'] },
                   ];
                   return cats.map(({ label, ids }) => {
                     const spreads = allSpreads.filter(s => ids.includes(s.id));
@@ -706,10 +706,20 @@ export default function App() {
               </section>
               )}
 
-              {/* Legal Disclaimer */}
-              <div className="mt-4 pt-6 border-t border-stone-200/60 dark:border-mystic-800/40 text-center">
-                <p className="text-[11px] leading-relaxed text-slate-400 dark:text-mystic-600 max-w-2xl mx-auto">
-                  ⚖️ 本網站提供之塔羅牌陣與解讀內容僅供娛樂與自我探索參考，不構成任何醫療、心理、法律或財務建議。請勿依據占卜結果做出重大決定。
+              {/* Donation + Legal footer */}
+              <div className="mt-8 pt-6 border-t border-stone-200/60 dark:border-mystic-800/40 flex flex-col items-center gap-3">
+                {/* TODO: 打賞功能暫時停用，之後換上 Buy Me a Coffee 連結再取消注釋
+                <a
+                  href="https://www.buymeacoffee.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-slate-400 dark:text-mystic-600 hover:text-amber-600 dark:hover:text-mystic-400 transition-colors"
+                >
+                  ☕ 請我喝杯咖啡
+                </a>
+                */}
+                <p className="text-[11px] leading-relaxed text-slate-400 dark:text-mystic-600 max-w-2xl mx-auto text-center">
+                  本網站提供之塔羅牌陣與解讀內容僅供娛樂與自我探索參考，不構成任何醫療、心理、法律或財務建議。請勿依據占卜結果做出重大決定。
                 </p>
               </div>
             </motion.div>
