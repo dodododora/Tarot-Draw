@@ -535,43 +535,43 @@ export default function App() {
       {/* Navbar */}
       <nav className="sticky top-0 z-50 bg-white/60 dark:bg-mystic-950/50 backdrop-blur-xl border-b border-white/20 dark:border-mystic-800/50 px-4 py-4 flex justify-between items-center transition-colors duration-500">
         <div 
-          className="flex items-center gap-3 cursor-pointer group"
+          className="flex items-center gap-2 cursor-pointer group"
           onClick={() => setView('home')}
         >
           <TarotLogoSVG />
-          <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight gold-text drop-shadow-sm ml-1">Tarot Draw</h1>
+          <h1 className="hidden sm:block text-xl sm:text-2xl font-extrabold tracking-tight gold-text drop-shadow-sm">Tarot Draw</h1>
         </div>
         {/* Mode Toggle */}
         <div className="flex items-center bg-stone-100/80 dark:bg-mystic-900/80 rounded-xl p-1 border border-stone-200 dark:border-mystic-800">
           <button
             onClick={() => { setMode('tarot'); setView('home'); setSelectedSpread(null); }}
-            className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${
+            className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${
               mode === 'tarot'
                 ? 'bg-amber-600 dark:bg-mystic-600 text-white shadow-sm'
                 : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
             }`}
           >
-            🔮 偉特
+            🔮<span className="hidden sm:inline"> 偉特</span>
           </button>
           <button
             onClick={() => { setMode('thoth'); setView('home'); setSelectedSpread(null); }}
-            className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${
+            className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${
               mode === 'thoth'
                 ? 'bg-purple-600 dark:bg-purple-700 text-white shadow-sm'
                 : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
             }`}
           >
-            🌌 托特
+            🌌<span className="hidden sm:inline"> 托特</span>
           </button>
           <button
             onClick={() => { setMode('lenormand'); setView('home'); setSelectedSpread(null); }}
-            className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${
+            className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${
               mode === 'lenormand'
                 ? 'bg-emerald-600 dark:bg-emerald-700 text-white shadow-sm'
                 : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
             }`}
           >
-            🃏 雷諾曼
+            🃏<span className="hidden sm:inline"> 雷諾曼</span>
           </button>
         </div>
         <div className="flex items-center gap-1 sm:gap-2">
@@ -601,22 +601,24 @@ export default function App() {
               className="space-y-12"
             >
               {/* How-to flow */}
-              <div className="flex items-center justify-center flex-wrap gap-1.5 text-[11px] font-medium text-slate-500 dark:text-mystic-500">
-                {[
-                  { n: '1', label: '選系統' },
-                  { n: '2', label: '選牌陣' },
-                  { n: '3', label: '輸入問題' },
-                  { n: '4', label: '抽牌' },
-                  { n: '5', label: '複製給 AI 解讀' },
-                ].map(({ n, label }, i, arr) => (
-                  <React.Fragment key={n}>
-                    <span className="flex items-center gap-1">
-                      <span className="w-4 h-4 rounded-full bg-amber-100 dark:bg-mystic-800 text-amber-700 dark:text-mystic-400 flex items-center justify-center text-[9px] font-bold shrink-0">{n}</span>
-                      {label}
-                    </span>
-                    {i < arr.length - 1 && <span className="text-slate-300 dark:text-mystic-700">›</span>}
-                  </React.Fragment>
-                ))}
+              <div className="overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                <div className="flex items-center justify-start sm:justify-center gap-1.5 text-[11px] font-medium text-slate-500 dark:text-mystic-500 min-w-max mx-auto px-1">
+                  {[
+                    { n: '1', label: '選系統' },
+                    { n: '2', label: '選牌陣' },
+                    { n: '3', label: '輸入問題' },
+                    { n: '4', label: '抽牌' },
+                    { n: '5', label: '複製給 AI 解讀' },
+                  ].map(({ n, label }, i, arr) => (
+                    <React.Fragment key={n}>
+                      <span className="flex items-center gap-1">
+                        <span className="w-4 h-4 rounded-full bg-amber-100 dark:bg-mystic-800 text-amber-700 dark:text-mystic-400 flex items-center justify-center text-[9px] font-bold shrink-0">{n}</span>
+                        {label}
+                      </span>
+                      {i < arr.length - 1 && <span className="text-slate-300 dark:text-mystic-700">›</span>}
+                    </React.Fragment>
+                  ))}
+                </div>
               </div>
 
               {/* Lenormand Home */}
@@ -1337,7 +1339,7 @@ function SpreadCard({ spread, isCustom, onClick, onEdit, onDelete }: {
   return (
     <div 
       onClick={onClick}
-      className="relative bg-white/70 dark:bg-mystic-900/60 p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] border border-amber-100 dark:border-mystic-800 hover:border-amber-300 dark:hover:border-mystic-600 shadow-sm hover:shadow-[0_8px_30px_rgb(251,191,36,0.1)] dark:hover:shadow-[0_8px_30px_rgba(99,102,241,0.05)] transition-all cursor-pointer group flex flex-col h-[180px] sm:h-[220px] overflow-hidden backdrop-blur-sm hover:-translate-y-1 active:scale-[0.98]"
+      className="relative bg-white/70 dark:bg-mystic-900/60 p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] border border-amber-100 dark:border-mystic-800 hover:border-amber-300 dark:hover:border-mystic-600 shadow-sm hover:shadow-[0_8px_30px_rgb(251,191,36,0.1)] dark:hover:shadow-[0_8px_30px_rgba(99,102,241,0.05)] transition-all cursor-pointer group flex flex-col min-h-[160px] sm:h-[220px] overflow-hidden backdrop-blur-sm hover:-translate-y-1 active:scale-[0.98]"
     >
       <div className="flex justify-between items-start mb-2 sm:mb-4 relative z-10 gap-2">
         <h3 className="text-base sm:text-xl font-bold text-amber-900 dark:text-mystic-100 group-hover:text-amber-600 dark:group-hover:text-indigo-400 transition-colors drop-shadow-sm leading-tight line-clamp-2">
