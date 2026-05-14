@@ -267,6 +267,18 @@ export const WAITE_SPREADS: Spread[] = [
   { id: "waite-triangle", name: "身心靈對話", count: 3, positions: ["身體感受", "心智邏輯", "靈魂渴望"],                  hint: "思緒混亂時，重新對齊三個維度的真實狀態",         exampleQuestion: "我最近疲憊且提不起勁，身心靈分別在傳遞什麼訊息？" },
 ];
 
+// Which spread IDs are available in each system
+// Waite: narrative/event-oriented + classic structures
+export const WAITE_SPREAD_IDS = [
+  'single', 'waite-triangle', 'celtic', 'hero',
+  'cycle', 'mirror', 'breakthrough', 'choice', 'resource',
+];
+// Thoth: energy-state / psychological structure (no narrative-heavy celtic/hero)
+export const THOTH_SPREAD_IDS = [
+  'single', 'waite-triangle',
+  'johari', 'pattern', 'iceberg', 'cycle', 'mirror',
+  'breakdown', 'breakthrough', 'choice', 'resource',
+];
 
 export function getCardEmoji(cardId: number): string {
   if (cardId < 22) {

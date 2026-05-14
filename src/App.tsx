@@ -1,8 +1,9 @@
 import React, { useState, useEffect, type MouseEvent, type FormEvent } from 'react';
 import { Moon, Sun, Plus, Trash2, Edit2, Copy, ArrowLeft, Sparkles, Wand2, Info, X, History, CheckCircle2, Compass, Lightbulb } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ALL_CARDS, THOTH_SPREADS, WAITE_SPREADS, getCardEmoji, TAROT_TRIVIA, LENORMAND_CARDS, LENORMAND_SPREADS, LENORMAND_TRIVIA, THOTH_ALL_CARDS, THOTH_TRIVIA, ORACLE_DATA, type Spread, type TarotCard, type LenormandCard } from './constants';
+import { ALL_CARDS, THOTH_SPREADS, WAITE_SPREADS, WAITE_SPREAD_IDS, THOTH_SPREAD_IDS, getCardEmoji, TAROT_TRIVIA, LENORMAND_CARDS, LENORMAND_SPREADS, LENORMAND_TRIVIA, THOTH_ALL_CARDS, THOTH_TRIVIA, ORACLE_DATA, type Spread, type TarotCard, type LenormandCard } from './constants';
 import { shuffleAndDraw } from './deckEngine';
+import { downloadShareCard, type ShareCardCard } from './shareCard';
 
 export interface DrawHistory {
   id: string;
@@ -639,7 +640,7 @@ export default function App() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="space-y-12"
+              className="flex flex-col min-h-full gap-12"
             >
               {/* How-to flow */}
               <div className="overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
@@ -687,31 +688,39 @@ export default function App() {
                 </section>
               )}
 
-              {/* Built-in Spreads — categorized */}
+              {/* Spreads — categorized, no redundant header */}
+              {(mode === 'tarot' || mode === 'thoth') && (
               <section className="space-y-8">
-                <div className="flex items-center gap-3 mb-1">
-                  <Wand2 className="text-stone-600 dark:text-mystic-500" size={24} />
-                  <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">內建牌陣</h2>
-                </div>
-                <p className="text-sm text-slate-500 dark:text-mystic-400 mb-6">
-                  {mode === 'lenormand' ? '共 36 張・無正逆位・雷諾曼體系' : mode === 'thoth' ? '共 78 張・無逆位・克勞利體系' : '共 78 張・支援正逆位・萊德偉特體系'}
-                </p>
-
                 {(() => {
-                  const allSpreads = [...THOTH_SPREADS, ...WAITE_SPREADS.filter(s => !THOTH_SPREADS.some(t => t.id === s.id))];
-                  const cats = [
-                    { label: '🌟 經典牌陣', ids: ['single', 'waite-triangle', 'celtic'] },
-                    { label: '💡 洞察探索', ids: ['johari', 'cycle', 'pattern', 'iceberg', 'mirror'] },
-                    { label: '🧭 決策與資源', ids: ['breakthrough', 'choice', 'resource', 'hero'] },
+                  // Master spread pool: all definitions live in THOTH_SPREADS; waite-triangle is in WAITE_SPREADS
+                  const masterPool = [
+                    ...THOTH_SPREADS,
+                    ...WAITE_SPREADS.filter(s => !THOTH_SPREADS.some(t => t.id === s.id)),
                   ];
+                  const allowedIds = mode === 'tarot' ? WAITE_SPREAD_IDS : THOTH_SPREAD_IDS;
+                  const spreads = masterPool.filter(s => allowedIds.includes(s.id));
+
+                  // Mode-specific categories
+                  const cats = mode === 'tarot'
+                    ? [
+                        { label: '🌟 經典牌陣', ids: ['single', 'waite-triangle', 'celtic'] },
+                        { label: '📖 敘事與關係', ids: ['hero', 'cycle', 'mirror'] },
+                        { label: '🧭 決策與資源', ids: ['breakthrough', 'choice', 'resource'] },
+                      ]
+                    : [
+                        { label: '🌟 核心牌陣', ids: ['single', 'waite-triangle'] },
+                        { label: '🔬 心理解構', ids: ['johari', 'pattern', 'iceberg', 'cycle', 'mirror'] },
+                        { label: '🧭 決策與資源', ids: ['breakthrough', 'choice', 'resource'] },
+                      ];
+
                   return cats.map(({ label, ids }) => {
-                    const spreads = allSpreads.filter(s => ids.includes(s.id));
-                    if (!spreads.length) return null;
+                    const catSpreads = spreads.filter(s => ids.includes(s.id));
+                    if (!catSpreads.length) return null;
                     return (
                       <div key={label}>
                         <p className="text-xs font-bold text-amber-700 dark:text-mystic-400 uppercase tracking-widest mb-3">{label}</p>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
-                          {spreads.map(spread => (
+                          {catSpreads.map(spread => (
                             <SpreadCard
                               key={spread.id}
                               spread={spread}
@@ -730,6 +739,7 @@ export default function App() {
                   });
                 })()}
               </section>
+              )}
 
 
               {/* Custom Spreads (Tarot & Thoth) */}
@@ -738,7 +748,7 @@ export default function App() {
                   <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-3">
                       <Edit2 className="text-stone-600 dark:text-mystic-500" size={24} />
-                      <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">自訂牌陣</h2>
+                      <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">我的牌陣</h2>
                     </div>
                     <button
                       onClick={openAddModal}
@@ -776,7 +786,7 @@ export default function App() {
               )}
 
               {/* Donation + Legal footer */}
-              <div className="mt-8 pt-6 border-t border-stone-200/60 dark:border-mystic-800/40 flex flex-col items-center gap-3">
+              <div className="mt-auto pt-8 pb-2 border-t border-stone-200/60 dark:border-mystic-800/40 flex flex-col items-center gap-3">
                 {/* TODO: 打賞功能暫時停用，之後換上 Buy Me a Coffee 連結再取消注釋
                 <a
                   href="https://www.buymeacoffee.com/"
@@ -1195,6 +1205,22 @@ export default function App() {
                       <Copy size={18} /> 複製 AI 解讀 Prompt
                     </button>
                   )}
+                </div>
+
+                {/* Share card download */}
+                <div className="flex justify-center mt-1">
+                  <button
+                    onClick={() => {
+                      const cardList: ShareCardCard[] = (mode === 'lenormand'
+                        ? lenormandDrawnCards.map(c => ({ nameCN: c.nameCN, nameEN: c.nameEN, isReversed: false, positionName: c.positionName, emoji: c.emoji }))
+                        : drawnCards.filter(c => !c.extraQuestion).map(c => ({ nameCN: c.nameCN, nameEN: c.nameEN, isReversed: c.isReversed, positionName: c.positionName }))
+                      );
+                      downloadShareCard({ spreadName: selectedSpread?.name ?? '', question, cards: cardList, mode });
+                    }}
+                    className="px-5 py-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 text-indigo-600 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 transition-all hover:-translate-y-1 active:scale-95 font-bold flex items-center gap-2 text-sm"
+                  >
+                    🖼 儲存分享圖
+                  </button>
                 </div>
 
                 {/* AI Quick-open shortcuts */}
