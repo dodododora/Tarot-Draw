@@ -1,4 +1,4 @@
-import React, { useState, useEffect, type MouseEvent, type FormEvent } from 'react';
+import React, { useState, useEffect, useCallback, type MouseEvent, type FormEvent } from 'react';
 import { Moon, Sun, Plus, Trash2, Edit2, Copy, ArrowLeft, Sparkles, Wand2, Info, X, History, CheckCircle2, Compass, Lightbulb } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ALL_CARDS, THOTH_SPREADS, WAITE_SPREADS, WAITE_SPREAD_IDS, THOTH_SPREAD_IDS, getCardEmoji, TAROT_TRIVIA, LENORMAND_CARDS, LENORMAND_SPREADS, LENORMAND_TRIVIA, THOTH_ALL_CARDS, THOTH_TRIVIA, ORACLE_DATA, type Spread, type TarotCard, type LenormandCard } from './constants';
@@ -126,6 +126,69 @@ export default function App() {
     return pool[Math.floor(Math.random() * pool.length)];
   }, [view, selectedSpread, mode]);
 
+  const filteredHistory = React.useMemo(() => {
+    const now = Date.now();
+    const ONE_WEEK  = 7  * 24 * 60 * 60 * 1000;
+    const ONE_MONTH = 30 * 24 * 60 * 60 * 1000;
+    return history.filter(r => {
+      const age = now - r.date;
+      if (historyFilter === 'week')  return age <= ONE_WEEK;
+      if (historyFilter === 'month') return age <= ONE_MONTH;
+      if (historyFilter === 'older') return age >  ONE_MONTH;
+      return true;
+    });
+  }, [history, historyFilter]);
+
+  const allFilteredSelected = React.useMemo(() =>
+    filteredHistory.length > 0 && filteredHistory.every(r => selectedHistoryIds.has(r.id)),
+    [filteredHistory, selectedHistoryIds]
+  );
+
+  const historyTabCounts = React.useMemo(() => {
+    const now = Date.now();
+    const ONE_WEEK  = 7  * 24 * 60 * 60 * 1000;
+    const ONE_MONTH = 30 * 24 * 60 * 60 * 1000;
+    let week = 0, month = 0, older = 0;
+    for (const r of history) {
+      const age = now - r.date;
+      if (age <= ONE_WEEK) week++;
+      else if (age <= ONE_MONTH) month++;
+      else older++;
+    }
+    return { all: history.length, week, month, older };
+  }, [history]);
+
+  // Memoized spread categories — only recompute when mode changes
+  const categorizedSpreads = React.useMemo(() => {
+    const masterPool = [
+      ...THOTH_SPREADS,
+      ...WAITE_SPREADS.filter(s => !THOTH_SPREADS.some(t => t.id === s.id)),
+    ];
+    const allowedIds = mode === 'tarot' ? WAITE_SPREAD_IDS : THOTH_SPREAD_IDS;
+    const spreads = masterPool.filter(s => allowedIds.includes(s.id));
+    const cats = mode === 'tarot'
+      ? [
+          { label: '🌟 經典牌陣', ids: ['single', 'waite-triangle', 'celtic'] },
+          { label: '📖 敘事與關係', ids: ['hero', 'cycle', 'mirror'] },
+          { label: '🧭 決策與資源', ids: ['breakthrough', 'choice', 'resource'] },
+        ]
+      : [
+          { label: '🌟 核心牌陣', ids: ['single', 'waite-triangle'] },
+          { label: '🔬 心理解構', ids: ['johari', 'pattern', 'iceberg', 'cycle', 'mirror'] },
+          { label: '🧭 決策與資源', ids: ['breakthrough', 'choice', 'resource'] },
+        ];
+    return cats
+      .map(({ label, ids }) => ({ label, catSpreads: spreads.filter(s => ids.includes(s.id)) }))
+      .filter(c => c.catSpreads.length > 0);
+  }, [mode]);
+
+  // Memoized drawnCards partitions — filter once, reuse everywhere in result view
+  const { mainCards, extraCards, hasExtraCards } = React.useMemo(() => {
+    const main  = drawnCards.filter(c => !c.extraQuestion);
+    const extra = drawnCards.filter(c => !!c.extraQuestion);
+    return { mainCards: main, extraCards: extra, hasExtraCards: extra.length > 0 };
+  }, [drawnCards]);
+
   // Dynamic choice spread modifier
   useEffect(() => {
     if (selectedSpread?.id === 'choice') {
@@ -233,12 +296,46 @@ export default function App() {
     }
   }, [customSpreads, history, isLoaded]);
 
-  const toggleTheme = () => setTheme(theme === 'light' ? 'dark' : 'light');
+  const toggleTheme = useCallback(() => setTheme(t => t === 'light' ? 'dark' : 'light'), []);
 
-  const showToast = (msg: string) => {
+  const showToast = useCallback((msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3000);
-  };
+  }, []);
+
+  // ─── Stable spread selection handlers (keep React.memo on SpreadCard effective)
+  const handleTarotSpreadSelect = useCallback((spread: Spread) => {
+    setSelectedSpread(spread);
+    if (spread.id === 'choice') setChoiceCount(2);
+    if (spread.id === 'mirror') setPeopleCount(2);
+    setView('draw');
+    setQuestion('');
+  }, []);
+
+  const handleLenormandSpreadSelect = useCallback((spread: Spread) => {
+    setSelectedSpread(spread);
+    setLenormandDrawnCards([]);
+    setView('draw');
+    setQuestion('');
+  }, []);
+
+  const handleCustomSpreadSelect = useCallback((spread: Spread) => {
+    setSelectedSpread(spread);
+    setView('draw');
+    setQuestion('');
+  }, []);
+
+  const handleSpreadEdit = useCallback((spread: Spread, e: MouseEvent) => {
+    e.stopPropagation();
+    setEditingSpread({ ...spread });
+    setIsModalOpen(true);
+  }, []);
+
+  const handleSpreadDelete = useCallback((spread: Spread, e: MouseEvent) => {
+    e.stopPropagation();
+    setCustomSpreads(prev => prev.filter(s => s.id !== spread.id));
+    showToast('已刪除自訂牌陣');
+  }, [showToast]);
 
   const handleDraw = () => {
     if (!selectedSpread) return;
@@ -554,7 +651,7 @@ export default function App() {
     });
   };
 
-  const openAddModal = () => {
+  const openAddModal = useCallback(() => {
     setEditingSpread({
       id: Date.now().toString() + Math.random().toString(36).substring(2, 9),
       name: '',
@@ -564,18 +661,7 @@ export default function App() {
       isCustom: true
     });
     setIsModalOpen(true);
-  };
-
-  const openEditModal = (spread: Spread) => {
-    setEditingSpread({ ...spread });
-    setIsModalOpen(true);
-  };
-
-  const deleteSpread = (id: string, e: MouseEvent) => {
-    e.stopPropagation();
-    setCustomSpreads(prev => prev.filter(s => s.id !== id));
-    showToast('已刪除自訂牌陣');
-  };
+  }, []);
 
   const saveSpread = (e: FormEvent) => {
     e.preventDefault();
@@ -660,13 +746,14 @@ export default function App() {
       </nav>
 
       <main className="flex-grow container mx-auto px-4 py-8 max-w-6xl">
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="sync">
           {view === 'home' && (
             <motion.div
               key="home"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.15, ease: 'easeOut' }}
               className="flex flex-col min-h-full gap-12"
             >
               {/* How-to flow */}
@@ -703,12 +790,7 @@ export default function App() {
                       <SpreadCard
                         key={spread.id}
                         spread={spread}
-                        onClick={() => {
-                          setSelectedSpread(spread);
-                          setLenormandDrawnCards([]);
-                          setView('draw');
-                          setQuestion('');
-                        }}
+                        onSelect={handleLenormandSpreadSelect}
                       />
                     ))}
                   </div>
@@ -718,53 +800,20 @@ export default function App() {
               {/* Spreads — categorized, no redundant header */}
               {(mode === 'tarot' || mode === 'thoth') && (
               <section className="space-y-8">
-                {(() => {
-                  // Master spread pool: all definitions live in THOTH_SPREADS; waite-triangle is in WAITE_SPREADS
-                  const masterPool = [
-                    ...THOTH_SPREADS,
-                    ...WAITE_SPREADS.filter(s => !THOTH_SPREADS.some(t => t.id === s.id)),
-                  ];
-                  const allowedIds = mode === 'tarot' ? WAITE_SPREAD_IDS : THOTH_SPREAD_IDS;
-                  const spreads = masterPool.filter(s => allowedIds.includes(s.id));
-
-                  // Mode-specific categories
-                  const cats = mode === 'tarot'
-                    ? [
-                        { label: '🌟 經典牌陣', ids: ['single', 'waite-triangle', 'celtic'] },
-                        { label: '📖 敘事與關係', ids: ['hero', 'cycle', 'mirror'] },
-                        { label: '🧭 決策與資源', ids: ['breakthrough', 'choice', 'resource'] },
-                      ]
-                    : [
-                        { label: '🌟 核心牌陣', ids: ['single', 'waite-triangle'] },
-                        { label: '🔬 心理解構', ids: ['johari', 'pattern', 'iceberg', 'cycle', 'mirror'] },
-                        { label: '🧭 決策與資源', ids: ['breakthrough', 'choice', 'resource'] },
-                      ];
-
-                  return cats.map(({ label, ids }) => {
-                    const catSpreads = spreads.filter(s => ids.includes(s.id));
-                    if (!catSpreads.length) return null;
-                    return (
-                      <div key={label}>
-                        <p className="text-xs font-bold text-amber-700 dark:text-mystic-400 uppercase tracking-widest mb-3">{label}</p>
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
-                          {catSpreads.map(spread => (
-                            <SpreadCard
-                              key={spread.id}
-                              spread={spread}
-                              onClick={() => {
-                                setSelectedSpread(spread);
-                                if (spread.id === 'choice') setChoiceCount(2);
-                                if (spread.id === 'mirror') setPeopleCount(2);
-                                setView('draw');
-                                setQuestion('');
-                              }}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    );
-                  });
-                })()}
+                {categorizedSpreads.map(({ label, catSpreads }) => (
+                  <div key={label}>
+                    <p className="text-xs font-bold text-amber-700 dark:text-mystic-400 uppercase tracking-widest mb-3">{label}</p>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
+                      {catSpreads.map(spread => (
+                        <SpreadCard
+                          key={spread.id}
+                          spread={spread}
+                          onSelect={handleTarotSpreadSelect}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </section>
               )}
 
@@ -791,16 +840,9 @@ export default function App() {
                           key={spread.id}
                           spread={spread}
                           isCustom
-                          onClick={() => {
-                            setSelectedSpread(spread);
-                            setView('draw');
-                            setQuestion('');
-                          }}
-                          onEdit={(e) => {
-                            e.stopPropagation();
-                            openEditModal(spread);
-                          }}
-                          onDelete={(e) => deleteSpread(spread.id, e)}
+                          onSelect={handleCustomSpreadSelect}
+                          onEdit={handleSpreadEdit}
+                          onDelete={handleSpreadDelete}
                         />
                       ))}
                     </div>
@@ -837,6 +879,7 @@ export default function App() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.15, ease: 'easeOut' }}
               className="max-w-2xl mx-auto space-y-8"
             >
               <button
@@ -1088,7 +1131,7 @@ export default function App() {
                           <motion.div
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: 0.2 }}
+                            transition={{ duration: 0.25, ease: 'easeOut', delay: 0.15 }}
                             className={`w-full px-6 py-4 rounded-[2rem] border-2 ${bg} shadow-lg flex flex-col items-center gap-2 transition-all backdrop-blur-sm`}
                           >
                             <div className="flex items-center gap-3">
@@ -1135,14 +1178,14 @@ export default function App() {
                   <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-amber-50/40 via-white/40 to-amber-100/30 dark:from-mystic-800/20 dark:via-mystic-900/80 dark:to-mystic-950 pointer-events-none"></div>
 
                   <div className="relative z-10 w-full max-w-6xl mx-auto">
-                    <TarotSpreadLayout spread={selectedSpread} cards={drawnCards.filter(c => !c.extraQuestion)} mode={mode === 'thoth' ? 'thoth' : 'tarot'} />
+                    <TarotSpreadLayout spread={selectedSpread} cards={mainCards} mode={mode === 'thoth' ? 'thoth' : 'tarot'} />
                   </div>
 
-                  {drawnCards.some(c => c.extraQuestion) && (
+                  {hasExtraCards && (
                     <div className="relative z-10 mt-16 pt-16 border-t border-amber-200/50 dark:border-mystic-800/50">
                       <h3 className="text-center text-xl font-bold gold-text mb-8 tracking-widest">✨ 補充指引</h3>
                       <div className="flex flex-wrap justify-center gap-6 sm:gap-10">
-                        {drawnCards.filter(c => c.extraQuestion).map((card, index) => (
+                        {extraCards.map((card, index) => (
                           <div key={index} className="flex flex-col items-center gap-4">
                             <div className="text-amber-800 dark:text-mystic-300 text-[13px] sm:text-sm font-medium text-center bg-white/80 dark:bg-mystic-900/80 px-4 py-2.5 rounded-xl border border-amber-200 dark:border-mystic-800 shadow-lg max-w-[160px] sm:max-w-[200px]">
                               <span className="text-amber-500 dark:text-mystic-500 mr-1">Q:</span>{card.extraQuestion}
@@ -1203,7 +1246,7 @@ export default function App() {
                 </AnimatePresence>
 
                 <div className="flex flex-wrap items-center justify-center gap-3">
-                  {drawnCards.some(c => c.extraQuestion) ? (
+                  {hasExtraCards ? (
                     <>
                       <button
                         onClick={() => copyToClipboard('all')}
@@ -1289,22 +1332,6 @@ export default function App() {
       {/* History Sidebar */}
       <AnimatePresence>
         {isHistoryOpen && (() => {
-          const now = Date.now();
-          const ONE_WEEK  = 7  * 24 * 60 * 60 * 1000;
-          const ONE_MONTH = 30 * 24 * 60 * 60 * 1000;
-
-          const filteredHistory = history.filter(r => {
-            const age = now - r.date;
-            if (historyFilter === 'week')  return age <= ONE_WEEK;
-            if (historyFilter === 'month') return age <= ONE_MONTH;
-            if (historyFilter === 'older') return age >  ONE_MONTH;
-            return true;
-          });
-
-          const allFilteredSelected =
-            filteredHistory.length > 0 &&
-            filteredHistory.every(r => selectedHistoryIds.has(r.id));
-
           const toggleSelectMode = () => {
             setHistorySelectMode(prev => !prev);
             setSelectedHistoryIds(new Set());
@@ -1354,10 +1381,14 @@ export default function App() {
               onClick={() => { setIsHistoryOpen(false); setHistorySelectMode(false); setSelectedHistoryIds(new Set()); }}
             >
               <motion.div
-                initial={{ x: '100%' }}
-                animate={{ x: 0 }}
-                exit={{ x: '100%' }}
-                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                variants={{
+                  hidden: { x: '100%' },
+                  visible: { x: 0, transition: { duration: 0.28, ease: [0.16, 1, 0.3, 1] } },
+                  exit:    { x: '100%', transition: { duration: 0.18, ease: [0.36, 0.66, 0.04, 1] } },
+                }}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
                 className="w-full max-w-sm sm:max-w-md lg:w-[40vw] lg:max-w-2xl h-full bg-[#f7f3e8]/95 dark:bg-mystic-950/95 backdrop-blur-2xl shadow-[-20px_0_40px_rgba(68,64,60,0.05)] dark:shadow-[-20px_0_40px_rgba(0,0,0,0.3)] border-l border-stone-200 dark:border-mystic-800/80 flex flex-col"
                 onClick={(e) => e.stopPropagation()}
               >
@@ -1398,12 +1429,7 @@ export default function App() {
                 {/* Filter tabs */}
                 <div className="px-4 lg:px-8 pt-3 pb-0 shrink-0 flex gap-1">
                   {FILTER_TABS.map(({ key, label }) => {
-                    const count = key === 'all' ? history.length : history.filter(r => {
-                      const age = now - r.date;
-                      if (key === 'week')  return age <= ONE_WEEK;
-                      if (key === 'month') return age <= ONE_MONTH;
-                      return age > ONE_MONTH;
-                    }).length;
+                    const count = historyTabCounts[key];
                     return (
                       <button
                         key={key}
@@ -1759,16 +1785,16 @@ export default function App() {
   );
 }
 
-function SpreadCard({ spread, isCustom, onClick, onEdit, onDelete }: React.Attributes & {
+const SpreadCard = React.memo(function SpreadCard({ spread, isCustom, onSelect, onEdit, onDelete }: {
   spread: Spread;
   isCustom?: boolean;
-  onClick: () => void;
-  onEdit?: (e: MouseEvent) => void;
-  onDelete?: (e: MouseEvent) => void;
+  onSelect: (spread: Spread) => void;
+  onEdit?: (spread: Spread, e: MouseEvent) => void;
+  onDelete?: (spread: Spread, e: MouseEvent) => void;
 }) {
   return (
     <div
-      onClick={onClick}
+      onClick={() => onSelect(spread)}
       className="relative bg-white/70 dark:bg-mystic-900/60 p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] border border-amber-100 dark:border-mystic-800 hover:border-amber-300 dark:hover:border-mystic-600 shadow-sm hover:shadow-md transition-all cursor-pointer group flex flex-col min-h-[160px] sm:min-h-[220px] overflow-hidden"
     >
       <div className="flex justify-between items-start mb-2 sm:mb-4 relative z-10 gap-2">
@@ -1812,21 +1838,13 @@ function SpreadCard({ spread, isCustom, onClick, onEdit, onDelete }: React.Attri
       {isCustom && (
         <div className="mt-4 pt-4 border-t border-amber-100 dark:border-mystic-800 flex justify-end gap-2 transition-opacity relative z-10">
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              if (onEdit) onEdit(e);
-            }}
+            onClick={(e) => { e.stopPropagation(); e.preventDefault(); onEdit?.(spread, e); }}
             className="p-1.5 text-slate-400 dark:text-mystic-500 hover:text-amber-600 dark:hover:text-mystic-400 transition-colors"
           >
             <Edit2 size={16} />
           </button>
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              if (onDelete) onDelete(e);
-            }}
+            onClick={(e) => { e.stopPropagation(); e.preventDefault(); onDelete?.(spread, e); }}
             className="p-1.5 text-slate-400 dark:text-mystic-500 hover:text-red-500 dark:hover:text-red-400 transition-colors"
           >
             <Trash2 size={16} />
@@ -1835,7 +1853,7 @@ function SpreadCard({ spread, isCustom, onClick, onEdit, onDelete }: React.Attri
       )}
     </div>
   );
-}
+});
 
 // ─── Oracle helpers (single source of truth for label + colour) ──────────────
 function getEffectiveScore(baseScore: number, reversed: boolean): number {
@@ -1890,7 +1908,7 @@ function TarotSpreadLayout({ spread, cards, mode }: { spread: Spread; cards: Dra
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3 }}
+            transition={{ duration: 0.25, ease: 'easeOut', delay: 0.15 }}
             className={`px-8 py-5 rounded-[2.5rem] border-2 ${bg} shadow-xl flex flex-col items-center gap-2 transition-all backdrop-blur-md`}
           >
             <div className="flex items-center gap-3">
@@ -2041,7 +2059,7 @@ function TarotSpreadLayout({ spread, cards, mode }: { spread: Spread; cards: Dra
 }
 }
 
-function TarotCardDisplay({ card, index, isExtra }: React.Attributes & { card: DrawnCard; index: number; isExtra?: boolean }) {
+function TarotCardDisplay({ card, index, isExtra }: { card: DrawnCard; index: number; isExtra?: boolean }) {
   const emoji = getCardEmoji(card.id);
   const isMajor = card.id < 22;
 
@@ -2049,7 +2067,7 @@ function TarotCardDisplay({ card, index, isExtra }: React.Attributes & { card: D
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: Math.min(index * 0.08, 0.32), duration: 0.3 }}
+      transition={{ delay: Math.min(index * 0.06, 0.2), duration: 0.22, ease: 'easeOut' }}
       className="flex flex-col items-center gap-2 shrink-0 mx-auto"
     >
       {!isExtra && (
@@ -2113,12 +2131,12 @@ function TarotCardDisplay({ card, index, isExtra }: React.Attributes & { card: D
   );
 }
 
-function LenormandCardDisplay({ card, index, isCenter }: React.Attributes & { card: DrawnLenormandCard; index: number; isCenter?: boolean }) {
+function LenormandCardDisplay({ card, index, isCenter }: { card: DrawnLenormandCard; index: number; isCenter?: boolean }) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.85 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: index * 0.07, type: 'spring', stiffness: 200, damping: 18 }}
+      transition={{ delay: Math.min(index * 0.05, 0.25), duration: 0.22, ease: 'easeOut' }}
       className="flex flex-col items-center gap-2"
     >
       <div className={`text-[10px] sm:text-xs font-bold uppercase tracking-widest text-center leading-tight ${isCenter ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-mystic-400'}`}>
