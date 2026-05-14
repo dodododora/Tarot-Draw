@@ -1,7 +1,7 @@
 import React, { useState, useEffect, type MouseEvent, type FormEvent } from 'react';
 import { Moon, Sun, Plus, Trash2, Edit2, Copy, ArrowLeft, Sparkles, Wand2, Info, X, History, CheckCircle2, Compass, Lightbulb } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ALL_CARDS, THOTH_SPREADS, WAITE_SPREADS, getCardEmoji, TAROT_TRIVIA, LENORMAND_CARDS, LENORMAND_SPREADS, LENORMAND_TRIVIA, THOTH_ALL_CARDS, THOTH_TRIVIA, type Spread, type TarotCard, type LenormandCard } from './constants';
+import { ALL_CARDS, THOTH_SPREADS, WAITE_SPREADS, getCardEmoji, TAROT_TRIVIA, LENORMAND_CARDS, LENORMAND_SPREADS, LENORMAND_TRIVIA, THOTH_ALL_CARDS, THOTH_TRIVIA, ORACLE_DATA, type Spread, type TarotCard, type LenormandCard } from './constants';
 
 export interface DrawHistory {
   id: string;
@@ -1044,6 +1044,52 @@ export default function App() {
               {mode === 'lenormand' && lenormandDrawnCards.length > 0 && (
                 <div className="relative bg-white/40 dark:bg-mystic-950 rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-10 shadow-2xl shadow-emerald-900/5 dark:shadow-mystic-900/50 border-4 border-emerald-100/50 dark:border-emerald-900/20 overflow-hidden backdrop-blur-sm">
                   <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-emerald-50/30 via-white/20 to-teal-50/20 dark:from-emerald-950/30 dark:via-mystic-900/80 dark:to-mystic-950 pointer-events-none" />
+                  {lenormandDrawnCards.length === 1 && (
+                    <div className="relative z-10 flex flex-col items-center gap-6 mb-8 w-full max-w-lg mx-auto">
+                      {(() => {
+                        const card = lenormandDrawnCards[0];
+                        const oracle = ORACLE_DATA.lenormand[card.id];
+                        if (!oracle) return null;
+                        
+                        let answer = '不確定 (Maybe)';
+                        let theme = 'text-amber-600 dark:text-amber-400';
+                        let bg = 'bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800';
+
+                        if (oracle.score === 2) {
+                          answer = '是 (Yes)';
+                          theme = 'text-green-600 dark:text-green-400';
+                          bg = 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-800';
+                        } else if (oracle.score === 1) {
+                          answer = '偏向是 (Maybe Yes)';
+                          theme = 'text-green-600/80 dark:text-green-400/80';
+                          bg = 'bg-green-50/50 dark:bg-green-900/20 border-green-100 dark:border-green-800/50';
+                        } else if (oracle.score === -1) {
+                          answer = '偏向否 (Maybe No)';
+                          theme = 'text-red-500/80 dark:text-red-400/80';
+                          bg = 'bg-red-50/50 dark:bg-red-900/20 border-red-100 dark:border-red-800/50';
+                        } else if (oracle.score === -2) {
+                          answer = '否 (No)';
+                          theme = 'text-red-600 dark:text-red-400';
+                          bg = 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800';
+                        }
+
+                        return (
+                          <motion.div 
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: 0.2 }}
+                            className={`w-full px-6 py-4 rounded-[2rem] border-2 ${bg} shadow-lg flex flex-col items-center gap-2 transition-all backdrop-blur-sm`}
+                          >
+                            <div className="flex items-center gap-3">
+                              <span className={`text-[10px] sm:text-xs font-black ${theme} opacity-70 uppercase tracking-[0.2em]`}>神諭指引</span>
+                              <span className={`text-xl sm:text-2xl font-black ${theme} tracking-tight`}>{answer}</span>
+                            </div>
+                            <p className={`text-xs sm:text-sm font-bold ${theme} opacity-90`}>{oracle.message}</p>
+                          </motion.div>
+                        );
+                      })()}
+                    </div>
+                  )}
                   {(lenormandDrawnCards.length === 3 || lenormandDrawnCards.length === 5) ? (
                     <div className="relative z-10 flex flex-wrap sm:flex-nowrap items-center justify-center gap-1 sm:gap-2 w-full max-w-3xl mx-auto overflow-x-auto py-2">
                       {lenormandDrawnCards.map((card, index) => (
@@ -1079,7 +1125,7 @@ export default function App() {
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-amber-50/40 via-white/40 to-amber-100/30 dark:from-mystic-800/20 dark:via-mystic-900/80 dark:to-mystic-950 pointer-events-none"></div>
                 
                 <div className="relative z-10 w-full max-w-6xl mx-auto">
-                  <TarotSpreadLayout spread={selectedSpread} cards={drawnCards.filter(c => !c.extraQuestion)} />
+                  <TarotSpreadLayout spread={selectedSpread} cards={drawnCards.filter(c => !c.extraQuestion)} mode={mode === 'thoth' ? 'thoth' : 'tarot'} />
                 </div>
 
                 {drawnCards.some(c => c.extraQuestion) && (
@@ -1581,7 +1627,7 @@ function SpreadCard({ spread, isCustom, onClick, onEdit, onDelete }: {
   );
 }
 
-function TarotSpreadLayout({ spread, cards }: { spread: Spread; cards: DrawnCard[] }) {
+function TarotSpreadLayout({ spread, cards, mode }: { spread: Spread; cards: DrawnCard[]; mode: 'tarot' | 'thoth' }) {
   const renderCard = (index: number) => {
     if (index >= cards.length) return null;
     return <TarotCardDisplay key={index} card={cards[index]} index={index} />;
@@ -1592,35 +1638,39 @@ function TarotSpreadLayout({ spread, cards }: { spread: Spread; cards: DrawnCard
       const card = cards[0];
       if (!card) return null;
       
-      const isSword = card.id >= 50 && card.id <= 63;
-      const badMajors = [13, 15, 16]; 
-      const neutralMajors = [0, 2, 9, 10, 11, 12, 14, 18, 20];
+      const oracle = ORACLE_DATA[mode][card.id];
+      if (!oracle) return null;
       
-      let answer = '是 (Yes)';
-      let theme = 'text-green-600 dark:text-green-400';
-      let bg = 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-800';
+      let answer = '不確定 (Maybe)';
+      let theme = 'text-amber-600 dark:text-amber-400';
+      let bg = 'bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800';
+      let score = oracle.score;
 
-      if (isSword || badMajors.includes(card.id)) {
+      if (score === 2) {
+        answer = '是 (Yes)';
+        theme = 'text-green-600 dark:text-green-400';
+        bg = 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-800';
+      } else if (score === 1) {
+        answer = '偏向是 (Maybe Yes)';
+        theme = 'text-green-600/80 dark:text-green-400/80';
+        bg = 'bg-green-50/50 dark:bg-green-900/20 border-green-100 dark:border-green-800/50';
+      } else if (score === -1) {
+        answer = '偏向否 (Maybe No)';
+        theme = 'text-red-500/80 dark:text-red-400/80';
+        bg = 'bg-red-50/50 dark:bg-red-900/20 border-red-100 dark:border-red-800/50';
+      } else if (score === -2) {
         answer = '否 (No)';
         theme = 'text-red-600 dark:text-red-400';
         bg = 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800';
-      } else if (neutralMajors.includes(card.id)) {
-        answer = '不確定 (Maybe)';
-        theme = 'text-amber-600 dark:text-amber-400';
-        bg = 'bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800';
       }
 
       if (card.isReversed) {
-        if (answer.includes('Yes')) {
-          answer = '可能有變數 (Maybe Yes)';
+        if (score > 0) {
+          answer = '偏向是 - 可能有變數 (Maybe Yes)';
           theme = 'text-amber-600 dark:text-amber-400';
           bg = 'bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800';
-        } else if (answer.includes('Maybe')) {
-          answer = '偏向否 (Probably No)';
-          theme = 'text-red-500 dark:text-red-400';
-          bg = 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800';
-        } else if (answer.includes('No')) {
-          answer = '可能有轉機 (Unlikely)';
+        } else if (score < 0) {
+          answer = '偏向否 - 可能有轉機 (Unlikely)';
           theme = 'text-amber-600 dark:text-amber-400';
           bg = 'bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800';
         }
@@ -1632,10 +1682,13 @@ function TarotSpreadLayout({ spread, cards }: { spread: Spread; cards: DrawnCard
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.3 }}
-            className={`px-6 py-3 rounded-2xl border-2 ${bg} shadow-md flex items-center gap-3 transition-all`}
+            className={`px-8 py-5 rounded-[2.5rem] border-2 ${bg} shadow-xl flex flex-col items-center gap-2 transition-all backdrop-blur-md`}
           >
-            <span className={`text-sm font-bold ${theme} opacity-80 uppercase tracking-widest`}>神諭指引</span>
-            <span className={`text-xl sm:text-2xl font-black ${theme}`}>{answer}</span>
+            <div className="flex items-center gap-3">
+              <span className={`text-[10px] sm:text-xs font-black ${theme} opacity-70 uppercase tracking-[0.2em]`}>神諭指引</span>
+              <span className={`text-xl sm:text-2xl font-black ${theme} tracking-tight`}>{answer}</span>
+            </div>
+            <p className={`text-xs sm:text-sm font-bold ${theme} opacity-90 text-center`}>{oracle.message}</p>
           </motion.div>
           {renderCard(0)}
         </div>
