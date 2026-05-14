@@ -277,7 +277,7 @@ export const WAITE_SPREAD_IDS = [
 export const THOTH_SPREAD_IDS = [
   'single', 'waite-triangle',
   'johari', 'pattern', 'iceberg', 'cycle', 'mirror',
-  'breakdown', 'breakthrough', 'choice', 'resource',
+  'breakthrough', 'choice', 'resource',
 ];
 
 export function getCardEmoji(cardId: number): string {
