@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, type MouseEvent, type FormEvent } from 'react';
+import { flushSync } from 'react-dom';
 import { useNavigate, useLocation, Routes, Route, Navigate } from 'react-router-dom';
 import { Moon, Sun, Plus, Trash2, Edit2, Copy, ArrowLeft, Sparkles, Wand2, Info, X, History, CheckCircle2, Compass, Lightbulb } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -91,6 +92,17 @@ const GlobalBackground = ({ theme }: { theme: 'light' | 'dark' }) => (
 );
 
 
+
+
+/** Guards the /result route: redirects to / if there's no drawn card data */
+function ResultGuard({ hasData, children }: { hasData: boolean; children: React.ReactNode }) {
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!hasData) navigate('/', { replace: true });
+  }, [hasData, navigate]);
+  if (!hasData) return null;
+  return <>{children}</>;
+}
 
 export default function App() {
   const [mode, setMode] = useState<'tarot' | 'lenormand' | 'thoth'>('tarot');
@@ -1089,7 +1101,8 @@ export default function App() {
             </motion.div>
             ) : <Navigate to="/" replace />} />
 
-            <Route path="/result" element={(selectedSpread && (drawnCards.length > 0 || lenormandDrawnCards.length > 0)) ? (
+            <Route path="/result" element={
+              <ResultGuard hasData={!!(selectedSpread && (drawnCards.length > 0 || lenormandDrawnCards.length > 0))}>
             <motion.div
               key="result"
               initial={{ opacity: 0 }}
@@ -1099,16 +1112,19 @@ export default function App() {
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                   {mode === 'lenormand' && <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800 mb-1 inline-block">雷諾曼</span>}
-                  <h2 className="text-2xl font-bold bg-gradient-to-r from-mystic-700 to-indigo-500 bg-clip-text text-transparent dark:from-mystic-200 dark:to-indigo-300 drop-shadow-sm">{selectedSpread.name}</h2>
+                  <h2 className="text-2xl font-bold bg-gradient-to-r from-mystic-700 to-indigo-500 bg-clip-text text-transparent dark:from-mystic-200 dark:to-indigo-300 drop-shadow-sm">{selectedSpread?.name}</h2>
                   <p className="text-slate-500 dark:text-mystic-400">問題：{question.trim() || '探索當下整體狀態'}</p>
                 </div>
                 <div className="flex gap-3">
                   <button
                     onClick={() => {
-                      navigate('/draw');
+                      console.log('[重新抽牌] clicked, selectedSpread:', selectedSpread?.name);
                       setCurrentHistoryId(null);
                       setDrawnCards([]);
                       setLenormandDrawnCards([]);
+                      console.log('[重新抽牌] navigate /draw 前');
+                      navigate('/draw');
+                      console.log('[重新抽牌] navigate /draw 後');
                     }}
                     className="px-4 py-2 rounded-lg border border-slate-200 dark:border-mystic-800 hover:bg-slate-50 dark:hover:bg-mystic-900 transition-colors text-sm font-medium"
                   >
@@ -1329,7 +1345,7 @@ export default function App() {
                 )}
               </div>
             </motion.div>
-            ) : <Navigate to="/" replace />} />
+            </ResultGuard>} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </AnimatePresence>
@@ -1486,20 +1502,22 @@ export default function App() {
                           className="p-4 sm:p-5 cursor-pointer flex-1 flex gap-3"
                           onClick={() => {
                             if (historySelectMode) { toggleRecord(record.id); return; }
-                            setSelectedSpread(record.spread);
-                            setQuestion(record.question);
-                            if (record.mode === 'lenormand' && record.lenormandCards) {
-                              setMode('lenormand');
-                              setLenormandDrawnCards(record.lenormandCards);
-                              setDrawnCards([]);
-                            } else {
-                              setMode('tarot');
-                              setDrawnCards(record.cards);
-                              setLenormandDrawnCards([]);
-                            }
-                            setCurrentHistoryId(record.id);
+                            flushSync(() => {
+                              setSelectedSpread(record.spread);
+                              setQuestion(record.question);
+                              if (record.mode === 'lenormand' && record.lenormandCards) {
+                                setMode('lenormand');
+                                setLenormandDrawnCards(record.lenormandCards);
+                                setDrawnCards([]);
+                              } else {
+                                setMode(record.mode === 'thoth' ? 'thoth' : 'tarot');
+                                setDrawnCards(record.cards);
+                                setLenormandDrawnCards([]);
+                              }
+                              setCurrentHistoryId(record.id);
+                            });
                             setIsHistoryOpen(false);
-                            setView('result');
+                            navigate('/result');
                           }}
                         >
                           {/* Checkbox in select mode */}
@@ -1538,20 +1556,22 @@ export default function App() {
                           <div className="flex items-center gap-2 p-2 pt-0">
                             <button
                               onClick={() => {
-                                setSelectedSpread(record.spread);
-                                setQuestion(record.question);
-                                if (record.mode === 'lenormand' && record.lenormandCards) {
-                                  setMode('lenormand');
-                                  setLenormandDrawnCards(record.lenormandCards);
-                                  setDrawnCards([]);
-                                } else {
-                                  setMode(record.mode === 'thoth' ? 'thoth' : 'tarot');
-                                  setDrawnCards(record.cards);
-                                  setLenormandDrawnCards([]);
-                                }
-                                setCurrentHistoryId(record.id);
+                                flushSync(() => {
+                                  setSelectedSpread(record.spread);
+                                  setQuestion(record.question);
+                                  if (record.mode === 'lenormand' && record.lenormandCards) {
+                                    setMode('lenormand');
+                                    setLenormandDrawnCards(record.lenormandCards);
+                                    setDrawnCards([]);
+                                  } else {
+                                    setMode(record.mode === 'thoth' ? 'thoth' : 'tarot');
+                                    setDrawnCards(record.cards);
+                                    setLenormandDrawnCards([]);
+                                  }
+                                  setCurrentHistoryId(record.id);
+                                });
                                 setIsHistoryOpen(false);
-                                setView('result');
+                                navigate('/result');
                               }}
                               className="flex-[3] py-3.5 bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 dark:hover:from-mystic-500 dark:hover:to-mystic-400 text-stone-50 dark:text-white rounded-xl shadow-lg shadow-stone-800/10 dark:shadow-mystic-500/20 transition-all active:scale-95 text-[15px] font-bold flex items-center justify-center gap-2"
                             >
