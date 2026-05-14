@@ -110,6 +110,8 @@ export default function App() {
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [choiceCount, setChoiceCount] = useState(2);
   const [peopleCount, setPeopleCount] = useState(2);
+  const [drawInputMode, setDrawInputMode] = useState<'random' | 'manual'>('random');
+  const [manualInputs, setManualInputs] = useState<{name: string; reversed: boolean}[]>([]);
 
   const currentTrivia = React.useMemo(() => {
     let pool = TAROT_TRIVIA;
@@ -172,6 +174,17 @@ export default function App() {
       }
     }
   }, [peopleCount, selectedSpread]);
+
+  // Reset manual inputs when spread card count changes
+  useEffect(() => {
+    if (selectedSpread) {
+      setManualInputs(prev =>
+        Array.from({ length: selectedSpread.count }, (_, i) =>
+          prev[i] ?? { name: '', reversed: false }
+        )
+      );
+    }
+  }, [selectedSpread?.count]);
   // Initialize theme and custom spreads
   useEffect(() => {
     const savedTheme = localStorage.getItem('tarot-theme') as 'light' | 'dark';
@@ -272,6 +285,50 @@ export default function App() {
     };
     
     setHistory(prev => [newHistoryEntry, ...prev]);
+  };
+
+  const handleManualSubmit = () => {
+    if (!selectedSpread) return;
+    const filled = manualInputs.filter(i => i.name.trim());
+    if (filled.length === 0) { showToast('請至少填入一張牌'); return; }
+
+    if (mode === 'lenormand') {
+      const results: DrawnLenormandCard[] = selectedSpread.positions.map((pos, i) => {
+        const input = manualInputs[i] ?? { name: '', reversed: false };
+        const cleanName = input.name.trim();
+        const matched = LENORMAND_CARDS.find(c =>
+          cleanName && (c.nameCN.includes(cleanName) || c.nameEN.toLowerCase().includes(cleanName.toLowerCase()))
+        );
+        return {
+          ...(matched ?? { id: -(i + 1), nameCN: cleanName || '（未填）', nameEN: '', keywords: [] }),
+          positionName: pos || `位置 ${i + 1}`,
+        };
+      });
+      setLenormandDrawnCards(results);
+      setView('result');
+      const newId = Date.now().toString() + Math.random().toString(36).substring(2, 9);
+      setCurrentHistoryId(newId);
+      setHistory(prev => [{ id: newId, date: Date.now(), question: question || '', spread: selectedSpread, cards: [], lenormandCards: results, mode: 'lenormand' as const }, ...prev]);
+    } else {
+      const deck = mode === 'thoth' ? THOTH_ALL_CARDS : ALL_CARDS;
+      const results: DrawnCard[] = selectedSpread.positions.map((pos, i) => {
+        const input = manualInputs[i] ?? { name: '', reversed: false };
+        const cleanName = input.name.trim();
+        const matched = deck.find(c =>
+          cleanName && (c.nameCN.includes(cleanName) || c.nameEN.toLowerCase().includes(cleanName.toLowerCase()))
+        );
+        return {
+          ...(matched ?? { id: -(i + 1), nameCN: cleanName || '（未填）', nameEN: '', keywords: [] }),
+          isReversed: mode === 'thoth' ? false : input.reversed,
+          positionName: pos || `位置 ${i + 1}`,
+        };
+      });
+      setDrawnCards(results);
+      setView('result');
+      const newId = Date.now().toString() + Math.random().toString(36).substring(2, 9);
+      setCurrentHistoryId(newId);
+      setHistory(prev => [{ id: newId, date: Date.now(), question: question || '', spread: selectedSpread, cards: results, mode }, ...prev]);
+    }
   };
 
   const drawExtraCard = () => {
@@ -777,15 +834,92 @@ export default function App() {
                     )}
                   </div>
 
-                  <button 
-                    onClick={handleDraw}
-                    className="w-full py-4 bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 dark:hover:from-mystic-500 dark:hover:to-mystic-400 text-stone-50 dark:text-white rounded-xl font-bold text-lg shadow-lg shadow-stone-800/20 dark:shadow-mystic-500/20 transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2"
-                  >
-                    <Compass size={20} /> 開始抽牌
-                  </button>
-                  <p className="text-center text-[11px] text-slate-400 dark:text-mystic-600">
-                    ✨ 抽牌後可一鍵複製 AI 解讀 Prompt，貼入 ChatGPT・Claude・Gemini 獲得深度解讀
-                  </p>
+                  {/* Draw Mode Toggle */}
+                  <div className="flex rounded-xl overflow-hidden border border-slate-200 dark:border-mystic-700 p-0.5 gap-0.5 bg-slate-100/70 dark:bg-mystic-800/50">
+                    <button
+                      onClick={() => setDrawInputMode('random')}
+                      className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${
+                        drawInputMode === 'random'
+                          ? 'bg-white dark:bg-mystic-700 text-stone-800 dark:text-white shadow'
+                          : 'text-slate-400 dark:text-mystic-500'
+                      }`}
+                    >
+                      🎴 隨機抽牌
+                    </button>
+                    <button
+                      onClick={() => setDrawInputMode('manual')}
+                      className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${
+                        drawInputMode === 'manual'
+                          ? 'bg-white dark:bg-mystic-700 text-stone-800 dark:text-white shadow'
+                          : 'text-slate-400 dark:text-mystic-500'
+                      }`}
+                    >
+                      ✍️ 手動輸入
+                    </button>
+                  </div>
+
+                  {drawInputMode === 'random' ? (
+                    <>
+                      <button
+                        onClick={handleDraw}
+                        className="w-full py-4 bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 dark:hover:from-mystic-500 dark:hover:to-mystic-400 text-stone-50 dark:text-white rounded-xl font-bold text-lg shadow-lg shadow-stone-800/20 dark:shadow-mystic-500/20 transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2"
+                      >
+                        <Compass size={20} /> 開始抽牌
+                      </button>
+                      <p className="text-center text-[11px] text-slate-400 dark:text-mystic-600">
+                        ✨ 抽牌後可一鍵複製 AI 解讀 Prompt，貼入 ChatGPT・Claude・Gemini 獲得深度解讀
+                      </p>
+                    </>
+                  ) : (
+                    <div className="space-y-2">
+                      <p className="text-xs text-slate-400 dark:text-mystic-500 text-center">
+                        輸入你實體抽到的牌名{mode === 'tarot' ? '，按「逆」切換逆位' : ''}
+                      </p>
+                      <div className="max-h-64 overflow-y-auto space-y-2 pr-1">
+                        {selectedSpread.positions.map((pos, i) => (
+                          <div key={i} className="flex items-start gap-2">
+                            <span className="mt-2.5 text-xs font-bold text-amber-600 dark:text-mystic-400 w-5 flex-shrink-0 text-right">{i + 1}</span>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[10px] text-slate-400 dark:text-mystic-600 mb-0.5 truncate">{pos}</p>
+                              <input
+                                type="text"
+                                value={manualInputs[i]?.name || ''}
+                                onChange={e => setManualInputs(prev => {
+                                  const next = [...prev];
+                                  next[i] = { ...(next[i] || { name: '', reversed: false }), name: e.target.value };
+                                  return next;
+                                })}
+                                placeholder="牌名..."
+                                className="w-full px-2.5 py-1.5 rounded-lg border border-amber-200/70 dark:border-mystic-700 bg-white/80 dark:bg-mystic-950 text-sm outline-none focus:ring-1 focus:ring-amber-400 dark:focus:ring-mystic-500 transition-all"
+                              />
+                            </div>
+                            {mode === 'tarot' && (
+                              <button
+                                onClick={() => setManualInputs(prev => {
+                                  const next = [...prev];
+                                  next[i] = { ...(next[i] || { name: '', reversed: false }), reversed: !next[i]?.reversed };
+                                  return next;
+                                })}
+                                className={`mt-5 flex-shrink-0 px-2 py-1 rounded-md text-[11px] font-bold border transition-colors ${
+                                  manualInputs[i]?.reversed
+                                    ? 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 border-purple-300 dark:border-purple-700'
+                                    : 'bg-slate-100 dark:bg-mystic-800 text-slate-400 dark:text-mystic-500 border-slate-200 dark:border-mystic-700'
+                                }`}
+                              >
+                                逆
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                      <button
+                        onClick={handleManualSubmit}
+                        className="w-full py-4 bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 dark:hover:from-mystic-500 dark:hover:to-mystic-400 text-stone-50 dark:text-white rounded-xl font-bold text-lg shadow-lg shadow-stone-800/20 dark:shadow-mystic-500/20 transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2"
+                      >
+                        <CheckCircle2 size={20} /> 確認輸入
+                      </button>
+                    </div>
+                  )}
 
                   {selectedSpread.id === 'choice' && (
                     <div className="bg-indigo-50/50 dark:bg-mystic-800/30 p-4 rounded-xl border border-indigo-100 dark:border-mystic-700/50">
@@ -1446,8 +1580,8 @@ function TarotSpreadLayout({ spread, cards }: { spread: Spread; cards: DrawnCard
       if (!card) return null;
       
       const isSword = card.id >= 50 && card.id <= 63;
-      const badMajors = [12, 13, 15, 16, 18]; 
-      const neutralMajors = [0, 2, 9, 10, 11, 14, 20];
+      const badMajors = [13, 15, 16]; 
+      const neutralMajors = [0, 2, 9, 10, 11, 12, 14, 18, 20];
       
       let answer = '是 (Yes)';
       let theme = 'text-green-600 dark:text-green-400';
@@ -1472,6 +1606,10 @@ function TarotSpreadLayout({ spread, cards }: { spread: Spread; cards: DrawnCard
           answer = '偏向否 (Probably No)';
           theme = 'text-red-500 dark:text-red-400';
           bg = 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800';
+        } else if (answer.includes('No')) {
+          answer = '可能有轉機 (Unlikely)';
+          theme = 'text-amber-600 dark:text-amber-400';
+          bg = 'bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800';
         }
       }
 
