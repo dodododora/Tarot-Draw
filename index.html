@@ -31,6 +31,7 @@
           var t = localStorage.getItem('tarot-theme');
           if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
           document.documentElement.classList.add(t);
+          document.documentElement.style.backgroundColor = t === 'light' ? '#f7f3e8' : '#0f0a1e';
         } catch(e) {}
       })();
     </script>
