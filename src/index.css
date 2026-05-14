@@ -21,6 +21,13 @@
 }
 
 @layer base {
+  html {
+    /* Pre-paint background — script in index.html adds .dark before first paint */
+    background-color: #f7f3e8; /* light mode cream */
+  }
+  html.dark {
+    background-color: #0f0a1e; /* dark mode = mystic-950 */
+  }
   body {
     @apply font-sans bg-transparent text-slate-900 transition-colors duration-500 min-h-screen bg-fixed relative overflow-x-hidden;
   }

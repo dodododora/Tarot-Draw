@@ -24,6 +24,16 @@
       gtag('js', new Date());
       gtag('config', 'G-64378763M9');
     </script>
+    <!-- Theme pre-injection: prevents FOUC on reload -->
+    <script>
+      (function() {
+        try {
+          var t = localStorage.getItem('tarot-theme');
+          if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          document.documentElement.classList.add(t);
+        } catch(e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
