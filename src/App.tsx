@@ -586,35 +586,45 @@ export default function App() {
           <TarotLogoSVG />
           <h1 className="hidden sm:block text-xl sm:text-2xl font-extrabold tracking-tight gold-text drop-shadow-sm">Tarot Draw</h1>
         </div>
-        {/* Mode Toggle */}
-        <div className="flex items-center bg-stone-100/80 dark:bg-mystic-900/80 rounded-xl p-1 border border-stone-200 dark:border-mystic-800">
-          <button
-            onClick={() => { setMode('tarot'); setView('home'); setSelectedSpread(null); }}
-            className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${mode === 'tarot'
-              ? 'bg-amber-600 dark:bg-mystic-600 text-white shadow-sm'
-              : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
-              }`}
-          >
-            🔮<span className="text-[10px] sm:text-xs"> 偉特</span>
-          </button>
-          <button
-            onClick={() => { setMode('thoth'); setView('home'); setSelectedSpread(null); }}
-            className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${mode === 'thoth'
-              ? 'bg-purple-600 dark:bg-purple-700 text-white shadow-sm'
-              : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
-              }`}
-          >
-            🌌<span className="text-[10px] sm:text-xs"> 托特</span>
-          </button>
-          <button
-            onClick={() => { setMode('lenormand'); setView('home'); setSelectedSpread(null); }}
-            className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${mode === 'lenormand'
-              ? 'bg-emerald-600 dark:bg-emerald-700 text-white shadow-sm'
-              : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
-              }`}
-          >
-            🃏<span className="text-[10px] sm:text-xs"> 雷諾曼</span>
-          </button>
+        {/* System selector — two groups: Tarot systems | Lenormand */}
+        <div className="flex items-center gap-1">
+          {/* Tarot group */}
+          <div className="flex items-center bg-stone-100/80 dark:bg-mystic-900/80 rounded-xl p-1 border border-stone-200 dark:border-mystic-800">
+            <button
+              onClick={() => { setMode('tarot'); setView('home'); setSelectedSpread(null); }}
+              className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${mode === 'tarot'
+                ? 'bg-amber-600 dark:bg-mystic-600 text-white shadow-sm'
+                : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
+                }`}
+            >
+              🔮<span className="text-[10px] sm:text-xs"> 偉特</span>
+            </button>
+            <button
+              onClick={() => { setMode('thoth'); setView('home'); setSelectedSpread(null); }}
+              className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${mode === 'thoth'
+                ? 'bg-purple-600 dark:bg-purple-700 text-white shadow-sm'
+                : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
+                }`}
+            >
+              🌌<span className="text-[10px] sm:text-xs"> 托特</span>
+            </button>
+          </div>
+
+          {/* Visual separator */}
+          <span className="text-stone-300 dark:text-mystic-700 text-base select-none px-0.5">|</span>
+
+          {/* Lenormand — independent system */}
+          <div className="flex items-center bg-stone-100/80 dark:bg-mystic-900/80 rounded-xl p-1 border border-stone-200 dark:border-mystic-800">
+            <button
+              onClick={() => { setMode('lenormand'); setView('home'); setSelectedSpread(null); }}
+              className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${mode === 'lenormand'
+                ? 'bg-emerald-600 dark:bg-emerald-700 text-white shadow-sm'
+                : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
+                }`}
+            >
+              🃏<span className="text-[10px] sm:text-xs"> 雷諾曼</span>
+            </button>
+          </div>
         </div>
         <div className="flex items-center gap-1 sm:gap-2">
           <button
