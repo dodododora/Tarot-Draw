@@ -1,0 +1,12 @@
+name = "tarot-draw-spa-router"
+main = "cloudflare-worker.js"
+compatibility_date = "2024-01-01"
+
+# Routes: intercept all traffic on tarot-draw.app
+# Requires account_id and zone_id — fill in from Cloudflare dashboard
+# account_id = "your-account-id"  # Workers & Pages → Overview → Account ID (right sidebar)
+# zone_id    = "your-zone-id"     # tarot-draw.app zone → Overview → Zone ID (right sidebar)
+
+[[routes]]
+pattern = "tarot-draw.app/*"
+zone_name = "tarot-draw.app"

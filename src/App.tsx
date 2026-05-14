@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, type MouseEvent, type FormEvent } from 'react';
+import { useNavigate, useLocation, Routes, Route, Navigate } from 'react-router-dom';
 import { Moon, Sun, Plus, Trash2, Edit2, Copy, ArrowLeft, Sparkles, Wand2, Info, X, History, CheckCircle2, Compass, Lightbulb } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ALL_CARDS, THOTH_SPREADS, WAITE_SPREADS, WAITE_SPREAD_IDS, THOTH_SPREAD_IDS, getCardEmoji, TAROT_TRIVIA, LENORMAND_CARDS, LENORMAND_SPREADS, LENORMAND_TRIVIA, THOTH_ALL_CARDS, THOTH_TRIVIA, ORACLE_DATA, type Spread, type TarotCard, type LenormandCard } from './constants';
@@ -93,7 +94,6 @@ const GlobalBackground = ({ theme }: { theme: 'light' | 'dark' }) => (
 
 export default function App() {
   const [mode, setMode] = useState<'tarot' | 'lenormand' | 'thoth'>('tarot');
-  const [view, setView] = useState<'home' | 'draw' | 'result'>('home');
   const [lenormandDrawnCards, setLenormandDrawnCards] = useState<DrawnLenormandCard[]>([]);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -119,12 +119,15 @@ export default function App() {
   const [showBatchDeleteConfirm, setShowBatchDeleteConfirm] = useState(false);
   const [manualInputs, setManualInputs] = useState<{ name: string; reversed: boolean }[]>([]);
 
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const currentTrivia = React.useMemo(() => {
     let pool = TAROT_TRIVIA;
     if (mode === 'lenormand') pool = LENORMAND_TRIVIA;
     if (mode === 'thoth') pool = THOTH_TRIVIA;
     return pool[Math.floor(Math.random() * pool.length)];
-  }, [view, selectedSpread, mode]);
+  }, [location.pathname, selectedSpread, mode]);
 
   const filteredHistory = React.useMemo(() => {
     const now = Date.now();
@@ -308,22 +311,22 @@ export default function App() {
     setSelectedSpread(spread);
     if (spread.id === 'choice') setChoiceCount(2);
     if (spread.id === 'mirror') setPeopleCount(2);
-    setView('draw');
+    navigate('/draw');
     setQuestion('');
-  }, []);
+  }, [navigate]);
 
   const handleLenormandSpreadSelect = useCallback((spread: Spread) => {
     setSelectedSpread(spread);
     setLenormandDrawnCards([]);
-    setView('draw');
+    navigate('/draw');
     setQuestion('');
-  }, []);
+  }, [navigate]);
 
   const handleCustomSpreadSelect = useCallback((spread: Spread) => {
     setSelectedSpread(spread);
-    setView('draw');
+    navigate('/draw');
     setQuestion('');
-  }, []);
+  }, [navigate]);
 
   const handleSpreadEdit = useCallback((spread: Spread, e: MouseEvent) => {
     e.stopPropagation();
@@ -353,7 +356,7 @@ export default function App() {
         positionName: selectedSpread.positions[index] || `位置 ${index + 1}`,
       }));
       setLenormandDrawnCards(lenResults);
-      setView('result');
+      navigate('/result');
       const newHistoryId = Date.now().toString() + Math.random().toString(36).substring(2, 9);
       setCurrentHistoryId(newHistoryId);
       setHistory(prev => [{ id: newHistoryId, date: Date.now(), question: question || '', spread: selectedSpread, cards: [], lenormandCards: lenResults, mode: 'lenormand' as const }, ...prev]);
@@ -373,7 +376,7 @@ export default function App() {
     }));
 
     setDrawnCards(results);
-    setView('result');
+    navigate('/result');
 
     const newHistoryId = Date.now().toString() + Math.random().toString(36).substring(2, 9);
     setCurrentHistoryId(newHistoryId);
@@ -408,7 +411,7 @@ export default function App() {
         };
       });
       setLenormandDrawnCards(results);
-      setView('result');
+      navigate('/result');
       const newId = Date.now().toString() + Math.random().toString(36).substring(2, 9);
       setCurrentHistoryId(newId);
       setHistory(prev => [{ id: newId, date: Date.now(), question: question || '', spread: selectedSpread, cards: [], lenormandCards: results, mode: 'lenormand' as const }, ...prev]);
@@ -427,7 +430,7 @@ export default function App() {
         };
       });
       setDrawnCards(results);
-      setView('result');
+      navigate('/result');
       const newId = Date.now().toString() + Math.random().toString(36).substring(2, 9);
       setCurrentHistoryId(newId);
       setHistory(prev => [{ id: newId, date: Date.now(), question: question || '', spread: selectedSpread, cards: results, mode }, ...prev]);
@@ -684,7 +687,7 @@ export default function App() {
       <nav className="sticky top-0 z-50 bg-white/60 dark:bg-mystic-950/50 backdrop-blur-xl border-b border-white/20 dark:border-mystic-800/50 px-4 py-4 flex justify-between items-center transition-colors duration-500">
         <div
           className="flex items-center gap-2 cursor-pointer group"
-          onClick={() => setView('home')}
+          onClick={() => navigate('/')}
         >
           <TarotLogoSVG />
           <h1 className="hidden sm:block text-xl sm:text-2xl font-extrabold tracking-tight gold-text drop-shadow-sm">Tarot Draw</h1>
@@ -694,7 +697,7 @@ export default function App() {
           {/* Tarot group */}
           <div className="flex items-center bg-stone-100/80 dark:bg-mystic-900/80 rounded-xl p-1 border border-stone-200 dark:border-mystic-800">
             <button
-              onClick={() => { setMode('tarot'); setView('home'); setSelectedSpread(null); }}
+              onClick={() => { setMode('tarot'); navigate('/'); setSelectedSpread(null); }}
               className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${mode === 'tarot'
                 ? 'bg-amber-600 dark:bg-mystic-600 text-white shadow-sm'
                 : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
@@ -703,7 +706,7 @@ export default function App() {
               🔮<span className="text-[10px] sm:text-xs"> 偉特</span>
             </button>
             <button
-              onClick={() => { setMode('thoth'); setView('home'); setSelectedSpread(null); }}
+              onClick={() => { setMode('thoth'); navigate('/'); setSelectedSpread(null); }}
               className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${mode === 'thoth'
                 ? 'bg-purple-600 dark:bg-purple-700 text-white shadow-sm'
                 : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
@@ -719,7 +722,7 @@ export default function App() {
           {/* Lenormand — independent system */}
           <div className="flex items-center bg-stone-100/80 dark:bg-mystic-900/80 rounded-xl p-1 border border-stone-200 dark:border-mystic-800">
             <button
-              onClick={() => { setMode('lenormand'); setView('home'); setSelectedSpread(null); }}
+              onClick={() => { setMode('lenormand'); navigate('/'); setSelectedSpread(null); }}
               className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${mode === 'lenormand'
                 ? 'bg-emerald-600 dark:bg-emerald-700 text-white shadow-sm'
                 : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
@@ -747,7 +750,8 @@ export default function App() {
 
       <main className="flex-grow container mx-auto px-4 py-8 max-w-6xl">
         <AnimatePresence mode="sync">
-          {view === 'home' && (
+          <Routes location={location} key={location.pathname}>
+            <Route path="/" element={
             <motion.div
               key="home"
               initial={{ opacity: 0, y: 20 }}
@@ -871,9 +875,9 @@ export default function App() {
                 </p>
               </div>
             </motion.div>
-          )}
+            } />
 
-          {view === 'draw' && selectedSpread && (
+            <Route path="/draw" element={selectedSpread ? (
             <motion.div
               key="draw"
               initial={{ opacity: 0, scale: 0.95 }}
@@ -883,7 +887,7 @@ export default function App() {
               className="max-w-2xl mx-auto space-y-8"
             >
               <button
-                onClick={() => setView('home')}
+                onClick={() => navigate('/')}
                 className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-mystic-600 dark:hover:text-mystic-400 transition-colors"
               >
                 <ArrowLeft size={18} /> 返回首頁
@@ -1083,9 +1087,9 @@ export default function App() {
                 </div>
               </div>
             </motion.div>
-          )}
+            ) : <Navigate to="/" replace />} />
 
-          {view === 'result' && selectedSpread && (
+            <Route path="/result" element={(selectedSpread && (drawnCards.length > 0 || lenormandDrawnCards.length > 0)) ? (
             <motion.div
               key="result"
               initial={{ opacity: 0 }}
@@ -1101,7 +1105,7 @@ export default function App() {
                 <div className="flex gap-3">
                   <button
                     onClick={() => {
-                      setView('draw');
+                      navigate('/draw');
                       setCurrentHistoryId(null);
                       setDrawnCards([]);
                       setLenormandDrawnCards([]);
@@ -1325,7 +1329,9 @@ export default function App() {
                 )}
               </div>
             </motion.div>
-          )}
+            ) : <Navigate to="/" replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
         </AnimatePresence>
       </main>
 
@@ -1360,7 +1366,7 @@ export default function App() {
             if (currentHistoryId && toDelete.has(currentHistoryId)) {
               setCurrentHistoryId(null);
               setDrawnCards([]);
-              setView('home');
+              navigate('/');
             }
             setSelectedHistoryIds(new Set());
             setHistorySelectMode(false);

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+      // GitHub Pages SPA routing workaround:
+      // Capture the current path and store it so index.html can restore it
+      // after React Router initializes.
+      var path = window.location.pathname + window.location.search + window.location.hash;
+      sessionStorage.setItem('spa-redirect', path);
+      window.location.replace('/');
+    </script>
+  </head>
+  <body></body>
+</html>
