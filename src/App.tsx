@@ -1118,13 +1118,12 @@ export default function App() {
                 <div className="flex gap-3">
                   <button
                     onClick={() => {
-                      console.log('[重新抽牌] clicked, selectedSpread:', selectedSpread?.name);
-                      setCurrentHistoryId(null);
-                      setDrawnCards([]);
-                      setLenormandDrawnCards([]);
-                      console.log('[重新抽牌] navigate /draw 前');
+                      flushSync(() => {
+                        setCurrentHistoryId(null);
+                        setDrawnCards([]);
+                        setLenormandDrawnCards([]);
+                      });
                       navigate('/draw');
-                      console.log('[重新抽牌] navigate /draw 後');
                     }}
                     className="px-4 py-2 rounded-lg border border-slate-200 dark:border-mystic-800 hover:bg-slate-50 dark:hover:bg-mystic-900 transition-colors text-sm font-medium"
                   >
