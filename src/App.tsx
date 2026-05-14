@@ -403,11 +403,13 @@ export default function App() {
 
 最後，點出值得注意的卡牌組合，以及 9 張牌整體的意義。`;
       } else if (cards.length === 5) {
-        prompt += `\n\n請逐一解讀五張牌的意義，再整合五牌的整體訊息，點出關鍵轉折點。`;
+        const [c1, c2, c3, c4, c5] = cards;
+        const f = (c: DrawnLenormandCard) => `${c.nameCN}${c.nameEN ? ` (${c.nameEN})` : ''}`;
+        prompt += `\n\n請從以下層次解讀這五張牌：\n\n（一）左右流向（時間軸）\n  ${f(c1)} → ${f(c2)} → ${f(c3)} → ${f(c4)} → ${f(c5)}\n  從左到右說明事件發展脈絡或因果關係。\n\n（二）鄰牌配對解讀（注意方向性，A+B ≠ B+A）\n  - 牌1+牌2：${f(c1)} + ${f(c2)}\n  - 牌2+牌3：${f(c2)} + ${f(c3)}（過渡核心）\n  - 牌3+牌4：${f(c3)} + ${f(c4)}\n  - 牌4+牌5：${f(c4)} + ${f(c5)}\n  請依序解析每組配對的具體含義。\n\n（三）中心牌的軸心\n  中心牌 ${f(c3)} 是整個牌陣的核心，分析它如何影響左右兩側的走向。\n\n（四）整體訊息\n  綜合五張牌的脈絡，給出具體且直接的答案。`;
       } else if (cards.length === 3) {
         const [c1, c2, c3] = cards;
-        const f = (c: DrawnLenormandCard) => `${c.nameCN} (${c.nameEN})`;
-        prompt += `\n\n請分別解讀三張牌（${f(c1)} → ${f(c2)} → ${f(c3)}）所描述的時間脈絡，再說明三張組合在一起的整體含義。`;
+        const f = (c: DrawnLenormandCard) => `${c.nameCN}${c.nameEN ? ` (${c.nameEN})` : ''}`;
+        prompt += `\n\n請從以下層次解讀這三張牌：\n\n（一）左右流向\n  ${f(c1)} → ${f(c2)} → ${f(c3)}\n\n（二）鄰牌配對解讀（注意方向性，A+B ≠ B+A）\n  - 左+中：${f(c1)} + ${f(c2)}的組合含義\n  - 中+右：${f(c2)} + ${f(c3)}的組合含義\n  請依序解析，並說明方向改變如何影響解讀。\n\n（三）整體訊息\n  三張牌合在一起描述的核心主題與答案。`;
       } else {
         prompt += `\n\n請為我解讀這張牌的含義。`;
       }
@@ -1042,21 +1044,32 @@ export default function App() {
               {mode === 'lenormand' && lenormandDrawnCards.length > 0 && (
                 <div className="relative bg-white/40 dark:bg-mystic-950 rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-10 shadow-2xl shadow-emerald-900/5 dark:shadow-mystic-900/50 border-4 border-emerald-100/50 dark:border-emerald-900/20 overflow-hidden backdrop-blur-sm">
                   <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-emerald-50/30 via-white/20 to-teal-50/20 dark:from-emerald-950/30 dark:via-mystic-900/80 dark:to-mystic-950 pointer-events-none" />
-                  <div className={`relative z-10 grid gap-3 sm:gap-5 justify-center w-full max-w-3xl mx-auto ${
-                    lenormandDrawnCards.length === 9 ? 'grid-cols-3' :
-                    lenormandDrawnCards.length === 5 ? 'grid-cols-3 sm:grid-cols-5' :
-                    lenormandDrawnCards.length === 3 ? 'grid-cols-3' :
-                    lenormandDrawnCards.length === 1 ? 'grid-cols-1' :
-                    lenormandDrawnCards.length === 4 ? 'grid-cols-2' :
-                    lenormandDrawnCards.length === 6 ? 'grid-cols-3' :
-                    lenormandDrawnCards.length === 7 ? 'grid-cols-4' :
-                    lenormandDrawnCards.length === 10 ? 'grid-cols-3 sm:grid-cols-5' :
-                    'grid-cols-3 sm:grid-cols-4'
-                  }`}>
-                    {lenormandDrawnCards.map((card, index) => (
-                      <LenormandCardDisplay key={index} card={card} index={index} isCenter={lenormandDrawnCards.length === 9 && index === 4} />
-                    ))}
-                  </div>
+                  {(lenormandDrawnCards.length === 3 || lenormandDrawnCards.length === 5) ? (
+                    <div className="relative z-10 flex flex-wrap sm:flex-nowrap items-center justify-center gap-1 sm:gap-2 w-full max-w-3xl mx-auto overflow-x-auto py-2">
+                      {lenormandDrawnCards.map((card, index) => (
+                        <React.Fragment key={index}>
+                          <LenormandCardDisplay card={card} index={index} isCenter={false} />
+                          {index < lenormandDrawnCards.length - 1 && (
+                            <span className="flex-shrink-0 text-emerald-400 dark:text-emerald-500 text-xl sm:text-2xl font-bold leading-none select-none">→</span>
+                          )}
+                        </React.Fragment>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className={`relative z-10 grid gap-3 sm:gap-5 justify-center w-full max-w-3xl mx-auto ${
+                      lenormandDrawnCards.length === 9 ? 'grid-cols-3' :
+                      lenormandDrawnCards.length === 1 ? 'grid-cols-1' :
+                      lenormandDrawnCards.length === 4 ? 'grid-cols-2' :
+                      lenormandDrawnCards.length === 6 ? 'grid-cols-3' :
+                      lenormandDrawnCards.length === 7 ? 'grid-cols-4' :
+                      lenormandDrawnCards.length === 10 ? 'grid-cols-3 sm:grid-cols-5' :
+                      'grid-cols-3 sm:grid-cols-4'
+                    }`}>
+                      {lenormandDrawnCards.map((card, index) => (
+                        <LenormandCardDisplay key={index} card={card} index={index} isCenter={lenormandDrawnCards.length === 9 && index === 4} />
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -1477,7 +1490,7 @@ export default function App() {
       {/* Global Footer */}
       <footer className="text-center py-4 border-t border-stone-100/60 dark:border-mystic-900/60 bg-white/30 dark:bg-mystic-950/30 backdrop-blur-sm">
         <a
-          href="https://forms.gle/你的GoogleForms連結"
+          href="https://forms.gle/oXj1gXmqR83f3cfP8"
           target="_blank"
           rel="noopener noreferrer"
           className="text-xs text-slate-400 dark:text-mystic-600 hover:text-amber-600 dark:hover:text-mystic-400 transition-colors"
@@ -1650,16 +1663,37 @@ function TarotSpreadLayout({ spread, cards }: { spread: Spread; cards: DrawnCard
         </div>
       );
 
-    case 'choice':
+    case 'choice': {
+      const numChoices = Math.round((cards.length - 1) / 2);
+      const letters = Array.from({ length: numChoices }, (_, i) => String.fromCharCode(65 + i));
+      const colClass =
+        numChoices <= 2 ? 'grid-cols-2' :
+        numChoices === 3 ? 'grid-cols-3' :
+        numChoices === 4 ? 'grid-cols-4' :
+        'grid-cols-5';
       return (
-        <div className="grid grid-cols-2 gap-x-12 sm:gap-x-32 gap-y-10 place-items-center max-w-2xl mx-auto w-full">
-          <div className="col-start-1">{renderCard(2)}</div>
-          <div className="col-start-2">{renderCard(4)}</div>
-          <div className="col-start-1">{renderCard(1)}</div>
-          <div className="col-start-2">{renderCard(3)}</div>
-          <div className="col-span-2 mt-4">{renderCard(0)}</div>
+        <div className="flex flex-col items-center gap-8 w-full">
+          <div className={`grid ${colClass} gap-x-4 sm:gap-x-6 gap-y-8 place-items-center w-full max-w-5xl mx-auto`}>
+            {/* Column labels */}
+            {letters.map(l => (
+              <div key={l} className="text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-3 py-1 rounded-full border border-indigo-200 dark:border-indigo-800 whitespace-nowrap">
+                選擇{l}
+              </div>
+            ))}
+            {/* Results row (index 2, 4, 6, 8...) */}
+            {Array.from({ length: numChoices }, (_, i) => (
+              <div key={`res-${i}`}>{renderCard(2 + i * 2)}</div>
+            ))}
+            {/* Development row (index 1, 3, 5, 7...) */}
+            {Array.from({ length: numChoices }, (_, i) => (
+              <div key={`dev-${i}`}>{renderCard(1 + i * 2)}</div>
+            ))}
+          </div>
+          {/* Current situation — always card 0 */}
+          <div>{renderCard(0)}</div>
         </div>
       );
+    }
       
     case 'pattern':
       return (
