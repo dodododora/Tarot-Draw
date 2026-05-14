@@ -35,3 +35,8 @@ dist-ssr/
 build/
 coverage/
 .vite/
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
