@@ -200,7 +200,7 @@ export const LENORMAND_SPREADS: Spread[] = [
     name: "單張速覽",
     count: 1,
     positions: ["指引"],
-    hint: "一張牌，快速獲得今日或當下的指引",
+    hint: "快速取得當下指引・適合是非題・每日一問",
     exampleQuestion: "今天與這位客戶的會面結果如何？"
   },
   {
@@ -208,7 +208,7 @@ export const LENORMAND_SPREADS: Spread[] = [
     name: "過去現在未來",
     count: 3,
     positions: ["過去的影響", "現在的狀態", "未來的走向"],
-    hint: "三張連讀，看清事件的時間脈絡",
+    hint: "三牌連讀，釐清事件的來龍去脈與走向",
     exampleQuestion: "這段感情的過去、現在、未來走向？"
   },
   {
@@ -216,7 +216,7 @@ export const LENORMAND_SPREADS: Spread[] = [
     name: "五牌線陣",
     count: 5,
     positions: ["遠因", "近因", "核心現況", "近期走向", "最終結果"],
-    hint: "五張成一線，從根源到結果的完整推演",
+    hint: "從根源到結果的完整推演，適合具體事務的深度追蹤",
     exampleQuestion: "這份工作機會對我而言的整體發展？"
   },
   {
@@ -228,7 +228,7 @@ export const LENORMAND_SPREADS: Spread[] = [
       "左側·隱藏因素", "中心·核心主題", "右側·他人視角",
       "左下·內在感受", "下方·近期行動", "右下·最終走向"
     ],
-    hint: "九張牌環繞中心，全方位透視問題的所有面向",
+    hint: "九牌環繞核心，全方位透視問題的所有面向與隱藏因素",
     exampleQuestion: "我目前這段關係的整體能量與走向如何？"
   },
 ];

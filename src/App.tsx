@@ -94,6 +94,162 @@ const GlobalBackground = ({ theme }: { theme: 'light' | 'dark' }) => (
 
 
 
+// Shuffle animation duration — change here to adjust the animation length
+const SHUFFLE_ANIMATION_MS = 2300; // 2s animation + 0.3s hold at gathered pile state
+
+/** Card back component for shuffle overlay — always dark-themed for ritual atmosphere */
+function CardBack({ featured = false }: { featured?: boolean }) {
+  return (
+    <div
+      className="rounded-2xl relative overflow-hidden flex-shrink-0"
+      style={{
+        width: '100%',
+        height: '100%',
+        background: 'linear-gradient(145deg, #3a2d6b 0%, #1a1035 60%, #0f0a1e 100%)',
+        border: '2px solid rgba(255,255,255,0.28)',
+        boxShadow: featured
+          ? '0 0 32px rgba(139,92,246,0.55), 0 8px 32px rgba(0,0,0,0.6)'
+          : '0 4px 20px rgba(0,0,0,0.5)',
+      }}
+    >
+      {/* Diagonal stripe pattern — higher opacity for visibility */}
+      <div className="absolute inset-0" style={{
+        backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(180,150,255,0.18) 6px, rgba(180,150,255,0.18) 7px)',
+      }} />
+      {/* Inner border */}
+      <div className="absolute inset-[7px] rounded-xl" style={{ border: '1px solid rgba(255,255,255,0.15)' }} />
+      {/* Center star glyph */}
+      <div className="absolute inset-0 flex items-center justify-center select-none"
+        style={{ color: 'rgba(200,170,255,0.45)', fontSize: featured ? '1.8rem' : '1.4rem' }}>
+        ✦
+      </div>
+    </div>
+  );
+}
+
+const SHUFFLE_ANIMATIONS = ['slide', 'arc', 'diagonal'] as const;
+type ShuffleAnim = typeof SHUFFLE_ANIMATIONS[number];
+
+/** Pure function — computes Framer Motion keyframes for one card.
+ *  gatherX: pre-computed transform offset that moves card to visual center of container.
+ *  Left cards cross RIGHT (+x), right cards cross LEFT (-x), center yields.
+ */
+function getCardAnimation(offset: number, animType: ShuffleAnim, gatherX: number) {
+  const absOffset = Math.abs(offset);
+  const side = offset < 0 ? -1 : offset > 0 ? 1 : 0;
+  const crossX = side * -150 * absOffset;   // crosses the center line
+
+  if (animType === 'slide') {
+    if (offset === 0) return {
+      x: [0,0,0,0,gatherX], y: [0,0,-50,-50,0], scale: [1,1,0.9,0.9,1], zIndex: [2,2,0,0,2],
+    };
+    return {
+      x:      [0, 0, crossX, crossX, gatherX],
+      y:      [0, 0, 0,      0,      0      ],
+      rotate: [0, 0, 0,      0,      side*3 ],
+      zIndex: side < 0 ? [1,1,10,10,1] : [1,1,1,1,1],
+    };
+  }
+
+  if (animType === 'arc') {
+    if (offset === 0) return {
+      x: [0,0,0,0,gatherX], y: [0,0,0,0,0], scale: [1,1,0.8,0.8,1], zIndex: [2,2,0,0,2],
+    };
+    const arcY = side * -60 * absOffset;
+    return {
+      x:      [0, 0,                      crossX, crossX, gatherX],
+      y:      [0, side * -20 * absOffset, arcY,   arcY,   0      ],
+      rotate: [0, side * -10 * absOffset, side * -20 * absOffset, side * -20 * absOffset, side*3],
+      zIndex: side < 0 ? [1,1,10,10,1] : [1,1,1,1,1],
+    };
+  }
+
+  // diagonal
+  if (offset === 0) return {
+    x: [0,0,0,0,gatherX], y: [0,0,0,0,0], scale: [1,1,0.85,0.85,1], zIndex: [2,2,0,0,2],
+  };
+  const diagY = side * 60 * absOffset;
+  return {
+    x:      [0, 0, crossX,              crossX,              gatherX],
+    y:      [0, 0, diagY,               diagY,               0      ],
+    rotate: [0, 0, side*15*absOffset,   side*15*absOffset,   side*3 ],
+    zIndex: side < 0 ? [1,1,10,10,1] : [1,1,1,1,1],
+  };
+}
+
+
+/** Full-screen shuffle animation overlay — random card count (5-7) and random style */
+function ShuffleOverlay({ question }: { question: string }) {
+  const [animType] = useState<ShuffleAnim>(
+    () => SHUFFLE_ANIMATIONS[Math.floor(Math.random() * SHUFFLE_ANIMATIONS.length)]
+  );
+  const [cardCount] = useState(() => Math.floor(Math.random() * 3) + 5); // 5, 6, or 7
+
+  const ease = [0.2, 0, 0.8, 1] as [number, number, number, number];
+  const T          = { duration: 2, repeat: 0, ease, times: [0, 0.15, 0.5, 0.75, 1] };
+  const T_stagger  = { duration: 2, repeat: 0, ease, times: [0, 0.25, 0.5, 0.75, 1] };
+
+  const centerIndex = Math.floor(cardCount / 2);
+  // Container wide enough for all cards (non-center 68px, center 86px, gap 16px)
+  const containerW = cardCount * 68 + (cardCount - 1) * 16 + 18;
+  const containerCenter = containerW / 2;
+
+  // Compute each card's natural center x (within container coords)
+  // then gatherX = how much transform to apply to reach containerCenter
+  const cardGatherX: number[] = [];
+  let cursor = 0;
+  for (let i = 0; i < cardCount; i++) {
+    const w = i === centerIndex ? 86 : 68;
+    const cardCenterX = cursor + w / 2;
+    cardGatherX.push(containerCenter - cardCenterX);
+    cursor += w + 16;
+  }
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-[200] flex flex-col items-center justify-center gap-14"
+      style={{ background: 'rgba(12, 7, 26, 0.98)', backdropFilter: 'blur(4px)' }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3, ease: 'easeInOut' }}
+    >
+      {/* Card row — overflow visible so cross/fan cards can travel outside bounds */}
+      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 16, height: 148,
+                    position: 'relative', width: containerW, justifyContent: 'center', overflow: 'visible' }}>
+        {Array.from({ length: cardCount }, (_, i) => {
+          const isCenter = i === centerIndex;
+          const offset   = i - centerIndex;
+          const useStagger = animType === 'arc' && offset > 0;
+          return (
+            <motion.div
+              key={i}
+              style={{ width: isCenter ? 86 : 68, height: isCenter ? 134 : 108,
+                       originX: 0.5, originY: 1, flexShrink: 0, position: 'relative' }}
+              animate={getCardAnimation(offset, animType, cardGatherX[i])}
+              transition={useStagger ? T_stagger : T}
+            >
+              <CardBack featured={isCenter} />
+            </motion.div>
+          );
+        })}
+      </div>
+
+      {/* Question area */}
+      <div className="text-center flex flex-col items-center gap-3 px-8">
+        <p style={{ color: 'rgba(180,150,255,0.7)', fontSize: '0.7rem', letterSpacing: '0.25em', fontWeight: 500, textTransform: 'uppercase' }}>
+          將問題放入心中⋯
+        </p>
+        {question.trim() && (
+          <p style={{ color: 'rgba(252,211,77,0.9)' }} className="text-base sm:text-lg font-semibold max-w-sm leading-relaxed">
+            {question.trim()}
+          </p>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
 /** Guards the /result route: redirects to / if there's no drawn card data */
 function ResultGuard({ hasData, children }: { hasData: boolean; children: React.ReactNode }) {
   const navigate = useNavigate();
@@ -130,6 +286,7 @@ export default function App() {
   const [selectedHistoryIds, setSelectedHistoryIds] = useState<Set<string>>(new Set());
   const [showBatchDeleteConfirm, setShowBatchDeleteConfirm] = useState(false);
   const [manualInputs, setManualInputs] = useState<{ name: string; reversed: boolean }[]>([]);
+  const [isShuffling, setIsShuffling] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -361,22 +518,21 @@ export default function App() {
         id: card.id,
         nameCN: card.nameCN,
         nameEN: card.nameEN,
-        // pull full LenormandCard fields from LENORMAND_CARDS
         suit: LENORMAND_CARDS.find(c => c.id === card.id)!.suit,
         emoji: LENORMAND_CARDS.find(c => c.id === card.id)!.emoji,
         keywords: LENORMAND_CARDS.find(c => c.id === card.id)!.keywords,
         positionName: selectedSpread.positions[index] || `位置 ${index + 1}`,
       }));
       setLenormandDrawnCards(lenResults);
-      navigate('/result');
       const newHistoryId = Date.now().toString() + Math.random().toString(36).substring(2, 9);
       setCurrentHistoryId(newHistoryId);
       setHistory(prev => [{ id: newHistoryId, date: Date.now(), question: question || '', spread: selectedSpread, cards: [], lenormandCards: lenResults, mode: 'lenormand' as const }, ...prev]);
+      setIsShuffling(true);
+      setTimeout(() => { setIsShuffling(false); navigate('/result'); }, SHUFFLE_ANIMATION_MS);
       return;
     }
 
-    // ─── Tarot / Thoth ────────────────────────────────────────────────────────
-    // shuffleAndDraw: 7 riffle passes, reversal accumulated in deck state
+    // ─── Tarot / Thoth ──────────────────────────────────────────────────────
     const system = mode === 'thoth' ? 'thoth' : 'waite';
     const sourceCards = mode === 'thoth' ? THOTH_ALL_CARDS : ALL_CARDS;
     const drawn = shuffleAndDraw(sourceCards, system, selectedSpread.count);
@@ -388,21 +544,11 @@ export default function App() {
     }));
 
     setDrawnCards(results);
-    navigate('/result');
-
     const newHistoryId = Date.now().toString() + Math.random().toString(36).substring(2, 9);
     setCurrentHistoryId(newHistoryId);
-
-    const newHistoryEntry: DrawHistory = {
-      id: newHistoryId,
-      date: Date.now(),
-      question: question || '',
-      spread: selectedSpread,
-      cards: results,
-      mode: mode,
-    };
-
-    setHistory(prev => [newHistoryEntry, ...prev]);
+    setHistory(prev => [{ id: newHistoryId, date: Date.now(), question: question || '', spread: selectedSpread, cards: results, mode }, ...prev]);
+    setIsShuffling(true);
+    setTimeout(() => { setIsShuffling(false); navigate('/result'); }, SHUFFLE_ANIMATION_MS);
   };
 
   const handleManualSubmit = () => {
@@ -423,10 +569,11 @@ export default function App() {
         };
       });
       setLenormandDrawnCards(results);
-      navigate('/result');
       const newId = Date.now().toString() + Math.random().toString(36).substring(2, 9);
       setCurrentHistoryId(newId);
       setHistory(prev => [{ id: newId, date: Date.now(), question: question || '', spread: selectedSpread, cards: [], lenormandCards: results, mode: 'lenormand' as const }, ...prev]);
+      setIsShuffling(true);
+      setTimeout(() => { setIsShuffling(false); navigate('/result'); }, SHUFFLE_ANIMATION_MS);
     } else {
       const deck = mode === 'thoth' ? THOTH_ALL_CARDS : ALL_CARDS;
       const results: DrawnCard[] = selectedSpread.positions.map((pos, i) => {
@@ -442,10 +589,11 @@ export default function App() {
         };
       });
       setDrawnCards(results);
-      navigate('/result');
       const newId = Date.now().toString() + Math.random().toString(36).substring(2, 9);
       setCurrentHistoryId(newId);
       setHistory(prev => [{ id: newId, date: Date.now(), question: question || '', spread: selectedSpread, cards: results, mode }, ...prev]);
+      setIsShuffling(true);
+      setTimeout(() => { setIsShuffling(false); navigate('/result'); }, SHUFFLE_ANIMATION_MS);
     }
   };
 
@@ -695,6 +843,11 @@ export default function App() {
   return (
     <div className="min-h-screen flex flex-col relative z-0">
       <GlobalBackground theme={theme} />
+
+      {/* Shuffle animation overlay — appears on top of everything */}
+      <AnimatePresence>
+        {isShuffling && <ShuffleOverlay question={question} />}
+      </AnimatePresence>
       {/* Navbar */}
       <nav className="sticky top-0 z-50 bg-white/60 dark:bg-mystic-950/50 backdrop-blur-xl border-b border-white/20 dark:border-mystic-800/50 px-4 py-4 flex justify-between items-center transition-colors duration-500">
         <div
