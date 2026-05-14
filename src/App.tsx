@@ -113,6 +113,10 @@ export default function App() {
   const [choiceCount, setChoiceCount] = useState(2);
   const [peopleCount, setPeopleCount] = useState(2);
   const [drawInputMode, setDrawInputMode] = useState<'random' | 'manual'>('random');
+  const [historyFilter, setHistoryFilter] = useState<'all' | 'week' | 'month' | 'older'>('all');
+  const [historySelectMode, setHistorySelectMode] = useState(false);
+  const [selectedHistoryIds, setSelectedHistoryIds] = useState<Set<string>>(new Set());
+  const [showBatchDeleteConfirm, setShowBatchDeleteConfirm] = useState(false);
   const [manualInputs, setManualInputs] = useState<{ name: string; reversed: boolean }[]>([]);
 
   const currentTrivia = React.useMemo(() => {
@@ -1284,82 +1288,168 @@ export default function App() {
 
       {/* History Sidebar */}
       <AnimatePresence>
-        {isHistoryOpen && (
-          <div className="fixed inset-0 z-[100] flex justify-end bg-slate-900/20 dark:bg-black/40 backdrop-blur-sm">
-            <motion.div
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="w-full max-w-sm sm:max-w-md h-full bg-[#f7f3e8]/95 dark:bg-mystic-950/95 backdrop-blur-2xl shadow-[-20px_0_40px_rgba(68,64,60,0.05)] dark:shadow-[-20px_0_40px_rgba(0,0,0,0.3)] border-l border-stone-200 dark:border-mystic-800/80 flex flex-col"
+        {isHistoryOpen && (() => {
+          const now = Date.now();
+          const ONE_WEEK  = 7  * 24 * 60 * 60 * 1000;
+          const ONE_MONTH = 30 * 24 * 60 * 60 * 1000;
+
+          const filteredHistory = history.filter(r => {
+            const age = now - r.date;
+            if (historyFilter === 'week')  return age <= ONE_WEEK;
+            if (historyFilter === 'month') return age <= ONE_MONTH;
+            if (historyFilter === 'older') return age >  ONE_MONTH;
+            return true;
+          });
+
+          const allFilteredSelected =
+            filteredHistory.length > 0 &&
+            filteredHistory.every(r => selectedHistoryIds.has(r.id));
+
+          const toggleSelectMode = () => {
+            setHistorySelectMode(prev => !prev);
+            setSelectedHistoryIds(new Set());
+            setShowBatchDeleteConfirm(false);
+          };
+
+          const toggleRecord = (id: string) => {
+            setSelectedHistoryIds(prev => {
+              const next = new Set(prev);
+              next.has(id) ? next.delete(id) : next.add(id);
+              return next;
+            });
+          };
+
+          const toggleSelectAll = () => {
+            if (allFilteredSelected) {
+              setSelectedHistoryIds(new Set());
+            } else {
+              setSelectedHistoryIds(new Set(filteredHistory.map(r => r.id)));
+            }
+          };
+
+          const executeBatchDelete = () => {
+            const toDelete = selectedHistoryIds;
+            setHistory(prev => prev.filter(h => !toDelete.has(h.id)));
+            if (currentHistoryId && toDelete.has(currentHistoryId)) {
+              setCurrentHistoryId(null);
+              setDrawnCards([]);
+              setView('home');
+            }
+            setSelectedHistoryIds(new Set());
+            setHistorySelectMode(false);
+            setShowBatchDeleteConfirm(false);
+            showToast(`已刪除 ${toDelete.size} 筆紀錄`);
+          };
+
+          const FILTER_TABS: { key: typeof historyFilter; label: string }[] = [
+            { key: 'all',   label: '全部' },
+            { key: 'week',  label: '本週' },
+            { key: 'month', label: '本月' },
+            { key: 'older', label: '更早' },
+          ];
+
+          return (
+            <div
+              className="fixed inset-0 z-[100] flex justify-end bg-slate-900/20 dark:bg-black/40 backdrop-blur-sm"
+              onClick={() => { setIsHistoryOpen(false); setHistorySelectMode(false); setSelectedHistoryIds(new Set()); }}
             >
-              <div className="px-6 py-5 border-b border-stone-200 dark:border-mystic-800/50 flex items-center justify-between bg-[#f0ead6]/80 dark:bg-mystic-900/50 shrink-0">
-                <h2 className="text-xl font-bold flex items-center gap-2">
-                  <History size={20} className="text-stone-600 dark:text-mystic-500" /> 歷史紀錄
-                </h2>
-                <div className="flex items-center gap-2">
-                  {history.length > 0 && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowClearConfirm(true);
-                      }}
-                      className="p-2 text-slate-400 hover:text-red-500 transition-colors flex items-center gap-1 text-sm font-medium bg-slate-100/50 hover:bg-red-50 dark:bg-mystic-800/50 dark:hover:bg-red-900/20 rounded-lg px-3"
-                      title="清空全部紀錄"
-                    >
-                      <Trash2 size={16} />
-                      <span className="hidden sm:inline">清空全部紀錄</span>
-                    </button>
-                  )}
-                  <button onClick={() => setIsHistoryOpen(false)} className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors ml-1">
-                    <X size={20} />
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
-                {history.length > 0 ? (
-                  history.map((record) => (
-                    <div key={record.id} className="relative group bg-stone-50/80 dark:bg-mystic-900 p-1 sm:p-2 rounded-[1.25rem] border border-stone-200/80 dark:border-mystic-800 shadow-sm hover:shadow-md hover:border-stone-400 dark:hover:border-mystic-600 transition-all flex flex-col">
-                      <div
-                        className="p-4 sm:p-5 cursor-pointer flex-1"
-                        onClick={() => {
-                          setSelectedSpread(record.spread);
-                          setQuestion(record.question);
-                          if (record.mode === 'lenormand' && record.lenormandCards) {
-                            setMode('lenormand');
-                            setLenormandDrawnCards(record.lenormandCards);
-                            setDrawnCards([]);
-                          } else {
-                            setMode('tarot');
-                            setDrawnCards(record.cards);
-                            setLenormandDrawnCards([]);
-                          }
-                          setCurrentHistoryId(record.id);
-                          setIsHistoryOpen(false);
-                          setView('result');
-                        }}
+              <motion.div
+                initial={{ x: '100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '100%' }}
+                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                className="w-full max-w-sm sm:max-w-md lg:w-[40vw] lg:max-w-2xl h-full bg-[#f7f3e8]/95 dark:bg-mystic-950/95 backdrop-blur-2xl shadow-[-20px_0_40px_rgba(68,64,60,0.05)] dark:shadow-[-20px_0_40px_rgba(0,0,0,0.3)] border-l border-stone-200 dark:border-mystic-800/80 flex flex-col"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Header */}
+                <div className="px-6 lg:px-8 py-5 border-b border-stone-200 dark:border-mystic-800/50 flex items-center justify-between bg-[#f0ead6]/80 dark:bg-mystic-900/50 shrink-0">
+                  <h2 className="text-xl font-bold flex items-center gap-2">
+                    <History size={20} className="text-stone-600 dark:text-mystic-500" /> 歷史紀錄
+                  </h2>
+                  <div className="flex items-center gap-2">
+                    {history.length > 0 && !historySelectMode && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setShowClearConfirm(true); }}
+                        className="p-2 text-slate-400 hover:text-red-500 transition-colors flex items-center gap-1 text-sm font-medium bg-slate-100/50 hover:bg-red-50 dark:bg-mystic-800/50 dark:hover:bg-red-900/20 rounded-lg px-3"
+                        title="清空全部紀錄"
                       >
-                        <div className="flex justify-between items-start mb-2">
-                          <h3 className="text-lg font-bold gold-text leading-tight">{record.spread.name}</h3>
-                          <span className="text-[11px] text-stone-600 dark:text-slate-400 bg-stone-200/50 dark:bg-mystic-800/50 px-2 py-1 rounded-md shrink-0">
-                            {new Date(record.date).toLocaleString('zh-TW', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })}
-                          </span>
-                        </div>
-                        <p className="text-sm text-slate-600 dark:text-mystic-300 line-clamp-2 min-h-[2.5rem] mb-3">
-                          {record.question?.trim() || '探索當下整體狀態'}
-                        </p>
-                        <div className="flex items-center justify-between text-xs font-semibold text-stone-600 dark:text-mystic-400">
-                          {record.mode === 'lenormand' && <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-1.5 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800">雷諾曼</span>}
-                          {record.mode === 'thoth' && <span className="text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 px-1.5 py-0.5 rounded-md border border-purple-200 dark:border-purple-800">托特</span>}
-                          {record.mode === 'tarot' && <span className="text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-1.5 py-0.5 rounded-md border border-amber-200 dark:border-amber-800">偉特</span>}
-                          <span>{(record.lenormandCards?.length ?? record.cards.length)} 張牌卡</span>
-                        </div>
-                      </div>
+                        <Trash2 size={16} />
+                        <span className="hidden sm:inline">清空全部</span>
+                      </button>
+                    )}
+                    {history.length > 0 && (
+                      <button
+                        onClick={toggleSelectMode}
+                        className={`px-3 py-1.5 rounded-lg text-sm font-bold transition-all ${
+                          historySelectMode
+                            ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200'
+                            : 'bg-slate-100/50 dark:bg-mystic-800/50 text-slate-600 dark:text-mystic-300 hover:bg-slate-200 dark:hover:bg-mystic-700'
+                        }`}
+                      >
+                        {historySelectMode ? '取消' : '管理'}
+                      </button>
+                    )}
+                    <button onClick={() => { setIsHistoryOpen(false); setHistorySelectMode(false); setSelectedHistoryIds(new Set()); }} className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors ml-1">
+                      <X size={20} />
+                    </button>
+                  </div>
+                </div>
 
-                      <div className="flex items-center gap-2 p-2 pt-0">
-                        <button
+                {/* Filter tabs */}
+                <div className="px-4 lg:px-8 pt-3 pb-0 shrink-0 flex gap-1">
+                  {FILTER_TABS.map(({ key, label }) => {
+                    const count = key === 'all' ? history.length : history.filter(r => {
+                      const age = now - r.date;
+                      if (key === 'week')  return age <= ONE_WEEK;
+                      if (key === 'month') return age <= ONE_MONTH;
+                      return age > ONE_MONTH;
+                    }).length;
+                    return (
+                      <button
+                        key={key}
+                        onClick={() => { setHistoryFilter(key); setSelectedHistoryIds(new Set()); }}
+                        className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 ${
+                          historyFilter === key
+                            ? 'bg-amber-100 dark:bg-mystic-700 text-amber-700 dark:text-mystic-200 shadow-sm'
+                            : 'text-slate-500 dark:text-mystic-500 hover:bg-stone-100 dark:hover:bg-mystic-800/60'
+                        }`}
+                      >
+                        {label}
+                        {count > 0 && <span className="opacity-60 text-[10px]">({count})</span>}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Select-all row (only in manage mode) */}
+                {historySelectMode && filteredHistory.length > 0 && (
+                  <div className="px-4 lg:px-8 py-2 shrink-0 flex items-center gap-3 border-b border-stone-200/60 dark:border-mystic-800/40">
+                    <input
+                      type="checkbox"
+                      checked={allFilteredSelected}
+                      onChange={toggleSelectAll}
+                      className="w-4 h-4 accent-amber-500 cursor-pointer"
+                      id="select-all-history"
+                    />
+                    <label htmlFor="select-all-history" className="text-sm font-semibold text-slate-600 dark:text-mystic-300 cursor-pointer select-none">
+                      全選（{filteredHistory.length} 筆）
+                    </label>
+                  </div>
+                )}
+
+                {/* Record list */}
+                <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-4">
+                  {filteredHistory.length > 0 ? (
+                    filteredHistory.map((record) => (
+                      <div key={record.id} className={`relative group bg-stone-50/80 dark:bg-mystic-900 p-1 sm:p-2 rounded-[1.25rem] border transition-all flex flex-col ${
+                        historySelectMode && selectedHistoryIds.has(record.id)
+                          ? 'border-amber-400 dark:border-amber-500 ring-1 ring-amber-300/50 shadow-md'
+                          : 'border-stone-200/80 dark:border-mystic-800 shadow-sm hover:shadow-md hover:border-stone-400 dark:hover:border-mystic-600'
+                      }`}>
+                        <div
+                          className="p-4 sm:p-5 cursor-pointer flex-1 flex gap-3"
                           onClick={() => {
+                            if (historySelectMode) { toggleRecord(record.id); return; }
                             setSelectedSpread(record.spread);
                             setQuestion(record.question);
                             if (record.mode === 'lenormand' && record.lenormandCards) {
@@ -1367,7 +1457,7 @@ export default function App() {
                               setLenormandDrawnCards(record.lenormandCards);
                               setDrawnCards([]);
                             } else {
-                              setMode(record.mode === 'thoth' ? 'thoth' : 'tarot');
+                              setMode('tarot');
                               setDrawnCards(record.cards);
                               setLenormandDrawnCards([]);
                             }
@@ -1375,87 +1465,185 @@ export default function App() {
                             setIsHistoryOpen(false);
                             setView('result');
                           }}
-                          className="flex-[3] py-3.5 bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 dark:hover:from-mystic-500 dark:hover:to-mystic-400 text-stone-50 dark:text-white rounded-xl shadow-lg shadow-stone-800/10 dark:shadow-mystic-500/20 transition-all active:scale-95 text-[15px] font-bold flex items-center justify-center gap-2"
                         >
-                          👁️ 查看
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            copyToClipboard('all', record);
-                          }}
-                          className="flex-[3] py-3.5 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-all rounded-xl active:scale-95 text-[15px] font-bold flex items-center justify-center gap-2"
-                          title="直接複製完整 AI 解讀 Prompt"
-                        >
-                          <Copy size={18} />
-                          <span>複製解讀</span>
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setHistory(prev => prev.filter(h => h.id !== record.id));
-                            showToast('已刪除紀錄');
-                          }}
-                          className="flex-1 py-3.5 bg-red-50 dark:bg-red-900/20 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/40 transition-all rounded-xl active:scale-95 flex items-center justify-center"
-                          aria-label="刪除紀錄"
-                        >
-                          <Trash2 size={20} />
-                        </button>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center py-16 text-slate-500 dark:text-mystic-400">
-                    <p>尚未有任何抽牌紀錄</p>
-                  </div>
-                )}
-              </div>
+                          {/* Checkbox in select mode */}
+                          {historySelectMode && (
+                            <div className="flex items-start pt-1 shrink-0">
+                              <input
+                                type="checkbox"
+                                checked={selectedHistoryIds.has(record.id)}
+                                onChange={() => toggleRecord(record.id)}
+                                onClick={e => e.stopPropagation()}
+                                className="w-4 h-4 accent-amber-500 cursor-pointer"
+                              />
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex justify-between items-start mb-2">
+                              <h3 className="text-lg font-bold gold-text leading-tight">{record.spread.name}</h3>
+                              <span className="text-[11px] text-stone-600 dark:text-slate-400 bg-stone-200/50 dark:bg-mystic-800/50 px-2 py-1 rounded-md shrink-0 ml-2">
+                                {new Date(record.date).toLocaleString('zh-TW', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })}
+                              </span>
+                            </div>
+                            <p className="text-sm text-slate-600 dark:text-mystic-300 line-clamp-2 min-h-[2.5rem] mb-3">
+                              {record.question?.trim() || '探索當下整體狀態'}
+                            </p>
+                            <div className="flex items-center justify-between text-xs font-semibold text-stone-600 dark:text-mystic-400">
+                              {record.mode === 'lenormand' && <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-1.5 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800">雷諾曼</span>}
+                              {record.mode === 'thoth'    && <span className="text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 px-1.5 py-0.5 rounded-md border border-purple-200 dark:border-purple-800">托特</span>}
+                              {record.mode === 'tarot'    && <span className="text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-1.5 py-0.5 rounded-md border border-amber-200 dark:border-amber-800">偉特</span>}
+                              <span>{(record.lenormandCards?.length ?? record.cards.length)} 張牌卡</span>
+                            </div>
+                          </div>
+                        </div>
 
-              <AnimatePresence>
-                {showClearConfirm && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 50 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 50 }}
-                    className="absolute bottom-6 left-4 right-4 bg-white dark:bg-mystic-900 rounded-2xl shadow-2xl border-2 border-red-200 dark:border-red-900/50 p-5 z-50 overflow-hidden"
-                  >
-                    <div className="absolute inset-0 bg-red-50/50 dark:bg-red-900/10 pointer-events-none" />
-                    <div className="relative z-10 flex flex-col items-center text-center gap-3">
-                      <div className="w-12 h-12 bg-red-100 dark:bg-red-900/40 rounded-full flex items-center justify-center text-red-500 mb-1">
-                        <Trash2 size={24} />
+                        {/* Per-record action buttons (hidden in select mode) */}
+                        {!historySelectMode && (
+                          <div className="flex items-center gap-2 p-2 pt-0">
+                            <button
+                              onClick={() => {
+                                setSelectedSpread(record.spread);
+                                setQuestion(record.question);
+                                if (record.mode === 'lenormand' && record.lenormandCards) {
+                                  setMode('lenormand');
+                                  setLenormandDrawnCards(record.lenormandCards);
+                                  setDrawnCards([]);
+                                } else {
+                                  setMode(record.mode === 'thoth' ? 'thoth' : 'tarot');
+                                  setDrawnCards(record.cards);
+                                  setLenormandDrawnCards([]);
+                                }
+                                setCurrentHistoryId(record.id);
+                                setIsHistoryOpen(false);
+                                setView('result');
+                              }}
+                              className="flex-[3] py-3.5 bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 dark:hover:from-mystic-500 dark:hover:to-mystic-400 text-stone-50 dark:text-white rounded-xl shadow-lg shadow-stone-800/10 dark:shadow-mystic-500/20 transition-all active:scale-95 text-[15px] font-bold flex items-center justify-center gap-2"
+                            >
+                              👁️ 查看
+                            </button>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); copyToClipboard('all', record); }}
+                              className="flex-[3] py-3.5 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-all rounded-xl active:scale-95 text-[15px] font-bold flex items-center justify-center gap-2"
+                              title="直接複製完整 AI 解讀 Prompt"
+                            >
+                              <Copy size={18} />
+                              <span>複製解讀</span>
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setHistory(prev => prev.filter(h => h.id !== record.id));
+                                showToast('已刪除紀錄');
+                              }}
+                              className="flex-1 py-3.5 bg-red-50 dark:bg-red-900/20 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/40 transition-all rounded-xl active:scale-95 flex items-center justify-center"
+                              aria-label="刪除紀錄"
+                            >
+                              <Trash2 size={20} />
+                            </button>
+                          </div>
+                        )}
                       </div>
-                      <h3 className="text-lg font-bold text-red-600 dark:text-red-400">確定要清空所有紀錄嗎？</h3>
-                      <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">此動作無法復原，請確認是否要繼續。</p>
-                      <div className="flex w-full gap-3 mt-1">
-                        <button
-                          onClick={() => setShowClearConfirm(false)}
-                          className="flex-1 py-2.5 rounded-xl font-bold bg-slate-100 dark:bg-mystic-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-mystic-700 transition-colors"
-                        >
-                          取消
-                        </button>
-                        <button
-                          onClick={() => {
-                            setHistory([]);
-                            if (currentHistoryId && history.find(h => h.id === currentHistoryId)) {
-                              setCurrentHistoryId(null);
-                              setDrawnCards([]);
-                              setView('home');
-                            }
-                            setShowClearConfirm(false);
-                            showToast('已清空所有紀錄');
-                          }}
-                          className="flex-1 py-2.5 rounded-xl font-bold bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/20 transition-all active:scale-95"
-                        >
-                          確認清空
-                        </button>
-                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-16 text-slate-500 dark:text-mystic-400">
+                      <p>{history.length === 0 ? '尚未有任何抽牌紀錄' : '此時間區間無紀錄'}</p>
                     </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          </div>
-        )}
+                  )}
+                </div>
+
+                {/* Batch action bar */}
+                <AnimatePresence>
+                  {historySelectMode && (
+                    <motion.div
+                      initial={{ y: 80, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      exit={{ y: 80, opacity: 0 }}
+                      className="shrink-0 px-4 lg:px-8 py-3 border-t border-stone-200 dark:border-mystic-800/60 bg-[#f0ead6]/90 dark:bg-mystic-900/80 flex items-center justify-between gap-3"
+                    >
+                      <span className="text-sm font-semibold text-slate-600 dark:text-mystic-300">
+                        已選 <span className="text-amber-600 dark:text-amber-400 font-black">{selectedHistoryIds.size}</span> 筆
+                      </span>
+                      <button
+                        disabled={selectedHistoryIds.size === 0}
+                        onClick={() => setShowBatchDeleteConfirm(true)}
+                        className="px-5 py-2 rounded-xl font-bold text-sm bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/20 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        刪除選取
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Clear-all confirm panel */}
+                <AnimatePresence>
+                  {showClearConfirm && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 50 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 50 }}
+                      className="absolute bottom-6 left-4 right-4 bg-white dark:bg-mystic-900 rounded-2xl shadow-2xl border-2 border-red-200 dark:border-red-900/50 p-5 z-50 overflow-hidden"
+                    >
+                      <div className="absolute inset-0 bg-red-50/50 dark:bg-red-900/10 pointer-events-none" />
+                      <div className="relative z-10 flex flex-col items-center text-center gap-3">
+                        <div className="w-12 h-12 bg-red-100 dark:bg-red-900/40 rounded-full flex items-center justify-center text-red-500 mb-1">
+                          <Trash2 size={24} />
+                        </div>
+                        <h3 className="text-lg font-bold text-red-600 dark:text-red-400">確定要清空所有紀錄嗎？</h3>
+                        <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">此動作無法復原，請確認是否要繼續。</p>
+                        <div className="flex w-full gap-3 mt-1">
+                          <button onClick={() => setShowClearConfirm(false)} className="flex-1 py-2.5 rounded-xl font-bold bg-slate-100 dark:bg-mystic-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-mystic-700 transition-colors">取消</button>
+                          <button
+                            onClick={() => {
+                              setHistory([]);
+                              if (currentHistoryId && history.find(h => h.id === currentHistoryId)) {
+                                setCurrentHistoryId(null);
+                                setDrawnCards([]);
+                                setView('home');
+                              }
+                              setShowClearConfirm(false);
+                              showToast('已清空所有紀錄');
+                            }}
+                            className="flex-1 py-2.5 rounded-xl font-bold bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/20 transition-all active:scale-95"
+                          >
+                            確認清空
+                          </button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Batch delete confirm panel */}
+                <AnimatePresence>
+                  {showBatchDeleteConfirm && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 50 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 50 }}
+                      className="absolute bottom-6 left-4 right-4 bg-white dark:bg-mystic-900 rounded-2xl shadow-2xl border-2 border-red-200 dark:border-red-900/50 p-5 z-50 overflow-hidden"
+                    >
+                      <div className="absolute inset-0 bg-red-50/50 dark:bg-red-900/10 pointer-events-none" />
+                      <div className="relative z-10 flex flex-col items-center text-center gap-3">
+                        <div className="w-12 h-12 bg-red-100 dark:bg-red-900/40 rounded-full flex items-center justify-center text-red-500 mb-1">
+                          <Trash2 size={24} />
+                        </div>
+                        <h3 className="text-lg font-bold text-red-600 dark:text-red-400">確定刪除 {selectedHistoryIds.size} 筆紀錄？</h3>
+                        <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">此動作無法復原，請確認是否要繼續。</p>
+                        <div className="flex w-full gap-3 mt-1">
+                          <button onClick={() => setShowBatchDeleteConfirm(false)} className="flex-1 py-2.5 rounded-xl font-bold bg-slate-100 dark:bg-mystic-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-mystic-700 transition-colors">取消</button>
+                          <button onClick={executeBatchDelete} className="flex-1 py-2.5 rounded-xl font-bold bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/20 transition-all active:scale-95">
+                            確認刪除
+                          </button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+              </motion.div>
+            </div>
+          );
+        })()}
       </AnimatePresence>
 
       {/* Custom Spread Modal */}
@@ -1581,7 +1769,7 @@ function SpreadCard({ spread, isCustom, onClick, onEdit, onDelete }: React.Attri
   return (
     <div
       onClick={onClick}
-      className="relative bg-white/70 dark:bg-mystic-900/60 p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] border border-amber-100 dark:border-mystic-800 hover:border-amber-300 dark:hover:border-mystic-600 shadow-sm hover:shadow-md transition-all cursor-pointer group flex flex-col min-h-[160px] sm:h-[220px] overflow-hidden"
+      className="relative bg-white/70 dark:bg-mystic-900/60 p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] border border-amber-100 dark:border-mystic-800 hover:border-amber-300 dark:hover:border-mystic-600 shadow-sm hover:shadow-md transition-all cursor-pointer group flex flex-col min-h-[160px] sm:min-h-[220px] overflow-hidden"
     >
       <div className="flex justify-between items-start mb-2 sm:mb-4 relative z-10 gap-2">
         <h3 className="text-base sm:text-xl font-bold text-amber-900 dark:text-mystic-100 group-hover:text-amber-600 dark:group-hover:text-indigo-400 transition-colors drop-shadow-sm leading-tight line-clamp-2">
