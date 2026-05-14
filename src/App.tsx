@@ -377,7 +377,11 @@ export default function App() {
         `  ${i + 1}. ${card.positionName}：${card.nameCN} (${card.nameEN})`
       ).join('\n');
 
-      let prompt = `我想透過 Lenormand 卡牌占卜以下問題：\n\n【問題】${targetQuestion.trim() || '探索當下整體狀態'}\n\n【牌陣】${targetSpread.name}\n\n抽出的牌：\n${cardList}`;
+      const systemHeader = `【系統】雷諾曼（獨立占卜體系，非塔羅）
+【核心邏輯】意義來自牌與牌的組合，單牌意義模糊。請優先解讀相鄰牌對，再建立整體敘事。
+【解讀提示】以具體事務導向解讀，勿心理化或靈性化。無卡巴拉、星座、元素等塔羅框架，圖像取其字面象徵即可。結尾請給一句直接回答問題的結論。`;
+
+      let prompt = `${systemHeader}\n\n我想透過 Lenormand 卡牌占卜以下問題：\n\n【問題】${targetQuestion.trim() || '探索當下整體狀態'}\n\n【牌陣】${targetSpread.name}\n\n抽出的牌：\n${cardList}`;
 
       if (cards.length === 9) {
         const [c1, c2, c3, c4, c5, c6, c7, c8, c9] = cards;
@@ -432,7 +436,7 @@ export default function App() {
 
     const mainText = mainCards.map((card, i) => `  ${i + 1}. ${card.positionName}：${card.nameCN} ${card.nameEN}（${card.isReversed ? '逆位' : '正位'}）`).join('\n');
     const extraText = extraCards.length > 0
-      ? `\n\n【補充指引（針對後續提問補抽）】\n${extraCards.map(card => `  Q: ${card.extraQuestion}\n  👉 ${card.nameCN} ${card.nameEN}（${card.isReversed ? '逆位' : '正位'}）`).join('\n\n')}`
+      ? `\n\n【補充指引】以下為針對子問題補抽的牌，請在原牌陣基礎上聚焦解讀，視為放大鏡而非新占卜。\n${extraCards.map(card => `  Q: ${card.extraQuestion}\n  👉 ${card.nameCN} ${card.nameEN}（${card.isReversed ? '逆位' : '正位'}）`).join('\n\n')}`
       : '';
 
     let text = '';
@@ -518,13 +522,22 @@ export default function App() {
       }
     }
 
+    const waiteHeader = `【系統】偉特塔羅（含逆位）
+【逆位邏輯】逆位不代表相反，而是該牌能量受阻、內化或尚未顯化。請依位置語境判斷，勿套用固定逆位牌義。
+【解讀提示】注意大小阿爾克那的比例——大牌多代表命運性力量主導，小牌多代表個人能動性較強。相鄰位置的張力與同花色重複出現的主題同樣重要。`;
+
+    const thothHeader = `【系統】托特塔羅（無逆位／Crowley體系）
+【體系差異】小牌有專屬命名（如Sorrow、Debauch），請以該名稱的能量本質解讀，勿套用偉特圖像敘事。宮廷牌結構不同：騎士＝偉特國王，王子＝偉特騎士。
+【解讀提示】托特關注能量狀態而非事件走向。請從驅動力與意識層次切入，並留意元素分佈的失衡方向。`;
+
+    const systemHeader = targetMode === 'thoth' ? thothHeader : waiteHeader;
     const modeName = targetMode === 'thoth' ? '托特' : '偉特';
     if (type === 'all') {
-      text = `我想透過${modeName}塔羅牌占卜以下問題：\n\n【問題】${targetQuestion.trim() || '探索當下整體狀態'}\n\n【牌陣】${targetSpread.name}\n\n抽出的牌：\n${mainText}${extraText}${analysisPrompt}`;
+      text = `${systemHeader}\n\n我想透過${modeName}塔羅牌占卜以下問題：\n\n【問題】${targetQuestion.trim() || '探索當下整體狀態'}\n\n【牌陣】${targetSpread.name}\n\n抽出的牌：\n${mainText}${extraText}${analysisPrompt}`;
     } else if (type === 'main') {
-      text = `我想透過${modeName}塔羅牌占卜以下問題：\n\n【問題】${targetQuestion.trim() || '探索當下整體狀態'}\n\n【牌陣】${targetSpread.name}（主牌陣）\n\n抽出的牌：\n${mainText}${analysisPrompt}`;
+      text = `${systemHeader}\n\n我想透過${modeName}塔羅牌占卜以下問題：\n\n【問題】${targetQuestion.trim() || '探索當下整體狀態'}\n\n【牌陣】${targetSpread.name}（主牌陣）\n\n抽出的牌：\n${mainText}${analysisPrompt}`;
     } else if (type === 'extra') {
-      text = `我想針對剛剛的${modeName}塔羅牌占卜結果，進行進一步的提問。請為我解讀以下補抽的牌卡：\n\n【原問題】${targetQuestion.trim() || '探索當下整體狀態'}\n\n【衍生自牌陣】${targetSpread.name}\n\n${extraText.replace('【補充指引（針對後續提問補抽）】\n', '')}\n\n請為我解讀這幾張補抽牌的具體含義，以及它們如何回應我的提問。`;
+      text = `我想針對剛剛的${modeName}塔羅牌占卜結果，進行進一步的提問。請為我解讀以下補抽的牌卡：\n\n【原問題】${targetQuestion.trim() || '探索當下整體狀態'}\n\n【衍生自牌陣】${targetSpread.name}\n\n${extraText.replace('【補充指引】以下為針對子問題補抽的牌，請在原牌陣基礎上聚焦解讀，視為放大鏡而非新占卜。\n', '')}\n\n請為我解讀這幾張補抽牌的具體含義，以及它們如何回應我的提問。`;
     }
 
     navigator.clipboard.writeText(text).then(() => {
