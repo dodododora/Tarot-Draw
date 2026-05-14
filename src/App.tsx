@@ -2,6 +2,7 @@ import React, { useState, useEffect, type MouseEvent, type FormEvent } from 'rea
 import { Moon, Sun, Plus, Trash2, Edit2, Copy, ArrowLeft, Sparkles, Wand2, Info, X, History, CheckCircle2, Compass, Lightbulb } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ALL_CARDS, THOTH_SPREADS, WAITE_SPREADS, getCardEmoji, TAROT_TRIVIA, LENORMAND_CARDS, LENORMAND_SPREADS, LENORMAND_TRIVIA, THOTH_ALL_CARDS, THOTH_TRIVIA, ORACLE_DATA, type Spread, type TarotCard, type LenormandCard } from './constants';
+import { shuffleAndDraw } from './deckEngine';
 
 export interface DrawHistory {
   id: string;
@@ -111,7 +112,7 @@ export default function App() {
   const [choiceCount, setChoiceCount] = useState(2);
   const [peopleCount, setPeopleCount] = useState(2);
   const [drawInputMode, setDrawInputMode] = useState<'random' | 'manual'>('random');
-  const [manualInputs, setManualInputs] = useState<{name: string; reversed: boolean}[]>([]);
+  const [manualInputs, setManualInputs] = useState<{ name: string; reversed: boolean }[]>([]);
 
   const currentTrivia = React.useMemo(() => {
     let pool = TAROT_TRIVIA;
@@ -128,7 +129,7 @@ export default function App() {
         const char = String.fromCharCode(65 + i);
         positions.push(`選擇${char}的發展軌跡`, `選擇${char}的結果`);
       }
-      
+
       const expectedCount = 1 + choiceCount * 2;
       if (selectedSpread.count !== expectedCount) {
         setSelectedSpread({
@@ -155,14 +156,14 @@ export default function App() {
           `${label}眼中的自己`
         );
       }
-      
+
       positions.push(
         peopleCount === 2 ? "互動產生的誤解" : "多方互動的盲點",
         peopleCount === 2 ? "關係發展的建議" : "群體關係的建議"
       );
-      
+
       const expectedCount = 1 + (peopleCount - 1) * 3 + 2;
-      
+
       if (selectedSpread.count !== expectedCount) {
         setSelectedSpread({
           ...selectedSpread,
@@ -211,7 +212,7 @@ export default function App() {
         console.error('Failed to parse saved history', e);
       }
     }
-    
+
     setIsLoaded(true);
   }, []);
 
@@ -238,14 +239,15 @@ export default function App() {
     if (!selectedSpread) return;
 
     if (mode === 'lenormand') {
-      // Lenormand draw — no reversed
-      const deck = [...LENORMAND_CARDS];
-      for (let i = deck.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [deck[i], deck[j]] = [deck[j], deck[i]];
-      }
-      const lenResults: DrawnLenormandCard[] = deck.slice(0, selectedSpread.count).map((card, index) => ({
-        ...card,
+      const drawn = shuffleAndDraw(LENORMAND_CARDS, 'lenormand', selectedSpread.count);
+      const lenResults: DrawnLenormandCard[] = drawn.map((card, index) => ({
+        id: card.id,
+        nameCN: card.nameCN,
+        nameEN: card.nameEN,
+        // pull full LenormandCard fields from LENORMAND_CARDS
+        suit: LENORMAND_CARDS.find(c => c.id === card.id)!.suit,
+        emoji: LENORMAND_CARDS.find(c => c.id === card.id)!.emoji,
+        keywords: LENORMAND_CARDS.find(c => c.id === card.id)!.keywords,
         positionName: selectedSpread.positions[index] || `位置 ${index + 1}`,
       }));
       setLenormandDrawnCards(lenResults);
@@ -255,17 +257,16 @@ export default function App() {
       setHistory(prev => [{ id: newHistoryId, date: Date.now(), question: question || '', spread: selectedSpread, cards: [], lenormandCards: lenResults, mode: 'lenormand' as const }, ...prev]);
       return;
     }
-    
-    // Fisher-Yates Shuffle (Tarot & Thoth)
-    const deck = mode === 'thoth' ? [...THOTH_ALL_CARDS] : [...ALL_CARDS];
-    for (let i = deck.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [deck[i], deck[j]] = [deck[j], deck[i]];
-    }
 
-    const results: DrawnCard[] = deck.slice(0, selectedSpread.count).map((card, index) => ({
-      ...card,
-      isReversed: mode === 'thoth' ? false : Math.random() > 0.5,
+    // ─── Tarot / Thoth ────────────────────────────────────────────────────────
+    // shuffleAndDraw: 7 riffle passes, reversal accumulated in deck state
+    const system = mode === 'thoth' ? 'thoth' : 'waite';
+    const sourceCards = mode === 'thoth' ? THOTH_ALL_CARDS : ALL_CARDS;
+    const drawn = shuffleAndDraw(sourceCards, system, selectedSpread.count);
+
+    const results: DrawnCard[] = drawn.map((card, index) => ({
+      ...sourceCards.find(c => c.id === card.id)!,
+      isReversed: card.reversed,
       positionName: selectedSpread.positions[index] || `位置 ${index + 1}`,
     }));
 
@@ -274,7 +275,7 @@ export default function App() {
 
     const newHistoryId = Date.now().toString() + Math.random().toString(36).substring(2, 9);
     setCurrentHistoryId(newHistoryId);
-    
+
     const newHistoryEntry: DrawHistory = {
       id: newHistoryId,
       date: Date.now(),
@@ -283,7 +284,7 @@ export default function App() {
       cards: results,
       mode: mode,
     };
-    
+
     setHistory(prev => [newHistoryEntry, ...prev]);
   };
 
@@ -339,7 +340,7 @@ export default function App() {
     }
     const availableCards = (mode === 'thoth' ? THOTH_ALL_CARDS : ALL_CARDS).filter(c => !drawnCards.some(dc => dc.id === c.id));
     if (availableCards.length === 0) return;
-    
+
     const randomIndex = Math.floor(Math.random() * availableCards.length);
     const newCard = availableCards[randomIndex];
     const extraCard: DrawnCard = {
@@ -353,7 +354,7 @@ export default function App() {
     setDrawnCards(newDrawnCards);
 
     if (currentHistoryId) {
-      setHistory(prev => prev.map(h => 
+      setHistory(prev => prev.map(h =>
         h.id === currentHistoryId ? { ...h, cards: newDrawnCards } : h
       ));
     }
@@ -424,17 +425,17 @@ export default function App() {
       });
       return;
     }
-    
+
     const mainCards = targetCards.filter(c => !c.extraQuestion);
     const extraCards = targetCards.filter(c => c.extraQuestion);
 
     const mainText = mainCards.map((card, i) => `  ${i + 1}. ${card.positionName}：${card.nameCN} ${card.nameEN}（${card.isReversed ? '逆位' : '正位'}）`).join('\n');
-    const extraText = extraCards.length > 0 
+    const extraText = extraCards.length > 0
       ? `\n\n【補充指引（針對後續提問補抽）】\n${extraCards.map(card => `  Q: ${card.extraQuestion}\n  👉 ${card.nameCN} ${card.nameEN}（${card.isReversed ? '逆位' : '正位'}）`).join('\n\n')}`
       : '';
 
     let text = '';
-    
+
     // Generate AI interpretation guide based on Tarot spread
     let analysisPrompt = '';
     if (targetSpread.isCustom) {
@@ -447,7 +448,7 @@ export default function App() {
           break;
         case 'choice': {
           const numChoices = (mainCards.length - 1) / 2;
-          const letters = Array.from({length: numChoices}, (_, i) => String.fromCharCode(65 + i));
+          const letters = Array.from({ length: numChoices }, (_, i) => String.fromCharCode(65 + i));
           const pathDesc = letters.map(l => `選擇${l}（發展軌跡→結果）`).join('、');
           analysisPrompt = `\n\n請從以下角度為我深入解讀這個 ${numChoices} 選項的決策牌陣：\n（一）底層邏輯：評估【決策當下的現況】揭示的核心變數與限制條件。\n（二）路徑推演：分別解讀 ${pathDesc} 的發展軌跡與機會成本差異。\n（三）決策指引：綜合 ${numChoices} 條路徑，給予具體且高維度的決策建議，並明確指出你認為最值得關注的選擇及原因。`;
           break;
@@ -457,7 +458,7 @@ export default function App() {
           if (numPeople <= 2) {
             analysisPrompt = `\n\n請從以下角度為我深入解讀這段雙方關係的系統性結構：\n（一）認知落差：對比雙方視角——【對象眼中的主角】vs【主角眼中的對象】——點出彼此的投射與盲點。\n（二）自我定位：分析【主角眼中的自己】與【對象眼中的自己】各自揭示的深層狀態。\n（三）互動動力：深挖【互動產生的誤解】的根源，以及雙方之間的隱形拉力。\n（四）破冰策略：基於上述洞察，給出具體且成熟的互動建議。`;
           } else {
-            const chars = Array.from({length: numPeople - 1}, (_, i) => String.fromCharCode(65 + i));
+            const chars = Array.from({ length: numPeople - 1 }, (_, i) => String.fromCharCode(65 + i));
             const peopleList = chars.map(c => `對象${c}`).join('、');
             analysisPrompt = `\n\n請從以下角度為我深入解讀這個 ${numPeople} 人局的關係系統：\n（一）自我視角：分析【主角眼中的自己】揭示的核心自我認知。\n（二）多方關係：逐一解讀 ${peopleList} 各自的視角差異（他眼中的主角、主角眼中的他、他眼中的自己），找出最關鍵的感知落差。\n（三）系統盲點：分析【多方互動的盲點】與整體關係網絡的張力來源。\n（四）群體建議：基於全局視角，給出在 ${numPeople} 人關係中找到平衡的具體建議。`;
           }
@@ -484,7 +485,7 @@ export default function App() {
         case 'hero':
           analysisPrompt = `\n\n請將這段經歷視作一場「英雄之旅」，為我解讀目前所在的階段。分析我面臨的【冒險的召喚】與【最深的試煉】，以及我將如何透過【關鍵的導師與工具】獲得啟示，最終【帶著恩賜歸來】。`;
           break;
-          
+
         // Waite Spreads
         case 'waite-triangle':
           analysisPrompt = `\n\n請為我解讀這三張牌如何分別反映出我目前【身體的感受】、【心智的邏輯】與【靈魂的渴望】。幫助我釐清這三個維度是否有衝突，並給我整合身心靈的建議。`;
@@ -561,14 +562,14 @@ export default function App() {
   const saveSpread = (e: FormEvent) => {
     e.preventDefault();
     if (!editingSpread) return;
-    
+
     setCustomSpreads(prev => {
       if (editingSpread.id && prev.find(s => s.id === editingSpread.id)) {
         return prev.map(s => s.id === editingSpread.id ? editingSpread : s);
       }
       return [...prev, editingSpread];
     });
-    
+
     setIsModalOpen(false);
   };
 
@@ -577,7 +578,7 @@ export default function App() {
       <GlobalBackground theme={theme} />
       {/* Navbar */}
       <nav className="sticky top-0 z-50 bg-white/60 dark:bg-mystic-950/50 backdrop-blur-xl border-b border-white/20 dark:border-mystic-800/50 px-4 py-4 flex justify-between items-center transition-colors duration-500">
-        <div 
+        <div
           className="flex items-center gap-2 cursor-pointer group"
           onClick={() => setView('home')}
         >
@@ -588,43 +589,40 @@ export default function App() {
         <div className="flex items-center bg-stone-100/80 dark:bg-mystic-900/80 rounded-xl p-1 border border-stone-200 dark:border-mystic-800">
           <button
             onClick={() => { setMode('tarot'); setView('home'); setSelectedSpread(null); }}
-            className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${
-              mode === 'tarot'
-                ? 'bg-amber-600 dark:bg-mystic-600 text-white shadow-sm'
-                : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
-            }`}
+            className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${mode === 'tarot'
+              ? 'bg-amber-600 dark:bg-mystic-600 text-white shadow-sm'
+              : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
+              }`}
           >
             🔮<span className="text-[10px] sm:text-xs"> 偉特</span>
           </button>
           <button
             onClick={() => { setMode('thoth'); setView('home'); setSelectedSpread(null); }}
-            className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${
-              mode === 'thoth'
-                ? 'bg-purple-600 dark:bg-purple-700 text-white shadow-sm'
-                : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
-            }`}
+            className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${mode === 'thoth'
+              ? 'bg-purple-600 dark:bg-purple-700 text-white shadow-sm'
+              : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
+              }`}
           >
             🌌<span className="text-[10px] sm:text-xs"> 托特</span>
           </button>
           <button
             onClick={() => { setMode('lenormand'); setView('home'); setSelectedSpread(null); }}
-            className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${
-              mode === 'lenormand'
-                ? 'bg-emerald-600 dark:bg-emerald-700 text-white shadow-sm'
-                : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
-            }`}
+            className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${mode === 'lenormand'
+              ? 'bg-emerald-600 dark:bg-emerald-700 text-white shadow-sm'
+              : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
+              }`}
           >
             🃏<span className="text-[10px] sm:text-xs"> 雷諾曼</span>
           </button>
         </div>
         <div className="flex items-center gap-1 sm:gap-2">
-          <button 
+          <button
             onClick={() => setIsHistoryOpen(true)}
             className="flex items-center gap-1.5 px-3 py-2 rounded-xl hover:bg-amber-100/50 dark:hover:bg-mystic-800/50 transition-colors text-sm font-semibold text-amber-900 dark:text-mystic-200"
           >
             <History size={18} /> <span className="hidden sm:inline">歷史紀錄</span>
           </button>
-          <button 
+          <button
             onClick={toggleTheme}
             className="p-2.5 rounded-xl hover:bg-amber-100/50 dark:hover:bg-mystic-800/50 transition-colors text-amber-900 dark:text-mystic-200"
           >
@@ -636,7 +634,7 @@ export default function App() {
       <main className="flex-grow container mx-auto px-4 py-8 max-w-6xl">
         <AnimatePresence mode="wait">
           {view === 'home' && (
-            <motion.div 
+            <motion.div
               key="home"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -736,45 +734,45 @@ export default function App() {
 
               {/* Custom Spreads (Tarot & Thoth) */}
               {(mode === 'tarot' || mode === 'thoth') && (
-              <section>
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-3">
-                    <Edit2 className="text-stone-600 dark:text-mystic-500" size={24} />
-                    <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">自訂牌陣</h2>
+                <section>
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                      <Edit2 className="text-stone-600 dark:text-mystic-500" size={24} />
+                      <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">自訂牌陣</h2>
+                    </div>
+                    <button
+                      onClick={openAddModal}
+                      className="flex items-center gap-2 px-4 py-2 bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 text-stone-50 dark:text-white rounded-lg transition-colors text-sm font-medium shadow-md dark:shadow-mystic-500/20"
+                    >
+                      <Plus size={18} /> 新增牌陣
+                    </button>
                   </div>
-                  <button 
-                    onClick={openAddModal}
-                    className="flex items-center gap-2 px-4 py-2 bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 text-stone-50 dark:text-white rounded-lg transition-colors text-sm font-medium shadow-md dark:shadow-mystic-500/20"
-                  >
-                    <Plus size={18} /> 新增牌陣
-                  </button>
-                </div>
-                {customSpreads.length > 0 ? (
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6 mx-auto">
-                    {customSpreads.map((spread) => (
-                      <SpreadCard 
-                        key={spread.id} 
-                        spread={spread} 
-                        isCustom
-                        onClick={() => {
-                          setSelectedSpread(spread);
-                          setView('draw');
-                          setQuestion('');
-                        }}
-                        onEdit={(e) => {
-                          e.stopPropagation();
-                          openEditModal(spread);
-                        }}
-                        onDelete={(e) => deleteSpread(spread.id, e)}
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-12 border-2 border-dashed border-slate-200 dark:border-mystic-800 rounded-2xl text-slate-500 dark:text-mystic-400">
-                    <p>尚未建立自訂牌陣</p>
-                  </div>
-                )}
-              </section>
+                  {customSpreads.length > 0 ? (
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6 mx-auto">
+                      {customSpreads.map((spread) => (
+                        <SpreadCard
+                          key={spread.id}
+                          spread={spread}
+                          isCustom
+                          onClick={() => {
+                            setSelectedSpread(spread);
+                            setView('draw');
+                            setQuestion('');
+                          }}
+                          onEdit={(e) => {
+                            e.stopPropagation();
+                            openEditModal(spread);
+                          }}
+                          onDelete={(e) => deleteSpread(spread.id, e)}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12 border-2 border-dashed border-slate-200 dark:border-mystic-800 rounded-2xl text-slate-500 dark:text-mystic-400">
+                      <p>尚未建立自訂牌陣</p>
+                    </div>
+                  )}
+                </section>
               )}
 
               {/* Donation + Legal footer */}
@@ -797,14 +795,14 @@ export default function App() {
           )}
 
           {view === 'draw' && selectedSpread && (
-            <motion.div 
+            <motion.div
               key="draw"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               className="max-w-2xl mx-auto space-y-8"
             >
-              <button 
+              <button
                 onClick={() => setView('home')}
                 className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-mystic-600 dark:hover:text-mystic-400 transition-colors"
               >
@@ -822,7 +820,7 @@ export default function App() {
                     <label className="block text-sm font-medium mb-2 text-slate-600 dark:text-mystic-300">
                       你想問的問題？
                     </label>
-                    <textarea 
+                    <textarea
                       value={question}
                       onChange={(e) => setQuestion(e.target.value)}
                       placeholder={selectedSpread.exampleQuestion ? `例如：${selectedSpread.exampleQuestion}` : "請輸入你的困惑或想了解的事情..."}
@@ -840,21 +838,19 @@ export default function App() {
                   <div className="flex rounded-xl overflow-hidden border border-slate-200 dark:border-mystic-700 p-0.5 gap-0.5 bg-slate-100/70 dark:bg-mystic-800/50">
                     <button
                       onClick={() => setDrawInputMode('random')}
-                      className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${
-                        drawInputMode === 'random'
-                          ? 'bg-white dark:bg-mystic-700 text-stone-800 dark:text-white shadow'
-                          : 'text-slate-400 dark:text-mystic-500'
-                      }`}
+                      className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${drawInputMode === 'random'
+                        ? 'bg-white dark:bg-mystic-700 text-stone-800 dark:text-white shadow'
+                        : 'text-slate-400 dark:text-mystic-500'
+                        }`}
                     >
                       🎴 隨機抽牌
                     </button>
                     <button
                       onClick={() => setDrawInputMode('manual')}
-                      className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${
-                        drawInputMode === 'manual'
-                          ? 'bg-white dark:bg-mystic-700 text-stone-800 dark:text-white shadow'
-                          : 'text-slate-400 dark:text-mystic-500'
-                      }`}
+                      className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${drawInputMode === 'manual'
+                        ? 'bg-white dark:bg-mystic-700 text-stone-800 dark:text-white shadow'
+                        : 'text-slate-400 dark:text-mystic-500'
+                        }`}
                     >
                       ✍️ 手動輸入
                     </button>
@@ -902,11 +898,10 @@ export default function App() {
                                   next[i] = { ...(next[i] || { name: '', reversed: false }), reversed: !next[i]?.reversed };
                                   return next;
                                 })}
-                                className={`mt-5 flex-shrink-0 px-2 py-1 rounded-md text-[11px] font-bold border transition-colors ${
-                                  manualInputs[i]?.reversed
-                                    ? 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 border-purple-300 dark:border-purple-700'
-                                    : 'bg-slate-100 dark:bg-mystic-800 text-slate-400 dark:text-mystic-500 border-slate-200 dark:border-mystic-700'
-                                }`}
+                                className={`mt-5 flex-shrink-0 px-2 py-1 rounded-md text-[11px] font-bold border transition-colors ${manualInputs[i]?.reversed
+                                  ? 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 border-purple-300 dark:border-purple-700'
+                                  : 'bg-slate-100 dark:bg-mystic-800 text-slate-400 dark:text-mystic-500 border-slate-200 dark:border-mystic-700'
+                                  }`}
                               >
                                 逆
                               </button>
@@ -933,11 +928,10 @@ export default function App() {
                           <button
                             key={num}
                             onClick={() => setChoiceCount(num)}
-                            className={`w-[42px] h-[42px] sm:w-11 sm:h-11 rounded-full font-bold text-sm sm:text-base flex items-center justify-center transition-all duration-300 ${
-                              choiceCount === num 
-                                ? 'bg-indigo-600 dark:bg-indigo-500 text-white shadow-md shadow-indigo-500/30 scale-105 ring-2 ring-indigo-300 dark:ring-indigo-700 ring-offset-1 dark:ring-offset-mystic-900' 
-                                : 'bg-white/80 dark:bg-mystic-900 shadow-sm text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-mystic-600 hover:bg-indigo-100 dark:hover:bg-mystic-800'
-                            }`}
+                            className={`w-[42px] h-[42px] sm:w-11 sm:h-11 rounded-full font-bold text-sm sm:text-base flex items-center justify-center transition-all duration-300 ${choiceCount === num
+                              ? 'bg-indigo-600 dark:bg-indigo-500 text-white shadow-md shadow-indigo-500/30 scale-105 ring-2 ring-indigo-300 dark:ring-indigo-700 ring-offset-1 dark:ring-offset-mystic-900'
+                              : 'bg-white/80 dark:bg-mystic-900 shadow-sm text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-mystic-600 hover:bg-indigo-100 dark:hover:bg-mystic-800'
+                              }`}
                           >
                             {num}
                           </button>
@@ -959,11 +953,10 @@ export default function App() {
                           <button
                             key={num}
                             onClick={() => setPeopleCount(num)}
-                            className={`w-[42px] h-[42px] sm:w-11 sm:h-11 rounded-full font-bold text-sm sm:text-base flex items-center justify-center transition-all duration-300 ${
-                              peopleCount === num 
-                                ? 'bg-emerald-600 dark:bg-emerald-600 text-white shadow-md shadow-emerald-500/30 scale-105 ring-2 ring-emerald-300 dark:ring-emerald-700 ring-offset-1 dark:ring-offset-mystic-900' 
-                                : 'bg-white/80 dark:bg-mystic-900 shadow-sm text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-mystic-600 hover:bg-emerald-100 dark:hover:bg-mystic-800'
-                            }`}
+                            className={`w-[42px] h-[42px] sm:w-11 sm:h-11 rounded-full font-bold text-sm sm:text-base flex items-center justify-center transition-all duration-300 ${peopleCount === num
+                              ? 'bg-emerald-600 dark:bg-emerald-600 text-white shadow-md shadow-emerald-500/30 scale-105 ring-2 ring-emerald-300 dark:ring-emerald-700 ring-offset-1 dark:ring-offset-mystic-900'
+                              : 'bg-white/80 dark:bg-mystic-900 shadow-sm text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-mystic-600 hover:bg-emerald-100 dark:hover:bg-mystic-800'
+                              }`}
                           >
                             {num}
                           </button>
@@ -1013,7 +1006,7 @@ export default function App() {
           )}
 
           {view === 'result' && selectedSpread && (
-            <motion.div 
+            <motion.div
               key="result"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -1026,7 +1019,7 @@ export default function App() {
                   <p className="text-slate-500 dark:text-mystic-400">問題：{question.trim() || '探索當下整體狀態'}</p>
                 </div>
                 <div className="flex gap-3">
-                  <button 
+                  <button
                     onClick={() => {
                       setView('draw');
                       setCurrentHistoryId(null);
@@ -1050,31 +1043,12 @@ export default function App() {
                         const card = lenormandDrawnCards[0];
                         const oracle = ORACLE_DATA.lenormand[card.id];
                         if (!oracle) return null;
-                        
-                        let answer = '不確定 (Maybe)';
-                        let theme = 'text-amber-600 dark:text-amber-400';
-                        let bg = 'bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800';
 
-                        if (oracle.score === 2) {
-                          answer = '是 (Yes)';
-                          theme = 'text-green-600 dark:text-green-400';
-                          bg = 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-800';
-                        } else if (oracle.score === 1) {
-                          answer = '偏向是 (Maybe Yes)';
-                          theme = 'text-green-600/80 dark:text-green-400/80';
-                          bg = 'bg-green-50/50 dark:bg-green-900/20 border-green-100 dark:border-green-800/50';
-                        } else if (oracle.score === -1) {
-                          answer = '偏向否 (Maybe No)';
-                          theme = 'text-red-500/80 dark:text-red-400/80';
-                          bg = 'bg-red-50/50 dark:bg-red-900/20 border-red-100 dark:border-red-800/50';
-                        } else if (oracle.score === -2) {
-                          answer = '否 (No)';
-                          theme = 'text-red-600 dark:text-red-400';
-                          bg = 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800';
-                        }
+                        // Lenormand has no reversals; effectiveScore == baseScore
+                        const { label, theme, bg } = oracleUI(oracle.score);
 
                         return (
-                          <motion.div 
+                          <motion.div
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: 0.2 }}
@@ -1082,7 +1056,7 @@ export default function App() {
                           >
                             <div className="flex items-center gap-3">
                               <span className={`text-[10px] sm:text-xs font-black ${theme} opacity-70 uppercase tracking-[0.2em]`}>神諭指引</span>
-                              <span className={`text-xl sm:text-2xl font-black ${theme} tracking-tight`}>{answer}</span>
+                              <span className={`text-xl sm:text-2xl font-black ${theme} tracking-tight`}>{label}</span>
                             </div>
                             <p className={`text-xs sm:text-sm font-bold ${theme} opacity-90`}>{oracle.message}</p>
                           </motion.div>
@@ -1102,15 +1076,14 @@ export default function App() {
                       ))}
                     </div>
                   ) : (
-                    <div className={`relative z-10 grid gap-3 sm:gap-5 justify-center w-full max-w-3xl mx-auto ${
-                      lenormandDrawnCards.length === 9 ? 'grid-cols-3' :
+                    <div className={`relative z-10 grid gap-3 sm:gap-5 justify-center w-full max-w-3xl mx-auto ${lenormandDrawnCards.length === 9 ? 'grid-cols-3' :
                       lenormandDrawnCards.length === 1 ? 'grid-cols-1' :
-                      lenormandDrawnCards.length === 4 ? 'grid-cols-2' :
-                      lenormandDrawnCards.length === 6 ? 'grid-cols-3' :
-                      lenormandDrawnCards.length === 7 ? 'grid-cols-4' :
-                      lenormandDrawnCards.length === 10 ? 'grid-cols-3 sm:grid-cols-5' :
-                      'grid-cols-3 sm:grid-cols-4'
-                    }`}>
+                        lenormandDrawnCards.length === 4 ? 'grid-cols-2' :
+                          lenormandDrawnCards.length === 6 ? 'grid-cols-3' :
+                            lenormandDrawnCards.length === 7 ? 'grid-cols-4' :
+                              lenormandDrawnCards.length === 10 ? 'grid-cols-3 sm:grid-cols-5' :
+                                'grid-cols-3 sm:grid-cols-4'
+                      }`}>
                       {lenormandDrawnCards.map((card, index) => (
                         <LenormandCardDisplay key={index} card={card} index={index} isCenter={lenormandDrawnCards.length === 9 && index === 4} />
                       ))}
@@ -1121,52 +1094,52 @@ export default function App() {
 
               {/* Tarot Tablecloth Layout */}
               {(mode === 'tarot' || mode === 'thoth') && (
-              <div className="relative bg-white/40 dark:bg-mystic-950 rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-12 shadow-2xl shadow-amber-900/5 dark:shadow-mystic-900/50 border-4 border-amber-100/50 dark:border-mystic-800/30 overflow-hidden backdrop-blur-sm">
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-amber-50/40 via-white/40 to-amber-100/30 dark:from-mystic-800/20 dark:via-mystic-900/80 dark:to-mystic-950 pointer-events-none"></div>
-                
-                <div className="relative z-10 w-full max-w-6xl mx-auto">
-                  <TarotSpreadLayout spread={selectedSpread} cards={drawnCards.filter(c => !c.extraQuestion)} mode={mode === 'thoth' ? 'thoth' : 'tarot'} />
-                </div>
+                <div className="relative bg-white/40 dark:bg-mystic-950 rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-12 shadow-2xl shadow-amber-900/5 dark:shadow-mystic-900/50 border-4 border-amber-100/50 dark:border-mystic-800/30 overflow-hidden backdrop-blur-sm">
+                  <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-amber-50/40 via-white/40 to-amber-100/30 dark:from-mystic-800/20 dark:via-mystic-900/80 dark:to-mystic-950 pointer-events-none"></div>
 
-                {drawnCards.some(c => c.extraQuestion) && (
-                  <div className="relative z-10 mt-16 pt-16 border-t border-amber-200/50 dark:border-mystic-800/50">
-                    <h3 className="text-center text-xl font-bold gold-text mb-8 tracking-widest">✨ 補充指引</h3>
-                    <div className="flex flex-wrap justify-center gap-6 sm:gap-10">
-                      {drawnCards.filter(c => c.extraQuestion).map((card, index) => (
-                        <div key={index} className="flex flex-col items-center gap-4">
-                          <div className="text-amber-800 dark:text-mystic-300 text-[13px] sm:text-sm font-medium text-center bg-white/80 dark:bg-mystic-900/80 px-4 py-2.5 rounded-xl border border-amber-200 dark:border-mystic-800 shadow-lg max-w-[160px] sm:max-w-[200px]">
-                            <span className="text-amber-500 dark:text-mystic-500 mr-1">Q:</span>{card.extraQuestion}
+                  <div className="relative z-10 w-full max-w-6xl mx-auto">
+                    <TarotSpreadLayout spread={selectedSpread} cards={drawnCards.filter(c => !c.extraQuestion)} mode={mode === 'thoth' ? 'thoth' : 'tarot'} />
+                  </div>
+
+                  {drawnCards.some(c => c.extraQuestion) && (
+                    <div className="relative z-10 mt-16 pt-16 border-t border-amber-200/50 dark:border-mystic-800/50">
+                      <h3 className="text-center text-xl font-bold gold-text mb-8 tracking-widest">✨ 補充指引</h3>
+                      <div className="flex flex-wrap justify-center gap-6 sm:gap-10">
+                        {drawnCards.filter(c => c.extraQuestion).map((card, index) => (
+                          <div key={index} className="flex flex-col items-center gap-4">
+                            <div className="text-amber-800 dark:text-mystic-300 text-[13px] sm:text-sm font-medium text-center bg-white/80 dark:bg-mystic-900/80 px-4 py-2.5 rounded-xl border border-amber-200 dark:border-mystic-800 shadow-lg max-w-[160px] sm:max-w-[200px]">
+                              <span className="text-amber-500 dark:text-mystic-500 mr-1">Q:</span>{card.extraQuestion}
+                            </div>
+                            <TarotCardDisplay card={card} index={index} isExtra={true} />
                           </div>
-                          <TarotCardDisplay card={card} index={index} isExtra={true} />
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                <div className="relative z-10 mt-16 flex flex-col items-center justify-center w-full">
-                  <div className="flex flex-col items-center gap-4 bg-white/60 dark:bg-mystic-900/60 p-6 sm:p-8 rounded-[2rem] border border-amber-200/50 dark:border-mystic-800 w-full max-w-md backdrop-blur shadow-xl dark:shadow-2xl">
-                    <div className="text-center mb-1">
-                      <h4 className="font-bold text-lg text-amber-800 dark:text-mystic-300">追加牌卡指引</h4>
-                      <p className="text-xs text-amber-600 dark:text-mystic-500 mt-1">若對上述結果有不懂之處，請在此發問</p>
+                  <div className="relative z-10 mt-16 flex flex-col items-center justify-center w-full">
+                    <div className="flex flex-col items-center gap-4 bg-white/60 dark:bg-mystic-900/60 p-6 sm:p-8 rounded-[2rem] border border-amber-200/50 dark:border-mystic-800 w-full max-w-md backdrop-blur shadow-xl dark:shadow-2xl">
+                      <div className="text-center mb-1">
+                        <h4 className="font-bold text-lg text-amber-800 dark:text-mystic-300">追加牌卡指引</h4>
+                        <p className="text-xs text-amber-600 dark:text-mystic-500 mt-1">若對上述結果有不懂之處，請在此發問</p>
+                      </div>
+                      <input
+                        type="text"
+                        value={extraQuestion}
+                        onChange={(e) => setExtraQuestion(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === 'Enter') drawExtraCard(); }}
+                        placeholder="請輸入補抽想深入了解的事..."
+                        className="w-full px-5 py-3.5 rounded-xl border border-amber-200 dark:border-mystic-700 bg-white/70 dark:bg-mystic-950/80 focus:ring-2 focus:ring-amber-400 dark:focus:ring-mystic-500 outline-none text-slate-800 dark:text-white text-center text-sm shadow-inner transition-colors"
+                      />
+                      <button
+                        onClick={drawExtraCard}
+                        className="w-full py-3 mt-1 bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 dark:hover:from-mystic-500 dark:hover:to-mystic-400 text-stone-50 dark:text-white rounded-xl font-bold shadow-lg shadow-stone-800/10 dark:shadow-mystic-500/20 transition-all active:scale-95 flex items-center justify-center gap-2"
+                      >
+                        <Sparkles size={18} /> 補抽一張
+                      </button>
                     </div>
-                    <input 
-                      type="text" 
-                      value={extraQuestion}
-                      onChange={(e) => setExtraQuestion(e.target.value)}
-                      onKeyDown={(e) => { if (e.key === 'Enter') drawExtraCard(); }}
-                      placeholder="請輸入補抽想深入了解的事..."
-                      className="w-full px-5 py-3.5 rounded-xl border border-amber-200 dark:border-mystic-700 bg-white/70 dark:bg-mystic-950/80 focus:ring-2 focus:ring-amber-400 dark:focus:ring-mystic-500 outline-none text-slate-800 dark:text-white text-center text-sm shadow-inner transition-colors"
-                    />
-                    <button 
-                      onClick={drawExtraCard}
-                      className="w-full py-3 mt-1 bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 dark:hover:from-mystic-500 dark:hover:to-mystic-400 text-stone-50 dark:text-white rounded-xl font-bold shadow-lg shadow-stone-800/10 dark:shadow-mystic-500/20 transition-all active:scale-95 flex items-center justify-center gap-2"
-                    >
-                      <Sparkles size={18} /> 補抽一張
-                    </button>
                   </div>
                 </div>
-              </div>
               )}
 
               <div className="bg-white/80 dark:bg-mystic-900 p-6 rounded-2xl border border-amber-100 dark:border-mystic-800 text-center shadow-sm">
@@ -1181,7 +1154,7 @@ export default function App() {
               <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/70 dark:bg-mystic-950/80 backdrop-blur-md border-t border-amber-100/50 dark:border-mystic-800 flex flex-col items-center justify-center gap-3 z-40 shadow-[0_-10px_40px_rgba(251,191,36,0.05)] dark:shadow-none">
                 <AnimatePresence>
                   {showCopySuccess && (
-                    <motion.div 
+                    <motion.div
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
@@ -1195,19 +1168,19 @@ export default function App() {
                 <div className="flex flex-wrap items-center justify-center gap-3">
                   {drawnCards.some(c => c.extraQuestion) ? (
                     <>
-                      <button 
+                      <button
                         onClick={() => copyToClipboard('all')}
                         className="px-5 py-2.5 rounded-xl bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 hover:dark:from-mystic-500 hover:dark:to-mystic-400 text-stone-50 dark:text-white shadow-lg shadow-stone-800/10 dark:shadow-mystic-500/20 transition-all hover:-translate-y-1 active:scale-95 font-bold flex items-center gap-2 text-sm"
                       >
                         <Copy size={16} /> 複製全部
                       </button>
-                      <button 
+                      <button
                         onClick={() => copyToClipboard('main')}
                         className="px-4 py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-mystic-800 dark:hover:bg-mystic-700 text-amber-700 dark:text-mystic-300 border border-amber-200 dark:border-mystic-700 transition-all hover:-translate-y-1 active:scale-95 font-bold flex items-center gap-2 text-sm"
                       >
                         <Copy size={14} /> 僅主牌陣
                       </button>
-                      <button 
+                      <button
                         onClick={() => copyToClipboard('extra')}
                         className="px-4 py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-mystic-800 dark:hover:bg-mystic-700 text-amber-700 dark:text-mystic-300 border border-amber-200 dark:border-mystic-700 transition-all hover:-translate-y-1 active:scale-95 font-bold flex items-center gap-2 text-sm"
                       >
@@ -1215,7 +1188,7 @@ export default function App() {
                       </button>
                     </>
                   ) : (
-                    <button 
+                    <button
                       onClick={() => copyToClipboard('all')}
                       className="px-8 py-3 rounded-xl bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 dark:hover:from-mystic-500 dark:hover:to-mystic-400 text-stone-50 dark:text-white shadow-lg shadow-stone-800/10 dark:shadow-mystic-500/20 transition-all hover:-translate-y-1 active:scale-95 font-bold flex items-center gap-2"
                     >
@@ -1277,7 +1250,7 @@ export default function App() {
                 </h2>
                 <div className="flex items-center gap-2">
                   {history.length > 0 && (
-                    <button 
+                    <button
                       onClick={(e) => {
                         e.stopPropagation();
                         setShowClearConfirm(true);
@@ -1294,12 +1267,12 @@ export default function App() {
                   </button>
                 </div>
               </div>
-              
+
               <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
                 {history.length > 0 ? (
                   history.map((record) => (
                     <div key={record.id} className="relative group bg-stone-50/80 dark:bg-mystic-900 p-1 sm:p-2 rounded-[1.25rem] border border-stone-200/80 dark:border-mystic-800 shadow-sm hover:shadow-md hover:border-stone-400 dark:hover:border-mystic-600 transition-all flex flex-col">
-                      <div 
+                      <div
                         className="p-4 sm:p-5 cursor-pointer flex-1"
                         onClick={() => {
                           setSelectedSpread(record.spread);
@@ -1336,7 +1309,7 @@ export default function App() {
                       </div>
 
                       <div className="flex items-center gap-2 p-2 pt-0">
-                        <button 
+                        <button
                           onClick={() => {
                             setSelectedSpread(record.spread);
                             setQuestion(record.question);
@@ -1357,7 +1330,7 @@ export default function App() {
                         >
                           👁️ 查看
                         </button>
-                        <button 
+                        <button
                           onClick={(e) => {
                             e.stopPropagation();
                             copyToClipboard('all', record);
@@ -1368,7 +1341,7 @@ export default function App() {
                           <Copy size={18} />
                           <span>複製解讀</span>
                         </button>
-                        <button 
+                        <button
                           onClick={(e) => {
                             e.stopPropagation();
                             setHistory(prev => prev.filter(h => h.id !== record.id));
@@ -1388,7 +1361,7 @@ export default function App() {
                   </div>
                 )}
               </div>
-              
+
               <AnimatePresence>
                 {showClearConfirm && (
                   <motion.div
@@ -1405,13 +1378,13 @@ export default function App() {
                       <h3 className="text-lg font-bold text-red-600 dark:text-red-400">確定要清空所有紀錄嗎？</h3>
                       <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">此動作無法復原，請確認是否要繼續。</p>
                       <div className="flex w-full gap-3 mt-1">
-                        <button 
+                        <button
                           onClick={() => setShowClearConfirm(false)}
                           className="flex-1 py-2.5 rounded-xl font-bold bg-slate-100 dark:bg-mystic-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-mystic-700 transition-colors"
                         >
                           取消
                         </button>
-                        <button 
+                        <button
                           onClick={() => {
                             setHistory([]);
                             if (currentHistoryId && history.find(h => h.id === currentHistoryId)) {
@@ -1440,7 +1413,7 @@ export default function App() {
       <AnimatePresence>
         {isModalOpen && editingSpread && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
@@ -1455,25 +1428,25 @@ export default function App() {
               <form onSubmit={saveSpread} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
                 <div>
                   <label className="block text-sm font-medium mb-1">牌陣名稱</label>
-                  <input 
+                  <input
                     required
                     value={editingSpread.name}
-                    onChange={e => setEditingSpread({...editingSpread, name: e.target.value})}
+                    onChange={e => setEditingSpread({ ...editingSpread, name: e.target.value })}
                     className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-mystic-800 bg-slate-50 dark:bg-mystic-950"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">提示文字</label>
-                  <input 
+                  <input
                     value={editingSpread.hint}
-                    onChange={e => setEditingSpread({...editingSpread, hint: e.target.value})}
+                    onChange={e => setEditingSpread({ ...editingSpread, hint: e.target.value })}
                     placeholder="例如：深入剖析..."
                     className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-mystic-800 bg-slate-50 dark:bg-mystic-950"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">抽牌張數 ({editingSpread.count})</label>
-                  <input 
+                  <input
                     type="range" min="1" max="20"
                     value={editingSpread.count}
                     onChange={e => {
@@ -1484,7 +1457,7 @@ export default function App() {
                       } else {
                         positions.splice(count);
                       }
-                      setEditingSpread({...editingSpread, count, positions});
+                      setEditingSpread({ ...editingSpread, count, positions });
                     }}
                     className="w-full"
                   />
@@ -1492,7 +1465,7 @@ export default function App() {
                 <div className="space-y-2">
                   <label className="block text-sm font-medium">各位置名稱</label>
                   {editingSpread.positions.map((pos, i) => (
-                    <input 
+                    <input
                       key={i}
                       required
                       placeholder={`位置 ${i + 1} 名稱`}
@@ -1500,13 +1473,13 @@ export default function App() {
                       onChange={e => {
                         const newPos = [...editingSpread.positions];
                         newPos[i] = e.target.value;
-                        setEditingSpread({...editingSpread, positions: newPos});
+                        setEditingSpread({ ...editingSpread, positions: newPos });
                       }}
                       className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-mystic-800 bg-slate-50 dark:bg-mystic-950 text-sm"
                     />
                   ))}
                 </div>
-                <button 
+                <button
                   type="submit"
                   className="w-full py-3 bg-mystic-600 hover:bg-mystic-500 text-white rounded-xl font-bold transition-colors"
                 >
@@ -1549,15 +1522,15 @@ export default function App() {
   );
 }
 
-function SpreadCard({ spread, isCustom, onClick, onEdit, onDelete }: { 
-  spread: Spread; 
-  isCustom?: boolean; 
+function SpreadCard({ spread, isCustom, onClick, onEdit, onDelete }: React.Attributes & {
+  spread: Spread;
+  isCustom?: boolean;
   onClick: () => void;
   onEdit?: (e: MouseEvent) => void;
   onDelete?: (e: MouseEvent) => void;
 }) {
   return (
-    <div 
+    <div
       onClick={onClick}
       className="relative bg-white/70 dark:bg-mystic-900/60 p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] border border-amber-100 dark:border-mystic-800 hover:border-amber-300 dark:hover:border-mystic-600 shadow-sm hover:shadow-md transition-all cursor-pointer group flex flex-col min-h-[160px] sm:h-[220px] overflow-hidden"
     >
@@ -1569,18 +1542,18 @@ function SpreadCard({ spread, isCustom, onClick, onEdit, onDelete }: {
           {spread.count} 張牌
         </span>
       </div>
-      
+
       {/* Hint (Theory/Description) */}
       <p className="text-xs sm:text-sm text-slate-600 dark:text-mystic-300 line-clamp-2 mb-4 sm:mb-6 relative z-10 font-medium leading-relaxed">
         {spread.hint || `自訂牌陣 · ${spread.count} 張`}
       </p>
-      
+
       {/* Positions Area (Horizontal Scroll) */}
       <div className="mt-auto relative z-10 w-full overflow-hidden rounded-lg bg-stone-50/50 dark:bg-mystic-950/30 p-2 sm:p-3 border border-stone-100 dark:border-mystic-800/50 shadow-inner">
         <div className="relative">
           {/* Right fade-out gradient */}
           <div className="absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-stone-50 dark:from-mystic-900 via-stone-50/80 dark:via-mystic-900/80 to-transparent pointer-events-none z-10 rounded-r-lg" />
-          
+
           <div className="flex items-center gap-2.5 overflow-x-auto pb-1 pr-10 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {spread.positions.map((pos, idx) => (
               <div key={idx} className="flex items-center gap-2.5 shrink-0">
@@ -1601,22 +1574,22 @@ function SpreadCard({ spread, isCustom, onClick, onEdit, onDelete }: {
 
       {isCustom && (
         <div className="mt-4 pt-4 border-t border-amber-100 dark:border-mystic-800 flex justify-end gap-2 transition-opacity relative z-10">
-          <button 
+          <button
             onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
               if (onEdit) onEdit(e);
-            }} 
+            }}
             className="p-1.5 text-slate-400 dark:text-mystic-500 hover:text-amber-600 dark:hover:text-mystic-400 transition-colors"
           >
             <Edit2 size={16} />
           </button>
-          <button 
+          <button
             onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
               if (onDelete) onDelete(e);
-            }} 
+            }}
             className="p-1.5 text-slate-400 dark:text-mystic-500 hover:text-red-500 dark:hover:text-red-400 transition-colors"
           >
             <Trash2 size={16} />
@@ -1625,6 +1598,37 @@ function SpreadCard({ spread, isCustom, onClick, onEdit, onDelete }: {
       )}
     </div>
   );
+}
+
+// ─── Oracle helpers (single source of truth for label + colour) ──────────────
+function getEffectiveScore(baseScore: number, reversed: boolean): number {
+  if (!reversed) return baseScore;
+  // Reversal = energy blocked/diminished, not a simple negation.
+  // +2 → -1  (was Yes, now leans Maybe No)
+  // +1 → -1  (was Maybe Yes, now leans Maybe No)
+  //  0 → -1  (neutral becomes slightly unfavourable when reversed)
+  // -1 → -2  (already bad, gets worse)
+  // -2 → -2  (floor)
+  if (baseScore >= 1)  return -1;
+  if (baseScore === 0) return -1;
+  return -2;
+}
+
+interface OracleUI {
+  label: string;
+  theme: string;
+  bg: string;
+}
+
+function oracleUI(effectiveScore: number): OracleUI {
+  switch (effectiveScore) {
+    case  2: return { label: '是 (Yes)',           theme: 'text-green-600 dark:text-green-400',       bg: 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-800' };
+    case  1: return { label: '偏向是 (Maybe Yes)',  theme: 'text-green-500/80 dark:text-green-400/80', bg: 'bg-green-50/60 dark:bg-green-900/20 border-green-100 dark:border-green-800/50' };
+    case  0: return { label: '不確定 (Maybe)',       theme: 'text-amber-600 dark:text-amber-400',       bg: 'bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800' };
+    case -1: return { label: '偏向否 (Maybe No)',   theme: 'text-orange-600 dark:text-orange-400',     bg: 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800/50' };
+    case -2: return { label: '否 (No)',             theme: 'text-red-600 dark:text-red-400',           bg: 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800' };
+    default: return { label: '不確定 (Maybe)',       theme: 'text-amber-600 dark:text-amber-400',       bg: 'bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800' };
+  }
 }
 
 function TarotSpreadLayout({ spread, cards, mode }: { spread: Spread; cards: DrawnCard[]; mode: 'tarot' | 'thoth' }) {
@@ -1637,48 +1641,16 @@ function TarotSpreadLayout({ spread, cards, mode }: { spread: Spread; cards: Dra
     case 'single': {
       const card = cards[0];
       if (!card) return null;
-      
+
       const oracle = ORACLE_DATA[mode][card.id];
       if (!oracle) return null;
-      
-      let answer = '不確定 (Maybe)';
-      let theme = 'text-amber-600 dark:text-amber-400';
-      let bg = 'bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800';
-      let score = oracle.score;
 
-      if (score === 2) {
-        answer = '是 (Yes)';
-        theme = 'text-green-600 dark:text-green-400';
-        bg = 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-800';
-      } else if (score === 1) {
-        answer = '偏向是 (Maybe Yes)';
-        theme = 'text-green-600/80 dark:text-green-400/80';
-        bg = 'bg-green-50/50 dark:bg-green-900/20 border-green-100 dark:border-green-800/50';
-      } else if (score === -1) {
-        answer = '偏向否 (Maybe No)';
-        theme = 'text-red-500/80 dark:text-red-400/80';
-        bg = 'bg-red-50/50 dark:bg-red-900/20 border-red-100 dark:border-red-800/50';
-      } else if (score === -2) {
-        answer = '否 (No)';
-        theme = 'text-red-600 dark:text-red-400';
-        bg = 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800';
-      }
-
-      if (card.isReversed) {
-        if (score > 0) {
-          answer = '偏向是 - 可能有變數 (Maybe Yes)';
-          theme = 'text-amber-600 dark:text-amber-400';
-          bg = 'bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800';
-        } else if (score < 0) {
-          answer = '偏向否 - 可能有轉機 (Unlikely)';
-          theme = 'text-amber-600 dark:text-amber-400';
-          bg = 'bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800';
-        }
-      }
+      const effectiveScore = getEffectiveScore(oracle.score, card.isReversed);
+      const { label, theme, bg } = oracleUI(effectiveScore);
 
       return (
         <div className="flex flex-col items-center gap-8 w-full">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.3 }}
@@ -1686,7 +1658,7 @@ function TarotSpreadLayout({ spread, cards, mode }: { spread: Spread; cards: Dra
           >
             <div className="flex items-center gap-3">
               <span className={`text-[10px] sm:text-xs font-black ${theme} opacity-70 uppercase tracking-[0.2em]`}>神諭指引</span>
-              <span className={`text-xl sm:text-2xl font-black ${theme} tracking-tight`}>{answer}</span>
+              <span className={`text-xl sm:text-2xl font-black ${theme} tracking-tight`}>{label}</span>
             </div>
             <p className={`text-xs sm:text-sm font-bold ${theme} opacity-90 text-center`}>{oracle.message}</p>
           </motion.div>
@@ -1694,151 +1666,150 @@ function TarotSpreadLayout({ spread, cards, mode }: { spread: Spread; cards: Dra
         </div>
       );
     }
-    
+
     case 'johari':
     case 'cycle':
     case 'waite-clarity':
     case 'waite-healing':
-      return (
-        <div className="grid grid-cols-2 gap-8 sm:gap-12 place-items-center w-full max-w-2xl mx-auto">
-          {renderCard(0)} {renderCard(1)}
-          {renderCard(2)} {renderCard(3)}
-        </div>
-      );
+  return (
+    <div className="grid grid-cols-2 gap-8 sm:gap-12 place-items-center w-full max-w-2xl mx-auto">
+      {renderCard(0)} {renderCard(1)}
+      {renderCard(2)} {renderCard(3)}
+    </div>
+  );
       
     case 'breakthrough':
-      return (
-        <div className="grid grid-cols-3 gap-6 sm:gap-10 place-items-center w-full max-w-3xl mx-auto">
-          <div className="col-start-2">{renderCard(0)}</div>
-          <div className="col-start-1 row-start-2">{renderCard(1)}</div>
-          <div className="col-start-3 row-start-2">{renderCard(2)}</div>
-          <div className="col-start-2 row-start-3">{renderCard(3)}</div>
-        </div>
-      );
+  return (
+    <div className="grid grid-cols-3 gap-6 sm:gap-10 place-items-center w-full max-w-3xl mx-auto">
+      <div className="col-start-2">{renderCard(0)}</div>
+      <div className="col-start-1 row-start-2">{renderCard(1)}</div>
+      <div className="col-start-3 row-start-2">{renderCard(2)}</div>
+      <div className="col-start-2 row-start-3">{renderCard(3)}</div>
+    </div>
+  );
 
     case 'choice': {
-      const numChoices = Math.round((cards.length - 1) / 2);
-      const letters = Array.from({ length: numChoices }, (_, i) => String.fromCharCode(65 + i));
-      const colClass =
-        numChoices <= 2 ? 'grid-cols-2' :
+    const numChoices = Math.round((cards.length - 1) / 2);
+    const letters = Array.from({ length: numChoices }, (_, i) => String.fromCharCode(65 + i));
+    const colClass =
+      numChoices <= 2 ? 'grid-cols-2' :
         numChoices === 3 ? 'grid-cols-3' :
-        numChoices === 4 ? 'grid-cols-4' :
-        'grid-cols-5';
-      return (
-        <div className="flex flex-col items-center gap-8 w-full">
-          <div className={`grid ${colClass} gap-x-4 sm:gap-x-6 gap-y-8 place-items-center w-full max-w-5xl mx-auto`}>
-            {/* Column labels */}
-            {letters.map(l => (
-              <div key={l} className="text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-3 py-1 rounded-full border border-indigo-200 dark:border-indigo-800 whitespace-nowrap">
-                選擇{l}
-              </div>
-            ))}
-            {/* Results row (index 2, 4, 6, 8...) */}
-            {Array.from({ length: numChoices }, (_, i) => (
-              <div key={`res-${i}`}>{renderCard(2 + i * 2)}</div>
-            ))}
-            {/* Development row (index 1, 3, 5, 7...) */}
-            {Array.from({ length: numChoices }, (_, i) => (
-              <div key={`dev-${i}`}>{renderCard(1 + i * 2)}</div>
-            ))}
-          </div>
-          {/* Current situation — always card 0 */}
-          <div>{renderCard(0)}</div>
+          numChoices === 4 ? 'grid-cols-4' :
+            'grid-cols-5';
+    return (
+      <div className="flex flex-col items-center gap-8 w-full">
+        <div className={`grid ${colClass} gap-x-4 sm:gap-x-6 gap-y-8 place-items-center w-full max-w-5xl mx-auto`}>
+          {/* Column labels */}
+          {letters.map(l => (
+            <div key={l} className="text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-3 py-1 rounded-full border border-indigo-200 dark:border-indigo-800 whitespace-nowrap">
+              選擇{l}
+            </div>
+          ))}
+          {/* Results row (index 2, 4, 6, 8...) */}
+          {Array.from({ length: numChoices }, (_, i) => (
+            <div key={`res-${i}`}>{renderCard(2 + i * 2)}</div>
+          ))}
+          {/* Development row (index 1, 3, 5, 7...) */}
+          {Array.from({ length: numChoices }, (_, i) => (
+            <div key={`dev-${i}`}>{renderCard(1 + i * 2)}</div>
+          ))}
         </div>
-      );
-    }
+        {/* Current situation — always card 0 */}
+        <div>{renderCard(0)}</div>
+      </div>
+    );
+  }
       
     case 'pattern':
-      return (
-        <div className="flex flex-col md:flex-row gap-6 sm:gap-8 justify-center items-center flex-wrap max-w-4xl mx-auto w-full">
-          {cards.map((_, i) => renderCard(i))}
-        </div>
-      );
+  return (
+    <div className="flex flex-col md:flex-row gap-6 sm:gap-8 justify-center items-center flex-wrap max-w-4xl mx-auto w-full">
+      {cards.map((_, i) => renderCard(i))}
+    </div>
+  );
 
     case 'iceberg':
-      return (
-        <div className="flex flex-col gap-6 items-center w-full max-w-3xl mx-auto">
-          <div className="z-10">{renderCard(0)}</div>
-          <div className="w-full h-px bg-cyan-200/50 dark:bg-cyan-900/50 my-2 relative">
-            <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-4 bg-white/40 dark:bg-mystic-950 text-xs text-cyan-600 dark:text-cyan-500 font-bold tracking-widest">水面之下</span>
-          </div>
-          <div className="flex gap-8 justify-center z-0">{renderCard(1)}{renderCard(2)}</div>
-          <div className="flex gap-8 justify-center z-0">{renderCard(3)}{renderCard(4)}</div>
-          <div className="mt-4 z-0">{renderCard(5)}</div>
-        </div>
-      );
+  return (
+    <div className="flex flex-col gap-6 items-center w-full max-w-3xl mx-auto">
+      <div className="z-10">{renderCard(0)}</div>
+      <div className="w-full h-px bg-cyan-200/50 dark:bg-cyan-900/50 my-2 relative">
+        <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-4 bg-white/40 dark:bg-mystic-950 text-xs text-cyan-600 dark:text-cyan-500 font-bold tracking-widest">水面之下</span>
+      </div>
+      <div className="flex gap-8 justify-center z-0">{renderCard(1)}{renderCard(2)}</div>
+      <div className="flex gap-8 justify-center z-0">{renderCard(3)}{renderCard(4)}</div>
+      <div className="mt-4 z-0">{renderCard(5)}</div>
+    </div>
+  );
 
     case 'mirror':
-      return (
-        <div className="grid grid-cols-2 gap-x-8 sm:gap-x-24 gap-y-10 place-items-center max-w-2xl mx-auto w-full">
-          {cards.map((_, i) => renderCard(i))}
-        </div>
-      );
+  return (
+    <div className="grid grid-cols-2 gap-x-8 sm:gap-x-24 gap-y-10 place-items-center max-w-2xl mx-auto w-full">
+      {cards.map((_, i) => renderCard(i))}
+    </div>
+  );
       
     case 'resource':
-      return (
-        <div className="grid grid-cols-3 gap-6 sm:gap-10 place-items-center max-w-4xl mx-auto w-full">
-          {renderCard(3)} {renderCard(0)} {renderCard(2)}
-          {renderCard(1)} {renderCard(4)} {renderCard(5)}
-        </div>
-      );
+  return (
+    <div className="grid grid-cols-3 gap-6 sm:gap-10 place-items-center max-w-4xl mx-auto w-full">
+      {renderCard(3)} {renderCard(0)} {renderCard(2)}
+      {renderCard(1)} {renderCard(4)} {renderCard(5)}
+    </div>
+  );
 
     case 'hero':
-      return (
-        <div className="grid grid-cols-3 gap-x-6 sm:gap-x-12 gap-y-10 place-items-center max-w-4xl mx-auto w-full">
-          <div>{renderCard(0)}</div> <div className="invisible"></div> <div>{renderCard(6)}</div>
-          <div>{renderCard(1)}</div> <div className="invisible"></div> <div>{renderCard(5)}</div>
-          <div>{renderCard(2)}</div> <div>{renderCard(3)}</div> <div>{renderCard(4)}</div>
-        </div>
-      );
+  return (
+    <div className="grid grid-cols-3 gap-x-6 sm:gap-x-12 gap-y-10 place-items-center max-w-4xl mx-auto w-full">
+      <div>{renderCard(0)}</div> <div className="invisible"></div> <div>{renderCard(6)}</div>
+      <div>{renderCard(1)}</div> <div className="invisible"></div> <div>{renderCard(5)}</div>
+      <div>{renderCard(2)}</div> <div>{renderCard(3)}</div> <div>{renderCard(4)}</div>
+    </div>
+  );
 
     case 'celtic':
-      return (
-        <div className="flex flex-col xl:flex-row gap-12 sm:gap-16 items-center justify-center w-full max-w-6xl mx-auto">
-          <div className="grid grid-cols-4 gap-4 sm:gap-8 place-items-center">
-            <div className="col-start-2 col-span-2 row-start-1 flex justify-center w-full">{renderCard(2)}</div>
-            <div className="col-start-1 row-start-2">{renderCard(4)}</div>
-            <div className="col-start-2 row-start-2">{renderCard(0)}</div>
-            <div className="col-start-3 row-start-2">{renderCard(1)}</div>
-            <div className="col-start-4 row-start-2">{renderCard(5)}</div>
-            <div className="col-start-2 col-span-2 row-start-3 flex justify-center w-full">{renderCard(3)}</div>
-          </div>
-          <div className="flex flex-col gap-6 sm:gap-8">
-            {renderCard(9)}
-            {renderCard(8)}
-            {renderCard(7)}
-            {renderCard(6)}
-          </div>
-        </div>
-      );
+  return (
+    <div className="flex flex-col xl:flex-row gap-12 sm:gap-16 items-center justify-center w-full max-w-6xl mx-auto">
+      <div className="grid grid-cols-4 gap-4 sm:gap-8 place-items-center">
+        <div className="col-start-2 col-span-2 row-start-1 flex justify-center w-full">{renderCard(2)}</div>
+        <div className="col-start-1 row-start-2">{renderCard(4)}</div>
+        <div className="col-start-2 row-start-2">{renderCard(0)}</div>
+        <div className="col-start-3 row-start-2">{renderCard(1)}</div>
+        <div className="col-start-4 row-start-2">{renderCard(5)}</div>
+        <div className="col-start-2 col-span-2 row-start-3 flex justify-center w-full">{renderCard(3)}</div>
+      </div>
+      <div className="flex flex-col gap-6 sm:gap-8">
+        {renderCard(9)}
+        {renderCard(8)}
+        {renderCard(7)}
+        {renderCard(6)}
+      </div>
+    </div>
+  );
 
     default:
-      return (
-        <div className={`grid gap-6 sm:gap-10 justify-center w-full mx-auto ${
-          cards.length === 1 ? 'grid-cols-1' :
-          cards.length === 2 ? 'grid-cols-2' :
-          cards.length === 3 ? 'grid-cols-3' :
+  return (
+    <div className={`grid gap-6 sm:gap-10 justify-center w-full mx-auto ${cards.length === 1 ? 'grid-cols-1' :
+      cards.length === 2 ? 'grid-cols-2' :
+        cards.length === 3 ? 'grid-cols-3' :
           cards.length === 4 ? 'grid-cols-2 sm:grid-cols-4' :
-          cards.length === 5 ? 'grid-cols-3 sm:grid-cols-5' :
-          cards.length === 6 ? 'grid-cols-3' :
-          cards.length === 7 ? 'grid-cols-3 sm:grid-cols-4' :
-          cards.length === 8 ? 'grid-cols-4' :
-          cards.length === 10 ? 'grid-cols-3 sm:grid-cols-5' :
-          cards.length === 12 ? 'grid-cols-4 sm:grid-cols-6' :
-          'grid-cols-3 sm:grid-cols-4'
-        }`}>
-          {cards.map((_, i) => renderCard(i))}
-        </div>
-      );
-  }
+            cards.length === 5 ? 'grid-cols-3 sm:grid-cols-5' :
+              cards.length === 6 ? 'grid-cols-3' :
+                cards.length === 7 ? 'grid-cols-3 sm:grid-cols-4' :
+                  cards.length === 8 ? 'grid-cols-4' :
+                    cards.length === 10 ? 'grid-cols-3 sm:grid-cols-5' :
+                      cards.length === 12 ? 'grid-cols-4 sm:grid-cols-6' :
+                        'grid-cols-3 sm:grid-cols-4'
+      }`}>
+      {cards.map((_, i) => renderCard(i))}
+    </div>
+  );
+}
 }
 
-function TarotCardDisplay({ card, index, isExtra }: { card: DrawnCard; index: number; isExtra?: boolean; key?: string | number }) {
+function TarotCardDisplay({ card, index, isExtra }: React.Attributes & { card: DrawnCard; index: number; isExtra?: boolean }) {
   const emoji = getCardEmoji(card.id);
   const isMajor = card.id < 22;
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: Math.min(index * 0.08, 0.32), duration: 0.3 }}
@@ -1852,20 +1823,17 @@ function TarotCardDisplay({ card, index, isExtra }: { card: DrawnCard; index: nu
           <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-white dark:from-mystic-950 to-transparent" />
         </div>
       )}
-      
-      <div className={`relative aspect-square w-[110px] sm:w-[130px] rounded-2xl overflow-hidden border-4 ${
-        card.isReversed ? 'border-red-400/80 dark:border-red-500/50 shadow-red-500/20' : 
-        isExtra ? 'border-amber-400/80 dark:border-mystic-500/50 shadow-amber-500/20 dark:shadow-mystic-500/20' : 
-        'border-amber-300/80 dark:border-gold-500/50 shadow-amber-500/20 dark:shadow-gold-500/20'
-      } shadow-lg`}>
+
+      <div className={`relative aspect-square w-[110px] sm:w-[130px] rounded-2xl overflow-hidden border-4 ${card.isReversed ? 'border-red-400/80 dark:border-red-500/50 shadow-red-500/20' :
+        isExtra ? 'border-amber-400/80 dark:border-mystic-500/50 shadow-amber-500/20 dark:shadow-mystic-500/20' :
+          'border-amber-300/80 dark:border-gold-500/50 shadow-amber-500/20 dark:shadow-gold-500/20'
+        } shadow-lg`}>
         {/* Card Background Decoration */}
-        <div className={`absolute inset-0 flex flex-col items-center justify-center p-4 transition-colors ${
-          isMajor ? 'bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-100/80 via-orange-50/50 to-white dark:from-mystic-800/80 dark:via-mystic-900 dark:to-mystic-950' : 'bg-white/90 dark:bg-mystic-900'
-        }`}>
-          <div className={`absolute inset-2 border rounded-lg pointer-events-none ${
-            isMajor ? 'border-amber-300/40 dark:border-gold-700/20' : 'border-amber-100 dark:border-mystic-800/50'
-          }`} />
-          
+        <div className={`absolute inset-0 flex flex-col items-center justify-center p-4 transition-colors ${isMajor ? 'bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-100/80 via-orange-50/50 to-white dark:from-mystic-800/80 dark:via-mystic-900 dark:to-mystic-950' : 'bg-white/90 dark:bg-mystic-900'
+          }`}>
+          <div className={`absolute inset-2 border rounded-lg pointer-events-none ${isMajor ? 'border-amber-300/40 dark:border-gold-700/20' : 'border-amber-100 dark:border-mystic-800/50'
+            }`} />
+
           {/* Mystical Symbols */}
           <div className="absolute top-3 left-3 flex items-center justify-center opacity-40 dark:opacity-30">
             {isMajor ? <Sparkles size={12} className="text-amber-500 dark:text-gold-400" /> : <div className="w-1.5 h-1.5 rounded-full bg-amber-300 dark:bg-mystic-500" />}
@@ -1883,12 +1851,10 @@ function TarotCardDisplay({ card, index, isExtra }: { card: DrawnCard; index: nu
           {/* Card Content */}
           <div className={`flex flex-col items-center justify-center text-center transition-transform duration-700 h-full w-full p-2 ${card.isReversed ? 'rotate-180' : ''}`}>
             <div className="text-4xl sm:text-5xl mb-2">{emoji}</div>
-            <div className={`font-extrabold text-sm sm:text-base mb-0.5 leading-tight ${
-              isMajor ? 'text-amber-900 dark:text-amber-50 drop-shadow-sm' : 'text-slate-800 dark:text-mystic-100'
-            }`}>{card.nameCN}</div>
-            <div className={`text-[9px] sm:text-[10px] tracking-wide uppercase leading-tight max-w-full line-clamp-1 ${
-              isMajor ? 'text-amber-600 font-bold dark:text-gold-400/80' : 'text-amber-700/60 dark:text-mystic-400 font-semibold'
-            }`}>{card.nameEN}</div>
+            <div className={`font-extrabold text-sm sm:text-base mb-0.5 leading-tight ${isMajor ? 'text-amber-900 dark:text-amber-50 drop-shadow-sm' : 'text-slate-800 dark:text-mystic-100'
+              }`}>{card.nameCN}</div>
+            <div className={`text-[9px] sm:text-[10px] tracking-wide uppercase leading-tight max-w-full line-clamp-1 ${isMajor ? 'text-amber-600 font-bold dark:text-gold-400/80' : 'text-amber-700/60 dark:text-mystic-400 font-semibold'
+              }`}>{card.nameEN}</div>
           </div>
         </div>
 
@@ -1910,7 +1876,7 @@ function TarotCardDisplay({ card, index, isExtra }: { card: DrawnCard; index: nu
   );
 }
 
-function LenormandCardDisplay({ card, index, isCenter }: { card: DrawnLenormandCard; index: number; isCenter?: boolean }) {
+function LenormandCardDisplay({ card, index, isCenter }: React.Attributes & { card: DrawnLenormandCard; index: number; isCenter?: boolean }) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.85 }}
@@ -1922,11 +1888,10 @@ function LenormandCardDisplay({ card, index, isCenter }: { card: DrawnLenormandC
         {card.positionName}
       </div>
 
-      <div className={`relative w-[90px] sm:w-[110px] aspect-[2/3] rounded-xl sm:rounded-2xl overflow-hidden border-2 shadow-lg transition-all duration-300 ${
-        isCenter
-          ? 'border-emerald-400 dark:border-emerald-500 shadow-emerald-400/30 scale-110 ring-2 ring-emerald-300/50 dark:ring-emerald-600/30'
-          : 'border-teal-200/80 dark:border-teal-900/50 shadow-teal-600/10'
-      }`}>
+      <div className={`relative w-[90px] sm:w-[110px] aspect-[2/3] rounded-xl sm:rounded-2xl overflow-hidden border-2 shadow-lg transition-all duration-300 ${isCenter
+        ? 'border-emerald-400 dark:border-emerald-500 shadow-emerald-400/30 scale-110 ring-2 ring-emerald-300/50 dark:ring-emerald-600/30'
+        : 'border-teal-200/80 dark:border-teal-900/50 shadow-teal-600/10'
+        }`}>
         <div className="absolute inset-0 bg-gradient-to-br from-stone-50 via-teal-50/30 to-emerald-50/50 dark:from-slate-900 dark:via-teal-950/40 dark:to-emerald-950/30" />
         <div className="absolute top-1.5 left-1.5 text-[10px] font-bold text-slate-600 dark:text-slate-400 bg-white/70 dark:bg-black/40 px-1 py-0.5 rounded leading-none">
           {card.suit}
