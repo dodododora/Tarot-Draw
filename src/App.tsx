@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ALL_CARDS, THOTH_SPREADS, WAITE_SPREADS, WAITE_SPREAD_IDS, THOTH_SPREAD_IDS, getCardEmoji, TAROT_TRIVIA, LENORMAND_CARDS, LENORMAND_SPREADS, LENORMAND_TRIVIA, THOTH_ALL_CARDS, THOTH_TRIVIA, ORACLE_DATA, type Spread, type TarotCard, type LenormandCard } from './constants';
 import { shuffleAndDraw } from './deckEngine';
 import { downloadShareCard, type ShareCardCard } from './shareCard';
+import { trackEvent } from './analytics';
 
 export interface DrawHistory {
   id: string;
@@ -480,22 +481,25 @@ export default function App() {
     setSelectedSpread(spread);
     if (spread.id === 'choice') setChoiceCount(2);
     if (spread.id === 'mirror') setPeopleCount(2);
+    trackEvent('select_spread', { spread_name: spread.name, spread_count: spread.count, system: mode });
     navigate('/draw');
     setQuestion('');
-  }, [navigate]);
+  }, [navigate, mode]);
 
   const handleLenormandSpreadSelect = useCallback((spread: Spread) => {
     setSelectedSpread(spread);
     setLenormandDrawnCards([]);
+    trackEvent('select_spread', { spread_name: spread.name, spread_count: spread.count, system: mode });
     navigate('/draw');
     setQuestion('');
-  }, [navigate]);
+  }, [navigate, mode]);
 
   const handleCustomSpreadSelect = useCallback((spread: Spread) => {
     setSelectedSpread(spread);
+    trackEvent('select_custom_spread', { spread_name: spread.name, card_count: spread.count, system: mode });
     navigate('/draw');
     setQuestion('');
-  }, [navigate]);
+  }, [navigate, mode]);
 
   const handleSpreadEdit = useCallback((spread: Spread, e: MouseEvent) => {
     e.stopPropagation();
@@ -528,6 +532,7 @@ export default function App() {
       setCurrentHistoryId(newHistoryId);
       setHistory(prev => [{ id: newHistoryId, date: Date.now(), question: question || '', spread: selectedSpread, cards: [], lenormandCards: lenResults, mode: 'lenormand' as const }, ...prev]);
       setIsShuffling(true);
+      trackEvent('draw_cards', { spread_name: selectedSpread.name, spread_count: selectedSpread.count, system: mode, has_question: (question.trim().length > 0) });
       setTimeout(() => { setIsShuffling(false); navigate('/result'); }, SHUFFLE_ANIMATION_MS);
       return;
     }
@@ -548,6 +553,7 @@ export default function App() {
     setCurrentHistoryId(newHistoryId);
     setHistory(prev => [{ id: newHistoryId, date: Date.now(), question: question || '', spread: selectedSpread, cards: results, mode }, ...prev]);
     setIsShuffling(true);
+    trackEvent('draw_cards', { spread_name: selectedSpread.name, spread_count: selectedSpread.count, system: mode, has_question: (question.trim().length > 0) });
     setTimeout(() => { setIsShuffling(false); navigate('/result'); }, SHUFFLE_ANIMATION_MS);
   };
 
@@ -556,6 +562,7 @@ export default function App() {
     const filled = manualInputs.filter(i => i.name.trim());
     if (filled.length === 0) { showToast('請至少填入一張牌'); return; }
 
+    trackEvent('manual_submit', { spread_name: selectedSpread.name, system: mode });
     if (mode === 'lenormand') {
       const results: DrawnLenormandCard[] = selectedSpread.positions.map((pos, i) => {
         const input = manualInputs[i] ?? { name: '', reversed: false };
@@ -623,6 +630,7 @@ export default function App() {
         h.id === currentHistoryId ? { ...h, cards: newDrawnCards } : h
       ));
     }
+    trackEvent('draw_extra', { spread_name: selectedSpread?.name ?? '', system: mode, extra_question: (extraQuestion.trim().length > 0) });
     setExtraQuestion('');
   };
 
@@ -806,8 +814,10 @@ export default function App() {
 
     navigator.clipboard.writeText(text).then(() => {
       if (record) {
+        trackEvent('copy_prompt', { spread_name: targetSpread.name, system: targetMode, type: 'history' });
         showToast('已複製 AI 解讀 Prompt！');
       } else {
+        trackEvent('copy_prompt', { spread_name: targetSpread.name, system: targetMode, type });
         setShowCopySuccess(type);
         setTimeout(() => setShowCopySuccess(null), 2000);
       }
@@ -830,13 +840,14 @@ export default function App() {
     e.preventDefault();
     if (!editingSpread) return;
 
+    const isNew = !customSpreads.find(s => s.id === editingSpread.id);
     setCustomSpreads(prev => {
       if (editingSpread.id && prev.find(s => s.id === editingSpread.id)) {
         return prev.map(s => s.id === editingSpread.id ? editingSpread : s);
       }
       return [...prev, editingSpread];
     });
-
+    if (isNew) trackEvent('create_custom_spread', { card_count: editingSpread.count });
     setIsModalOpen(false);
   };
 
@@ -862,7 +873,7 @@ export default function App() {
           {/* Tarot group */}
           <div className="flex items-center bg-stone-100/80 dark:bg-mystic-900/80 rounded-xl p-1 border border-stone-200 dark:border-mystic-800">
             <button
-              onClick={() => { setMode('tarot'); navigate('/'); setSelectedSpread(null); }}
+              onClick={() => { setMode('tarot'); navigate('/'); setSelectedSpread(null); trackEvent('select_system', { system: 'tarot' }); }}
               className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${mode === 'tarot'
                 ? 'bg-amber-600 dark:bg-mystic-600 text-white shadow-sm'
                 : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
@@ -871,7 +882,7 @@ export default function App() {
               🔮<span className="text-[10px] sm:text-xs"> 偉特</span>
             </button>
             <button
-              onClick={() => { setMode('thoth'); navigate('/'); setSelectedSpread(null); }}
+              onClick={() => { setMode('thoth'); navigate('/'); setSelectedSpread(null); trackEvent('select_system', { system: 'thoth' }); }}
               className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${mode === 'thoth'
                 ? 'bg-purple-600 dark:bg-purple-700 text-white shadow-sm'
                 : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
@@ -887,7 +898,7 @@ export default function App() {
           {/* Lenormand — independent system */}
           <div className="flex items-center bg-stone-100/80 dark:bg-mystic-900/80 rounded-xl p-1 border border-stone-200 dark:border-mystic-800">
             <button
-              onClick={() => { setMode('lenormand'); navigate('/'); setSelectedSpread(null); }}
+              onClick={() => { setMode('lenormand'); navigate('/'); setSelectedSpread(null); trackEvent('select_system', { system: 'lenormand' }); }}
               className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${mode === 'lenormand'
                 ? 'bg-emerald-600 dark:bg-emerald-700 text-white shadow-sm'
                 : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
@@ -899,13 +910,13 @@ export default function App() {
         </div>
         <div className="flex items-center gap-1 sm:gap-2">
           <button
-            onClick={() => setIsHistoryOpen(true)}
+            onClick={() => { setIsHistoryOpen(true); trackEvent('open_history'); }}
             className="flex items-center gap-1.5 px-3 py-2 rounded-xl hover:bg-amber-100/50 dark:hover:bg-mystic-800/50 transition-colors text-sm font-semibold text-amber-900 dark:text-mystic-200"
           >
             <History size={18} /> <span className="hidden sm:inline">歷史紀錄</span>
           </button>
           <button
-            onClick={toggleTheme}
+            onClick={() => { toggleTheme(); trackEvent('toggle_theme', { theme: theme === 'light' ? 'dark' : 'light' }); }}
             className="p-2.5 rounded-xl hover:bg-amber-100/50 dark:hover:bg-mystic-800/50 transition-colors text-amber-900 dark:text-mystic-200"
           >
             {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
@@ -1276,6 +1287,7 @@ export default function App() {
                         setDrawnCards([]);
                         setLenormandDrawnCards([]);
                       });
+                      trackEvent('redraw', { spread_name: selectedSpread?.name ?? '', system: mode });
                       navigate('/draw');
                     }}
                     className="px-4 py-2 rounded-lg border border-slate-200 dark:border-mystic-800 hover:bg-slate-50 dark:hover:bg-mystic-900 transition-colors text-sm font-medium"
@@ -1458,6 +1470,7 @@ export default function App() {
                         : drawnCards.filter(c => !c.extraQuestion).map(c => ({ nameCN: c.nameCN, nameEN: c.nameEN, isReversed: c.isReversed, positionName: c.positionName }))
                       );
                       downloadShareCard({ spreadName: selectedSpread?.name ?? '', question, cards: cardList, mode });
+                      trackEvent('download_share_image', { spread_name: selectedSpread?.name ?? '', system: mode });
                     }}
                     className="px-5 py-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 text-indigo-600 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 transition-all hover:-translate-y-1 active:scale-95 font-bold flex items-center gap-2 text-sm"
                   >
@@ -1668,6 +1681,7 @@ export default function App() {
                               }
                               setCurrentHistoryId(record.id);
                             });
+                            trackEvent('view_history_record', { spread_name: record.spread?.name ?? '', system: record.mode ?? 'tarot' });
                             setIsHistoryOpen(false);
                             navigate('/result');
                           }}
@@ -1741,6 +1755,7 @@ export default function App() {
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setHistory(prev => prev.filter(h => h.id !== record.id));
+                                trackEvent('delete_history', { type: 'single', count: 1 });
                                 showToast('已刪除紀錄');
                               }}
                               className="flex-1 py-3.5 bg-red-50 dark:bg-red-900/20 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/40 transition-all rounded-xl active:scale-95 flex items-center justify-center"
@@ -1802,15 +1817,16 @@ export default function App() {
                           <button onClick={() => setShowClearConfirm(false)} className="flex-1 py-2.5 rounded-xl font-bold bg-slate-100 dark:bg-mystic-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-mystic-700 transition-colors">取消</button>
                           <button
                             onClick={() => {
-                              setHistory([]);
-                              if (currentHistoryId && history.find(h => h.id === currentHistoryId)) {
-                                setCurrentHistoryId(null);
-                                setDrawnCards([]);
-                                setView('home');
-                              }
-                              setShowClearConfirm(false);
-                              showToast('已清空所有紀錄');
-                            }}
+                               setHistory([]);
+                               if (currentHistoryId && history.find(h => h.id === currentHistoryId)) {
+                                 setCurrentHistoryId(null);
+                                 setDrawnCards([]);
+                                 setView('home');
+                               }
+                               trackEvent('delete_history', { type: 'all', count: history.length });
+                               setShowClearConfirm(false);
+                               showToast('已清空所有紀錄');
+                             }}
                             className="flex-1 py-2.5 rounded-xl font-bold bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/20 transition-all active:scale-95"
                           >
                             確認清空
@@ -1839,7 +1855,7 @@ export default function App() {
                         <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">此動作無法復原，請確認是否要繼續。</p>
                         <div className="flex w-full gap-3 mt-1">
                           <button onClick={() => setShowBatchDeleteConfirm(false)} className="flex-1 py-2.5 rounded-xl font-bold bg-slate-100 dark:bg-mystic-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-mystic-700 transition-colors">取消</button>
-                          <button onClick={executeBatchDelete} className="flex-1 py-2.5 rounded-xl font-bold bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/20 transition-all active:scale-95">
+                          <button onClick={() => { executeBatchDelete(); trackEvent('delete_history', { type: 'batch', count: selectedHistoryIds.size }); }} className="flex-1 py-2.5 rounded-xl font-bold bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/20 transition-all active:scale-95">
                             確認刪除
                           </button>
                         </div>
@@ -1957,6 +1973,7 @@ export default function App() {
           href="https://forms.gle/oXj1gXmqR83f3cfP8"
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => trackEvent('click_feedback')}
           className="text-xs text-slate-400 dark:text-mystic-600 hover:text-amber-600 dark:hover:text-mystic-400 transition-colors"
         >
           有想反饋的嗎？點這裡 →
