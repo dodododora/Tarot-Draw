@@ -328,9 +328,9 @@ export function getCardEmoji(cardId: number, system?: 'waite' | 'thoth'): string
   const suitIndex = Math.floor((cardId - 22) / 14);
   switch (suitIndex) {
     case 0: return "🪄"; // Wands
-    case 1: return "🏆"; // Cups
-    case 2: return "⚔️"; // Swords
-    case 3: return system === 'thoth' ? "💿" : "🪙"; // Disks vs Pentacles
+    case 1: return "🍶"; // Cups
+    case 2: return cardId === 51 ? "⚔️" : "🗡️"; // Swords — Two of Swords = ⚔️, rest = 🗡️
+    case 3: return system === 'thoth' ? "🔘" : "🪙"; // Disks vs Pentacles
     default: return "🎴";
   }
 }
