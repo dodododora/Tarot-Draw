@@ -1968,7 +1968,8 @@ export default function App() {
       </AnimatePresence>
 
       {/* Global Footer */}
-      <footer className="text-center py-4 border-t border-stone-100/60 dark:border-mystic-900/60 bg-white/30 dark:bg-mystic-950/30 backdrop-blur-sm">
+      <footer className="text-center py-4 border-t border-stone-100/60 dark:border-mystic-900/60 bg-white/30 dark:bg-mystic-950/30 backdrop-blur-sm flex flex-col items-center gap-1.5">
+        <p className="text-xs text-slate-400 dark:text-mystic-600">© 2026 Tarot Draw｜本站內容僅供娛樂與自我探索參考</p>
         <a
           href="https://forms.gle/oXj1gXmqR83f3cfP8"
           target="_blank"
