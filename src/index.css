@@ -56,13 +56,11 @@
   transform: rotate(180deg);
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
+/* Hide scrollbar globally — scroll still works, no layout shift on route change */
+* {
+  scrollbar-width: none;       /* Firefox */
+  -ms-overflow-style: none;    /* IE / Edge */
 }
-::-webkit-scrollbar-track {
-  @apply bg-transparent;
-}
-::-webkit-scrollbar-thumb {
-  @apply bg-stone-300 dark:bg-mystic-700/50 rounded-full hover:bg-stone-400 dark:hover:bg-mystic-600/50;
+*::-webkit-scrollbar {
+  display: none;               /* Chrome / Safari */
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, type MouseEvent, type FormEvent } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useCallback, type MouseEvent, type FormEvent } from 'react';
 import { flushSync } from 'react-dom';
 import { useNavigate, useLocation, Routes, Route, Navigate } from 'react-router-dom';
 import { Moon, Sun, Plus, Trash2, Edit2, Copy, ArrowLeft, Sparkles, Wand2, Info, X, History, CheckCircle2, Compass, Lightbulb } from 'lucide-react';
@@ -239,7 +239,7 @@ function ShuffleOverlay({ question }: { question: string }) {
       {/* Question area */}
       <div className="text-center flex flex-col items-center gap-3 px-8">
         <p style={{ color: 'rgba(180,150,255,0.7)', fontSize: '0.7rem', letterSpacing: '0.25em', fontWeight: 500, textTransform: 'uppercase' }}>
-          將問題放入心中⋯
+          讓心靜下來，將問題放入心中⋯
         </p>
         {question.trim() && (
           <p style={{ color: 'rgba(252,211,77,0.9)' }} className="text-base sm:text-lg font-semibold max-w-sm leading-relaxed">
@@ -259,6 +259,15 @@ function ResultGuard({ hasData, children }: { hasData: boolean; children: React.
   }, [hasData, navigate]);
   if (!hasData) return null;
   return <>{children}</>;
+}
+
+/** Resets scroll position to top on every route change — fires before paint to avoid visible jump */
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
 }
 
 export default function App() {
@@ -288,6 +297,7 @@ export default function App() {
   const [showBatchDeleteConfirm, setShowBatchDeleteConfirm] = useState(false);
   const [manualInputs, setManualInputs] = useState<{ name: string; reversed: boolean }[]>([]);
   const [isShuffling, setIsShuffling] = useState(false);
+  const [bottomCard, setBottomCard] = useState<DrawnCard | null>(null);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -342,12 +352,14 @@ export default function App() {
     const cats = mode === 'tarot'
       ? [
           { label: '🌟 經典牌陣', ids: ['single', 'waite-triangle', 'celtic'] },
-          { label: '📖 敘事與關係', ids: ['hero', 'cycle', 'mirror'] },
+          { label: '🔄 轉化與旅程', ids: ['cycle', 'hero'] },
+          { label: '🪞 關係動力', ids: ['attraction', 'rel-seasons', 'mirror'] },
           { label: '🧭 決策與資源', ids: ['breakthrough', 'choice', 'resource'] },
         ]
       : [
-          { label: '🌟 核心牌陣', ids: ['single', 'waite-triangle'] },
-          { label: '🔬 心理解構', ids: ['johari', 'pattern', 'iceberg', 'cycle', 'mirror'] },
+          { label: '🌟 經典牌陣', ids: ['single', 'waite-triangle'] },
+          { label: '🧠 深層探索', ids: ['johari', 'cycle', 'iceberg'] },
+          { label: '🪞 關係場域', ids: ['energy-resonance', 'mirror-mirror', 'mirror'] },
           { label: '🧭 決策與資源', ids: ['breakthrough', 'choice', 'resource'] },
         ];
     return cats
@@ -412,6 +424,48 @@ export default function App() {
           count: expectedCount,
           positions,
           exampleQuestion: peopleCount > 2 ? "我與團隊中另外幾位同事彼此之間真實的看法是什麼？" : "我跟前任目前各自對彼此真實的看法是什麼？"
+        });
+      }
+    }
+  }, [peopleCount, selectedSpread]);
+
+  // Dynamic energy-resonance spread modifier (reuses peopleCount)
+  useEffect(() => {
+    if (selectedSpread?.id === 'energy-resonance') {
+      const base = ['我的底層渴望', '對方的底層渴望', '碰撞製造的東西', '各自迴避的部分', '去除投射後的核心'];
+      const positions = [...base];
+      for (let i = 1; i < peopleCount - 1; i++) {
+        const char = String.fromCharCode(65 + i);
+        positions.splice(1 + i, 0, `對象${char}的底層渴望`);
+      }
+      const expectedCount = 4 + (peopleCount - 1);
+      if (selectedSpread.count !== expectedCount) {
+        setSelectedSpread({
+          ...selectedSpread,
+          name: peopleCount === 2 ? '能量共振' : `能量共振 (${peopleCount}人局)`,
+          count: expectedCount,
+          positions,
+        });
+      }
+    }
+  }, [peopleCount, selectedSpread]);
+
+  // Dynamic mirror-mirror spread modifier (reuses peopleCount)
+  useEffect(() => {
+    if (selectedSpread?.id === 'mirror-mirror') {
+      const base = ['你在對方身上受不了的', '這件事在你身上的根', '對方從你身上照見的', '你們共同迴避的', '這段關係真正的課題'];
+      const positions = [...base];
+      for (let i = 1; i < peopleCount - 1; i++) {
+        const char = String.fromCharCode(65 + i);
+        positions.splice(2 + i, 0, `對象${char}從你身上照見的`);
+      }
+      const expectedCount = 4 + (peopleCount - 1);
+      if (selectedSpread.count !== expectedCount) {
+        setSelectedSpread({
+          ...selectedSpread,
+          name: peopleCount === 2 ? '鏡中鏡' : `鏡中鏡 (${peopleCount}人局)`,
+          count: expectedCount,
+          positions,
         });
       }
     }
@@ -517,7 +571,7 @@ export default function App() {
     if (!selectedSpread) return;
 
     if (mode === 'lenormand') {
-      const drawn = shuffleAndDraw(LENORMAND_CARDS, 'lenormand', selectedSpread.count);
+      const { drawn } = shuffleAndDraw(LENORMAND_CARDS, 'lenormand', selectedSpread.count);
       const lenResults: DrawnLenormandCard[] = drawn.map((card, index) => ({
         id: card.id,
         nameCN: card.nameCN,
@@ -540,13 +594,20 @@ export default function App() {
     // ─── Tarot / Thoth ──────────────────────────────────────────────────────
     const system = mode === 'thoth' ? 'thoth' : 'waite';
     const sourceCards = mode === 'thoth' ? THOTH_ALL_CARDS : ALL_CARDS;
-    const drawn = shuffleAndDraw(sourceCards, system, selectedSpread.count);
+    const { drawn, bottom } = shuffleAndDraw(sourceCards, system, selectedSpread.count);
 
     const results: DrawnCard[] = drawn.map((card, index) => ({
       ...sourceCards.find(c => c.id === card.id)!,
       isReversed: card.reversed,
       positionName: selectedSpread.positions[index] || `位置 ${index + 1}`,
     }));
+
+    const bottomResult: DrawnCard = {
+      ...sourceCards.find(c => c.id === bottom.id)!,
+      isReversed: mode === 'thoth' ? false : bottom.reversed,
+      positionName: '底牌',
+    };
+    setBottomCard(bottomResult);
 
     setDrawnCards(results);
     const newHistoryId = Date.now().toString() + Math.random().toString(36).substring(2, 9);
@@ -706,9 +767,15 @@ export default function App() {
     const mainCards = targetCards.filter(c => !c.extraQuestion);
     const extraCards = targetCards.filter(c => c.extraQuestion);
 
-    const mainText = mainCards.map((card, i) => `  ${i + 1}. ${card.positionName}：${card.nameCN} ${card.nameEN}（${card.isReversed ? '逆位' : '正位'}）`).join('\n');
+    const mainText = mainCards.map((card, i) => {
+      const orientation = targetMode === 'thoth' ? '' : `（${card.isReversed ? '逆位' : '正位'}）`;
+      return `  ${i + 1}. ${card.positionName}：${card.nameCN} ${card.nameEN}${orientation}`;
+    }).join('\n');
     const extraText = extraCards.length > 0
-      ? `\n\n【補充指引】以下為針對子問題補抽的牌，請在原牌陣基礎上聚焦解讀，視為放大鏡而非新占卜。\n${extraCards.map(card => `  Q: ${card.extraQuestion}\n  👉 ${card.nameCN} ${card.nameEN}（${card.isReversed ? '逆位' : '正位'}）`).join('\n\n')}`
+      ? `\n\n【補充指引】以下為針對子問題補抽的牌，請在原牌陣基礎上聚焦解讀，視為放大鏡而非新占卜。\n${extraCards.map(card => {
+        const orientation = targetMode === 'thoth' ? '' : `（${card.isReversed ? '逆位' : '正位'}）`;
+        return `  Q: ${card.extraQuestion}\n  👉 ${card.nameCN} ${card.nameEN}${orientation}`;
+      }).join('\n\n')}`
       : '';
 
     let text = '';
@@ -748,7 +815,7 @@ export default function App() {
           analysisPrompt = `\n\n請為我深入解讀目前的僵局，殘酷地指出我的【錯誤的發力點】，並告訴我如何利用【隱藏的槓桿】作為【關鍵行動】來突破【核心限制】。`;
           break;
         case 'cycle':
-          analysisPrompt = `\n\n請為我深入解讀這段生命週期的能量代謝，明確指出什麼是【正在消亡的】與【必須放下的】，並指導我如何將【必須帶走的】資產投入到【正在萌芽的】事物中。`;
+          analysisPrompt = `\n\n請為我深入解讀這段生命週期的能量代謝，明確指出【正在消亡的】與【正在萌芽的】之間，【此刻的張力】正在製造什麼樣的臨界狀態，並指導我如何將【必須放下的】包袱留下，把【必須帶走的】資產投入到【正在萌芽的】事物中。`;
           break;
         case 'pattern':
           analysisPrompt = `\n\n請為我進行深度的心理模式解構，分析【觸發機制】與【表層防禦】背後的【核心恐懼】，點出我留在【舒適圈的代價】，並給出【阻斷慣性的行動】建議。`;
@@ -925,6 +992,7 @@ export default function App() {
       </nav>
 
       <main className="flex-grow container mx-auto px-4 py-8 max-w-6xl">
+        <ScrollToTop />
         <AnimatePresence mode="sync">
           <Routes location={location} key={location.pathname}>
             <Route path="/" element={
@@ -977,9 +1045,22 @@ export default function App() {
                 </section>
               )}
 
-              {/* Spreads — categorized, no redundant header */}
+              {/* Spreads — tarot / thoth */}
               {(mode === 'tarot' || mode === 'thoth') && (
               <section className="space-y-8">
+                <div>
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-2xl">{mode === 'tarot' ? '🔮' : '🌌'}</span>
+                    <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">
+                      {mode === 'tarot' ? '偉特牌陣' : '托特牌陣'}
+                    </h2>
+                  </div>
+                  <p className="text-sm text-slate-500 dark:text-mystic-400">
+                    {mode === 'tarot'
+                      ? '共 78 張牌・含正逆位・適合敘事與心理探索'
+                      : '共 78 張牌・無逆位・著重能量狀態與深層解析'}
+                  </p>
+                </div>
                 {categorizedSpreads.map(({ label, catSpreads }) => (
                   <div key={label}>
                     <p className="text-xs font-bold text-amber-700 dark:text-mystic-400 uppercase tracking-widest mb-3">{label}</p>
@@ -1046,9 +1127,6 @@ export default function App() {
                   ☕ 請我喝杯咖啡
                 </a>
                 */}
-                <p className="text-[11px] leading-relaxed text-slate-400 dark:text-mystic-600 max-w-2xl mx-auto text-center">
-                  本網站提供之塔羅牌陣與解讀內容僅供娛樂與自我探索參考，不構成任何醫療、心理、法律或財務建議。請勿依據占卜結果做出重大決定。
-                </p>
               </div>
             </motion.div>
             } />
@@ -1203,7 +1281,7 @@ export default function App() {
                     </div>
                   )}
 
-                  {selectedSpread.id === 'mirror' && (
+                  {(selectedSpread.id === 'mirror' || selectedSpread.id === 'energy-resonance' || selectedSpread.id === 'mirror-mirror') && (
                     <div className="bg-emerald-50/50 dark:bg-emerald-950/20 p-4 rounded-xl border border-emerald-100 dark:border-emerald-900/30">
                       <label className="text-sm font-bold text-emerald-900 dark:text-emerald-300 block mb-3">
                         這段關係牽涉多少人？（包含你，目前：{peopleCount} 人）
@@ -1254,7 +1332,7 @@ export default function App() {
                   <div className="bg-indigo-50/60 dark:bg-indigo-950/30 p-4 sm:px-5 rounded-2xl border border-indigo-100/60 dark:border-indigo-900/30 flex items-start gap-3">
                     <Lightbulb className="text-indigo-400 dark:text-indigo-400 mt-0.5 flex-shrink-0" size={18} />
                     <div>
-                      <p className="text-sm font-bold text-indigo-900 dark:text-indigo-300 mb-1.5 tracking-wide">塔羅小知識</p>
+                      <p className="text-sm font-bold text-indigo-900 dark:text-indigo-300 mb-1.5 tracking-wide">{mode === 'lenormand' ? '雷諾曼小知識' : mode === 'thoth' ? '托特小知識' : '塔羅小知識'}</p>
                       <p className="text-sm text-indigo-800/80 dark:text-indigo-200/70 leading-relaxed italic">
                         {currentTrivia}
                       </p>
@@ -1276,6 +1354,8 @@ export default function App() {
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                   {mode === 'lenormand' && <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800 mb-1 inline-block">雷諾曼</span>}
+                  {mode === 'thoth' && <span className="text-xs font-bold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 px-2 py-0.5 rounded-full border border-purple-200 dark:border-purple-800 mb-1 inline-block">托特塔羅</span>}
+                  {mode === 'tarot' && <span className="text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2 py-0.5 rounded-full border border-amber-200 dark:border-amber-800 mb-1 inline-block">偉特塔羅</span>}
                   <h2 className="text-2xl font-bold bg-gradient-to-r from-mystic-700 to-indigo-500 bg-clip-text text-transparent dark:from-mystic-200 dark:to-indigo-300 drop-shadow-sm">{selectedSpread?.name}</h2>
                   <p className="text-slate-500 dark:text-mystic-400">問題：{question.trim() || '探索當下整體狀態'}</p>
                 </div>
@@ -1374,7 +1454,7 @@ export default function App() {
                             <div className="text-amber-800 dark:text-mystic-300 text-[13px] sm:text-sm font-medium text-center bg-white/80 dark:bg-mystic-900/80 px-4 py-2.5 rounded-xl border border-amber-200 dark:border-mystic-800 shadow-lg max-w-[160px] sm:max-w-[200px]">
                               <span className="text-amber-500 dark:text-mystic-500 mr-1">Q:</span>{card.extraQuestion}
                             </div>
-                            <TarotCardDisplay card={card} index={index} isExtra={true} />
+                            <TarotCardDisplay card={card} index={index} isExtra={true} system={mode === 'thoth' ? 'thoth' : 'waite'} />
                           </div>
                         ))}
                       </div>
@@ -1406,10 +1486,30 @@ export default function App() {
                 </div>
               )}
 
+              {/* Bottom Card — tarot/thoth only */}
+              {(mode === 'tarot' || mode === 'thoth') && bottomCard && (
+                <div className="relative bg-white/40 dark:bg-mystic-950 rounded-[2rem] p-6 sm:p-8 shadow-xl border-2 border-dashed border-amber-200/60 dark:border-mystic-700/40 backdrop-blur-sm">
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="text-center">
+                      <p className="text-xs font-bold text-amber-700 dark:text-mystic-400 uppercase tracking-widest">底牌</p>
+                      <p className="text-[11px] text-slate-500 dark:text-mystic-500 mt-0.5">牌堆最底的一張，反映潛藏的動機或心理狀態</p>
+                    </div>
+                    <TarotCardDisplay card={bottomCard} index={0} isExtra={true} system={mode === 'thoth' ? 'thoth' : 'waite'} />
+                    {mode === 'tarot' && (
+                      <p className={`text-xs font-bold ${bottomCard.isReversed ? 'text-red-500 dark:text-red-400' : 'text-amber-600 dark:text-mystic-400'}`}>
+                        {bottomCard.isReversed ? '逆位' : '正位'}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+
               <div className="bg-white/80 dark:bg-mystic-900 p-6 rounded-2xl border border-amber-100 dark:border-mystic-800 text-center shadow-sm">
                 <p className="text-amber-800 dark:text-mystic-300 italic font-medium">
                   {mode === 'lenormand'
                     ? '「雷諾曼牌訴說的是日常的故事，而你才是故事的主角。」'
+                    : mode === 'thoth'
+                    ? '「能量沒有好壞，只有是否被意識到。」'
                     : '「牌卡只是指引，真正的答案在你的內心。」'}
                 </p>
               </div>
@@ -2089,7 +2189,7 @@ function oracleUI(effectiveScore: number): OracleUI {
 function TarotSpreadLayout({ spread, cards, mode }: { spread: Spread; cards: DrawnCard[]; mode: 'tarot' | 'thoth' }) {
   const renderCard = (index: number) => {
     if (index >= cards.length) return null;
-    return <TarotCardDisplay key={index} card={cards[index]} index={index} />;
+    return <TarotCardDisplay key={index} card={cards[index]} index={index} system={mode} />;
   };
 
   switch (spread.id) {
@@ -2259,8 +2359,8 @@ function TarotSpreadLayout({ spread, cards, mode }: { spread: Spread; cards: Dra
 }
 }
 
-function TarotCardDisplay({ card, index, isExtra }: { card: DrawnCard; index: number; isExtra?: boolean }) {
-  const emoji = getCardEmoji(card.id);
+function TarotCardDisplay({ card, index, isExtra, system }: { card: DrawnCard; index: number; isExtra?: boolean; system?: 'waite' | 'thoth' }) {
+  const emoji = getCardEmoji(card.id, system);
   const isMajor = card.id < 22;
 
   return (

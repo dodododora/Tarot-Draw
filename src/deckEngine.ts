@@ -174,9 +174,12 @@ export function shuffleAndDraw(
   rawCards: Array<{ id: number; nameCN: string; nameEN: string }>,
   system: DeckSystem,
   count: number
-): DeckCard[] {
+): { drawn: DeckCard[]; bottom: DeckCard } {
   const config = SHUFFLE_CONFIGS[system];
   const deck = createDeck(rawCards);
   const shuffled = simulateShuffle(deck, config);
-  return drawFromTop(shuffled, count);
+  return {
+    drawn: drawFromTop(shuffled, count),
+    bottom: shuffled[shuffled.length - 1],
+  };
 }

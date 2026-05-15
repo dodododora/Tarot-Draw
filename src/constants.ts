@@ -142,6 +142,8 @@ export const THOTH_TRIVIA: string[] = [
   "在托特系統中，錢幣 (Pentacles) 被替換為圓盤 (Disks)，象徵物質界更為動態與宇宙尺度的能量。",
   "克勞利認為舊時代（奧西里斯時代）已經結束，世界進入了荷魯斯的新紀元，因此將第 20 張牌「審判」改名為「新紀元 (The Aeon)」。",
   "傳統的「節制 (Temperance)」在托特牌中被改為「藝術 (Art)」，強調鍊金術中火與水結合的轉化與昇華過程。",
+  "本站模擬實體洗牌：透過多次切牌、交錯疊合、翻轉牌疊，讓每次抽牌的結果都來自完整的洗牌過程。",
+  "問題越清晰，答案越清晰。輸入問題時，盡量具體描述想了解的事，避免一次問多個問題。",
 ];
 
 // ─── Lenormand ───────────────────────────────────────────────────────────────
@@ -246,67 +248,81 @@ export const LENORMAND_TRIVIA: string[] = [
   "「魚（Fish）」代表流動、財務與豐盛，最初源自占卜師將牌義與日耳曼民間傳說中「魚帶來財富」的信仰結合。",
   "完整版的大展開牌陣（Grand Tableau）需要全部 36 張牌，一次性鋪開排成 4 行 9 列，是雷諾曼最複雜的讀法。",
   "雷諾曼牌在德語系國家（德國、奧地利、瑞士）至今仍非常盛行，甚至比塔羅牌更廣泛地出現在日常占卜場合。",
+  "問題越清晰，答案越清晰。雷諾曼擅長回答具體的事務性問題，問題越明確，牌陣的故事脈絡就越清晰。",
 ];
 
 export const THOTH_SPREADS: Spread[] = [
   { id: "single",       name: "單張神諭",    count: 1,  positions: ["當下指引"],                                                                                                                hint: "一張牌提取唯一焦點，支援是非題、快速方向確認",                    exampleQuestion: "針對今天的重要會議，我最該穩住的心態是什麼？" },
   { id: "johari",       name: "盲點矩陣",    count: 4,  positions: ["公開區", "盲目區", "隱藏區", "未知潛能"],                                                                                  hint: "基於周哈里窗模型，解構自我認知與他人視角的落差",                  exampleQuestion: "在目前團隊中，我對自己角色的認知與實際情況有何落差？" },
-  { id: "cycle",        name: "週期蛻變",    count: 4,  positions: ["正在消亡的", "正在萌芽的", "必須放下的", "必須帶走的"],                                                                    hint: "在過渡期或轉折點，釐清能量的生滅與新舊交替",                      exampleQuestion: "邁入30歲的轉折，我該如何看待目前的職涯過渡期？" },
+  { id: "cycle",        name: "週期蛻變",    count: 5,  positions: ["正在消亡的", "正在萌芽的", "此刻的張力", "必須放下的", "必須帶走的"],                                                              hint: "在過渡期或轉折點，釐清能量的生滅與新舊交替",                      exampleQuestion: "邁入30歲的轉折，我該如何看待目前的職涯過渡期？" },
   { id: "breakthrough", name: "破局策略",    count: 4,  positions: ["核心瓶頸", "沉沒成本", "隱藏槓桿", "第一步"],                                                                              hint: "陷入僵局時，尋找最具性價比的突破口與專注路徑",                    exampleQuestion: "這個專案推動不下去，我該如何調整策略來破局？" },
-  { id: "choice",       name: "決策推演",    count: 5,  positions: ["底層邏輯", "A 的隱藏成本", "A 的演化", "B 的隱藏成本", "B 的演化"],                                                       hint: "推演不同選擇的機會成本與演化路徑，超越單純好壞考量",              exampleQuestion: "我該選擇去大企業求穩，還是加入新創團隊承擔風險？" },
-  { id: "pattern",      name: "模式解構",    count: 5,  positions: ["觸發機制", "慣性反應", "核心恐懼", "舒適圈代價", "阻斷慣性"],                                                              hint: "深入心理分析，釐清為何反覆陷入相同困境或關係模式",                exampleQuestion: "為什麼我總是在關係深入時，會下意識地想逃避？" },
+  { id: "choice",       name: "決策推演",    count: 5,  positions: ["底層邏輯", "A 的隱藏成本", "A 的演化", "B 的隱藏成本", "B 的演化"],                                                       hint: "推演不同選擇的機會成本與演化路徑，超越單純好壞考量，支援多選項比較",              exampleQuestion: "我該選擇去大企業求穩，還是加入新創團隊承擔風險？" },
   { id: "iceberg",      name: "冰山深探",    count: 6,  positions: ["表層行為", "理性認知", "真實情緒", "核心信念", "防衛機制", "整合策略"],                                                    hint: "向下挖掘，看見冰山底下的真實驅動力與防衛機制",                    exampleQuestion: "我明明想追求事業成功，卻總是提不起勁的深層原因？" },
-  { id: "mirror",       name: "關係鏡像",    count: 6,  positions: ["我的投射", "我的底線", "對方的投射", "對方需求", "系統摩擦", "共振點"],                                                    hint: "超越誰對誰錯，透視雙方互動的系統性結構與隱形動力",                exampleQuestion: "我與合夥人摩擦頻繁，這段合作關係底層的問題出在哪？" },
-  { id: "resource",     name: "局勢盤點",    count: 6,  positions: ["北極星目標", "可用資源", "外部變數", "系統阻力", "隱藏推力", "下一里程碑"],                                                hint: "盤點人生或專案的籌碼、風險與下階段方向，如同專案審計",            exampleQuestion: "對於明年的創業計畫，我目前的資源與風險盤點為何？" },
-  { id: "hero",         name: "英雄之旅",    count: 7,  positions: ["現狀", "冒險召喚", "內在阻力", "導師與工具", "深淵試煉", "啟示與轉化", "帶著恩賜歸來"],                                    hint: "以神話學框架，定位你目前處於人生哪一個敘事階段",                  exampleQuestion: "我決定徹底轉換跑道，這段旅程將面臨什麼挑戰與成長？" },
-  { id: "celtic",       name: "凱爾特十字", count: 10, positions: ["現況", "主要挑戰", "顯意識", "潛意識", "過去", "近未來", "自我認知", "外在環境", "焦慮與渴望", "最終演化"],                hint: "最經典的全景掃描，層層剝開複雜局勢的因果鏈",                      exampleQuestion: "我目前面臨人生的巨大低潮，請幫我全盤檢視各維度的問題與解法。" },
+  { id: "mirror",            name: "關係鏡像",    count: 6,  positions: ["我的投射", "我的底線", "對方的投射", "對方需求", "系統摩擦", "共振點"],                                                    hint: "超越對錯，透視雙方互動的系統性結構與隱形動力，支援多人關係局",                exampleQuestion: "我與合夥人摩擦頻繁，這段合作關係底層的問題出在哪？" },
+  { id: "resource",          name: "局勢盤點",    count: 6,  positions: ["北極星目標", "可用資源", "外部變數", "系統阻力", "隱藏推力", "下一里程碑"],                                                hint: "盤點人生或專案的籌碼、風險與下階段方向，如同專案審計",            exampleQuestion: "對於明年的創業計畫，我目前的資源與風險盤點為何？" },
+  { id: "hero",              name: "英雄之旅",    count: 7,  positions: ["現狀", "冒險召喚", "內在阻力", "導師與工具", "深淵試煉", "啟示與轉化", "帶著恩賜歸來"],                                    hint: "以神話學框架，定位你目前處於人生哪一個敘事階段",                  exampleQuestion: "我決定徹底轉換跑道，這段旅程將面臨什麼挑戰與成長？" },
+  { id: "energy-resonance",  name: "能量共振",    count: 5,  positions: ["我的底層渴望", "對方的底層渴望", "碰撞製造的東西", "各自迴避的部分", "去除投射後的核心"],         hint: "看見兩個能量場相遇時，真正在發生什麼，支援多人場域解讀",                                   exampleQuestion: "我與這個人之間的互動底層透露了什麼？" },
+  { id: "mirror-mirror",     name: "鏡中鏡",      count: 5,  positions: ["你在對方身上受不了的", "這件事在你身上的根", "對方從你身上照見的", "你們共同迴避的", "這段關係真正的課題"],      hint: "透過關係這面鏡子，看見你其實在跟自己的哪個部分對話，支援多人解讀",                             exampleQuestion: "我在這段關係中反覆被觸發，背後真正的課題是什麼？" },
+  { id: "celtic",            name: "凱爾特十字", count: 10, positions: ["現況", "主要挑戰", "顯意識", "潛意識", "過去", "近未來", "自我認知", "外在環境", "焦慮與渴望", "最終演化"],                hint: "最經典的全景掃描，層層剝開複雜局勢的因果鏈",                      exampleQuestion: "我目前面臨人生的巨大低潮，請幫我全盤檢視各維度的問題與解法。" },
 ];
 
 export const WAITE_SPREADS: Spread[] = [
   { id: "single",         name: "單張神諭",    count: 1, positions: ["當下指引"],                                        hint: "一張牌提取唯一焦點，支援是非題、快速方向確認",   exampleQuestion: "這份工作對我目前的靈性發展是否有益？" },
   { id: "waite-triangle", name: "身心靈對話", count: 3, positions: ["身體感受", "心智邏輯", "靈魂渴望"],                  hint: "思緒混亂時，重新對齊三個維度的真實狀態",         exampleQuestion: "我最近疲憊且提不起勁，身心靈分別在傳遞什麼訊息？" },
+  { id: "attraction",     name: "吸引力解析",  count: 3, positions: ["我目前散發的頻率", "正在召喚的連結模式", "値得鬆開的舊有慣性"],  hint: "看見自己在關係中散發的頻率，了解當下正在召喚什麼樣的連結",  exampleQuestion: "我目前的狀態在感情關係中吸引著什麼？" },
+  { id: "rel-seasons",    name: "關係四季",    count: 4, positions: ["現在的關係節奏", "推動這個節奏的核心力量", "需要給予的滋養", "即將來臨的自然轉變"],  hint: "以四季比喻關係當下的節奏，找到最自然的滋養與前進方式",  exampleQuestion: "這段感情現在處於什麼節奏？我將如何與它同行？" },
 ];
 
 // Which spread IDs are available in each system
 // Waite: narrative/event-oriented + classic structures
 export const WAITE_SPREAD_IDS = [
-  'single', 'waite-triangle', 'celtic', 'hero',
-  'cycle', 'mirror', 'breakthrough', 'choice', 'resource',
+  'single', 'waite-triangle', 'celtic',
+  'cycle', 'hero',
+  'attraction', 'rel-seasons', 'mirror',
+  'breakthrough', 'choice', 'resource',
 ];
-// Thoth: energy-state / psychological structure (no narrative-heavy celtic/hero)
+// Thoth: energy-state / psychological structure
 export const THOTH_SPREAD_IDS = [
   'single', 'waite-triangle',
-  'johari', 'pattern', 'iceberg', 'cycle', 'mirror',
+  'johari', 'iceberg',
+  'cycle',
+  'energy-resonance', 'mirror-mirror', 'mirror',
   'breakthrough', 'choice', 'resource',
 ];
 
-export function getCardEmoji(cardId: number): string {
+export function getCardEmoji(cardId: number, system?: 'waite' | 'thoth'): string {
   if (cardId < 22) {
     const MAJOR_EMOJIS = [
       "🚶", // 0 愚者
       "🧙", // 1 魔術師
-      "📜", // 2 女教皇
+      "📜", // 2 女教皇/女祭司
       "👸", // 3 皇后
       "🤴", // 4 皇帝
       "🗝️", // 5 教皇
       "💞", // 6 戀人
       "🎠", // 7 戰車
-      "🦁", // 8 力量
+      "🦁", // 8 偉特:力量(Leo) / 托特:調節(Libra→swap)
       "🏮", // 9 隱者
       "🎡", // 10 命運之輪
-      "⚖️", // 11 正義
+      "⚖️", // 11 偉特:正義(Libra) / 托特:慾望(Leo→swap)
       "🙃", // 12 倒吊人
       "💀", // 13 死亡
-      "👼", // 14 節制
+      "👼", // 14 偉特:節制 / 托特:藝術
       "👿", // 15 惡魔
       "🌩️", // 16 高塔
-      "🌟", // 17 星星
+      "⭐", // 17 星星
       "🌕", // 18 月亮
       "☀️", // 19 太陽
-      "📯", // 20 審判
-      "🌍"  // 21 世界
+      "📯", // 20 偉特:審判 / 托特:新紀元
+      "🌍"  // 21 世界/宇宙
     ];
-    return MAJOR_EMOJIS[cardId] || "🌟";
+    // Thoth: position 8 = 調節 Adjustment (Libra ⚖️), position 11 = 慾望 Lust (Leo 🦁)
+    if (system === 'thoth') {
+      const t = [...MAJOR_EMOJIS];
+      t[8] = "⚖️"; t[11] = "🦁";
+      return t[cardId] || "⭐";
+    }
+    return MAJOR_EMOJIS[cardId] || "⭐";
   }
 
   const suitIndex = Math.floor((cardId - 22) / 14);
@@ -314,7 +330,7 @@ export function getCardEmoji(cardId: number): string {
     case 0: return "🪄"; // Wands
     case 1: return "🏆"; // Cups
     case 2: return "⚔️"; // Swords
-    case 3: return "🪙"; // Pentacles
+    case 3: return system === 'thoth' ? "💿" : "🪙"; // Disks vs Pentacles
     default: return "🎴";
   }
 }
@@ -353,8 +369,12 @@ export const TAROT_TRIVIA = [
   "寶劍三視覺上畫著三把劍無情地刺穿一顆心，雖然象徵心碎，但也客觀提醒著人們：悲傷與看清真相是靈魂療癒必經的痛楚。",
   "錢幣十中不僅畫了擁有財富的老人、夫妻與小孩，還有兩隻安康的白狗，代表著不只金錢，還包含家庭血脈與精神安穩的代代延續。",
   "權杖八是少數沒有畫出任何人物輪廓的小阿爾克那牌，八根整齊劃一飛在空中的權杖，精準象徵了毫無阻力、極速發展的能量。",
-  "「月亮」牌底部的甲殼類生物正從深水中爬上陸地，象徵著從最深層潛意識中逐漸浮現出、難以名狀的原始恐懼。"
+  "「月亮」牌底部的甲殼類生物正從深水中爬上陸地，象徵著從最深層潛意識中逐漸浮現出、難以名狀的原始恐懼。",
+  "本站模擬實體洗牌：透過多次切牌、交錯疊合、翻轉牌疊，讓每次抽牌的結果都來自完整的洗牌過程。",
+  "問題越清晰，答案越清晰。輸入問題時，盡量具體描述想了解的事，避免一次問多個問題。",
 ];
+
+
 
 export interface OracleInfo {
   score: number;
