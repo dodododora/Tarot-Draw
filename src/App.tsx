@@ -2278,8 +2278,8 @@ function oracleUI(effectiveScore: number): OracleUI {
     case  2: return { label: '是 (Yes)',           theme: 'text-teal-700 dark:text-teal-400',          bg: 'bg-teal-50/80 dark:bg-teal-900/30 border-teal-200/60 dark:border-teal-800/50' };
     case  1: return { label: '偏向是 (Maybe Yes)',  theme: 'text-teal-600/80 dark:text-teal-400/70',    bg: 'bg-teal-50/50 dark:bg-teal-900/20 border-teal-200/40 dark:border-teal-800/30' };
     case  0: return { label: '不確定 (Maybe)',       theme: 'text-stone-600 dark:text-stone-400',         bg: 'bg-stone-100/80 dark:bg-stone-800/30 border-stone-300/50 dark:border-stone-700/40' };
-    case -1: return { label: '偏向否 (Maybe No)',   theme: 'text-rose-700/80 dark:text-rose-400/60',    bg: 'bg-rose-100/50 dark:bg-rose-900/10 border-rose-300/40 dark:border-rose-800/20' };
-    case -2: return { label: '否 (No)',             theme: 'text-rose-800 dark:text-rose-400',           bg: 'bg-rose-100/70 dark:bg-rose-900/20 border-rose-300/60 dark:border-rose-800/30' };
+    case -1: return { label: '偏向否 (Maybe No)',   theme: 'text-rose-700/80 dark:text-rose-300/80',    bg: 'bg-rose-100/50 dark:bg-rose-950/40 border-rose-300/40 dark:border-rose-700/30' };
+    case -2: return { label: '否 (No)',             theme: 'text-rose-800 dark:text-rose-200',           bg: 'bg-rose-100/70 dark:bg-rose-950/60 border-rose-300/60 dark:border-rose-700/50' };
     default: return { label: '不確定 (Maybe)',       theme: 'text-stone-600 dark:text-stone-400',         bg: 'bg-stone-100/80 dark:bg-stone-800/30 border-stone-300/50 dark:border-stone-700/40' };
   }
 }
