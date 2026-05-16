@@ -291,12 +291,14 @@ export const THOTH_SPREAD_IDS = [
 ];
 
 export function getCardImagePath(
-  system: 'waite' | 'thoth' | 'lenormand',
+  system: 'waite' | 'tarot' | 'thoth' | 'lenormand',
   cardId: number
 ): string {
   const base = '/cards';
+  // app uses 'tarot' as the mode key for Waite — normalise here
+  const sys = system === 'tarot' ? 'waite' : system;
 
-  if (system === 'lenormand') {
+  if (sys === 'lenormand') {
     const LENORMAND_NAMES = [
       'rider', 'clover', 'ship', 'house', 'tree',
       'clouds', 'snake', 'coffin', 'bouquet', 'scythe',
@@ -331,8 +333,8 @@ export function getCardImagePath(
       15: 'the-devil', 16: 'the-tower', 17: 'the-star',
       18: 'the-moon', 19: 'the-sun', 20: 'the-aeon', 21: 'the-universe',
     };
-    const name = system === 'thoth' ? THOTH_MAJOR[cardId] : WAITE_MAJOR[cardId];
-    return `${base}/${system}_major_${num}_${name}.webp`;
+    const name = sys === 'thoth' ? THOTH_MAJOR[cardId] : WAITE_MAJOR[cardId];
+    return `${base}/${sys}_major_${num}_${name}.webp`;
   }
 
   // ── Minor Arcana (id 22–77) ──────────────────────────────────────────
@@ -348,11 +350,11 @@ export function getCardImagePath(
   const minorId   = cardId - 22;
   const suitIndex = Math.floor(minorId / 14);
   const cardIndex = minorId % 14;
-  const suit      = system === 'thoth' ? THOTH_SUITS[suitIndex] : WAITE_SUITS[suitIndex];
+  const suit      = sys === 'thoth' ? THOTH_SUITS[suitIndex] : WAITE_SUITS[suitIndex];
   const num       = String(cardIndex + 1).padStart(2, '0');
-  const cardName  = system === 'thoth' ? THOTH_MINOR[suitIndex][cardIndex] : WAITE_MINOR[cardIndex];
+  const cardName  = sys === 'thoth' ? THOTH_MINOR[suitIndex][cardIndex] : WAITE_MINOR[cardIndex];
 
-  return `${base}/${system}_${suit}_${num}_${cardName}.webp`;
+  return `${base}/${sys}_${suit}_${num}_${cardName}.webp`;
 }
 
 export function getCardEmoji(cardId: number, system?: 'waite' | 'thoth'): string {

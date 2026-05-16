@@ -2361,7 +2361,6 @@ function TarotSpreadLayout({ spread, cards, mode }: { spread: Spread; cards: Dra
 
 function TarotCardDisplay({ card, index, isExtra, system }: { card: DrawnCard; index: number; isExtra?: boolean; system?: 'waite' | 'thoth' }) {
   const imgSrc = card.id >= 0 ? getCardImagePath(system ?? 'waite', card.id) : null;
-  console.log('imgSrc:', imgSrc, 'cardId:', card.id, 'system:', system);
   const isMajor = card.id < 22;
 
   return (
