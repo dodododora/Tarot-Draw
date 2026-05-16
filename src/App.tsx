@@ -2361,6 +2361,7 @@ function TarotSpreadLayout({ spread, cards, mode }: { spread: Spread; cards: Dra
 
 function TarotCardDisplay({ card, index, isExtra, system }: { card: DrawnCard; index: number; isExtra?: boolean; system?: 'waite' | 'thoth' }) {
   const imgSrc = card.id >= 0 ? getCardImagePath(system ?? 'waite', card.id) : null;
+  console.log('imgSrc:', imgSrc, 'cardId:', card.id, 'system:', system);
   const isMajor = card.id < 22;
 
   return (
@@ -2379,7 +2380,7 @@ function TarotCardDisplay({ card, index, isExtra, system }: { card: DrawnCard; i
         </div>
       )}
 
-      <div className={`relative w-[110px] sm:w-[130px] rounded-2xl overflow-hidden border-4 ${
+      <div className={`relative w-[110px] sm:w-[130px] aspect-[2/3] rounded-2xl overflow-hidden border-4 ${
         card.isReversed ? 'border-red-400/80 dark:border-red-500/50 shadow-red-500/20' :
         isExtra ? 'border-amber-400/80 dark:border-mystic-500/50 shadow-amber-500/20 dark:shadow-mystic-500/20' :
           'border-amber-300/80 dark:border-gold-500/50 shadow-amber-500/20 dark:shadow-gold-500/20'
@@ -2391,7 +2392,7 @@ function TarotCardDisplay({ card, index, isExtra, system }: { card: DrawnCard; i
             alt={card.nameCN}
             loading="lazy"
             className="w-full h-full object-cover block"
-            style={{ transform: card.isReversed ? 'rotate(180deg)' : 'none', aspectRatio: '2/3' }}
+            style={{ transform: card.isReversed ? 'rotate(180deg)' : 'none' }}
           />
         ) : (
           /* Fallback for manually-entered cards with no id */
@@ -2445,7 +2446,7 @@ function LenormandCardDisplay({ card, index, isCenter }: { card: DrawnLenormandC
         {card.positionName}
       </div>
 
-      <div className={`relative w-[90px] sm:w-[110px] rounded-xl sm:rounded-2xl overflow-hidden border-2 shadow-lg transition-all duration-300 ${
+      <div className={`relative w-[90px] sm:w-[110px] aspect-[2/3] rounded-xl sm:rounded-2xl overflow-hidden border-2 shadow-lg transition-all duration-300 ${
         isCenter
           ? 'border-emerald-400 dark:border-emerald-500 shadow-emerald-400/30 scale-110 ring-2 ring-emerald-300/50 dark:ring-emerald-600/30'
           : 'border-teal-200/80 dark:border-teal-900/50 shadow-teal-600/10'
@@ -2456,7 +2457,6 @@ function LenormandCardDisplay({ card, index, isCenter }: { card: DrawnLenormandC
             alt={card.nameCN}
             loading="lazy"
             className="w-full h-full object-cover block"
-            style={{ aspectRatio: '2/3' }}
           />
         ) : (
           /* Fallback emoji for unmatched cards */
