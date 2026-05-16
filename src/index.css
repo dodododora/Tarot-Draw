@@ -24,7 +24,7 @@
 @layer base {
   html {
     /* Pre-paint background — script in index.html adds .dark before first paint */
-    background-color: #d4d8dc; /* light mode cool grey */
+    background-color: #c8cdd4; /* light mode cool grey */
   }
   html.dark {
     background-color: #141614; /* dark mode = mystic-950 */
@@ -35,6 +35,10 @@
   .dark body {
     @apply text-slate-100;
   }
+}
+
+.font-serif-tc {
+  font-family: var(--font-serif-tc);
 }
 
 .card-gradient {

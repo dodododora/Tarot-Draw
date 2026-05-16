@@ -199,7 +199,7 @@ function ShuffleOverlay({ question, mode }: { question: string; mode: 'tarot' | 
   return (
     <motion.div
       className="fixed inset-0 z-[200] flex flex-col items-center justify-center gap-14"
-      style={{ background: 'rgba(10, 6, 20, 0.96)', backdropFilter: 'blur(6px)' }}
+      style={{ background: 'rgba(20, 15, 40, 0.85)', backdropFilter: 'blur(8px)' }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -341,16 +341,16 @@ export default function App() {
     const spreads = masterPool.filter(s => allowedIds.includes(s.id));
     const cats = mode === 'tarot'
       ? [
-          { label: '🌟 經典牌陣', ids: ['single', 'waite-triangle', 'celtic'] },
-          { label: '🔄 轉化與旅程', ids: ['cycle', 'hero'] },
-          { label: '🪞 關係動力', ids: ['attraction', 'rel-seasons', 'mirror'] },
-          { label: '🧭 決策與資源', ids: ['breakthrough', 'choice', 'resource'] },
+          { label: '✦ 快速一問', ids: ['single', 'waite-triangle'] },
+          { label: '✦ 關係與他人', ids: ['attraction', 'rel-seasons', 'mirror'] },
+          { label: '✦ 做決定', ids: ['breakthrough', 'choice'] },
+          { label: '✦ 深入探索', ids: ['celtic', 'cycle', 'hero', 'resource'] },
         ]
       : [
-          { label: '🌟 經典牌陣', ids: ['single', 'waite-triangle'] },
-          { label: '🧠 深層探索', ids: ['johari', 'cycle', 'iceberg'] },
-          { label: '🪞 關係場域', ids: ['energy-resonance', 'mirror-mirror', 'mirror'] },
-          { label: '🧭 決策與資源', ids: ['breakthrough', 'choice', 'resource'] },
+          { label: '✦ 快速一問', ids: ['single', 'waite-triangle'] },
+          { label: '✦ 關係與他人', ids: ['energy-resonance', 'mirror-mirror', 'mirror'] },
+          { label: '✦ 做決定', ids: ['breakthrough', 'choice'] },
+          { label: '✦ 深入探索', ids: ['johari', 'cycle', 'iceberg', 'resource'] },
         ];
     return cats
       .map(({ label, ids }) => ({ label, catSpreads: spreads.filter(s => ids.includes(s.id)) }))
@@ -925,7 +925,7 @@ export default function App() {
           onClick={() => navigate('/')}
         >
           <TarotLogoSVG />
-          <h1 className="hidden sm:block text-xl sm:text-2xl font-extrabold tracking-tight gold-text drop-shadow-sm font-[--font-serif-tc]">Tarot Draw</h1>
+          <h1 className="hidden sm:block text-xl sm:text-2xl font-extrabold tracking-tight gold-text drop-shadow-sm font-serif-tc">Tarot Draw</h1>
         </div>
         {/* System selector — two groups: Tarot systems | Lenormand */}
         <div className="flex items-center gap-1">
@@ -1022,7 +1022,7 @@ export default function App() {
                 <section>
                   <div className="flex items-center gap-3 mb-2">
                     <span className="text-2xl">🃏</span>
-                    <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 font-[--font-serif-tc]">雷諾曼牌陣</h2>
+                    <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 font-serif-tc">雷諾曼牌陣</h2>
                   </div>
                   <p className="text-sm text-slate-500 dark:text-mystic-400 mb-6">共 36 張牌・無正逆位・著重具體事件與組合連讀</p>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mx-auto">
@@ -1043,7 +1043,7 @@ export default function App() {
                 <div>
                   <div className="flex items-center gap-3 mb-2">
                     <span className="text-2xl">{mode === 'tarot' ? '🔮' : '🌌'}</span>
-                    <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 font-[--font-serif-tc]">
+                    <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 font-serif-tc">
                       {mode === 'tarot' ? '偉特牌陣' : '托特牌陣'}
                     </h2>
                   </div>
@@ -1055,7 +1055,7 @@ export default function App() {
                 </div>
                 {categorizedSpreads.map(({ label, catSpreads }) => (
                   <div key={label}>
-                    <p className="text-xs font-bold text-amber-700 dark:text-mystic-400 uppercase tracking-widest mb-3">{label}</p>
+                    <p className="text-xs font-bold text-stone-500 dark:text-mystic-400 uppercase tracking-widest mb-3">{label}</p>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
                       {catSpreads.map(spread => (
                         <SpreadCard
@@ -1077,7 +1077,7 @@ export default function App() {
                   <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-3">
                       <Edit2 className="text-stone-600 dark:text-mystic-500" size={24} />
-                      <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 font-[--font-serif-tc]">我的牌陣</h2>
+                      <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 font-serif-tc">我的牌陣</h2>
                     </div>
                     <button
                       onClick={openAddModal}
@@ -1139,7 +1139,7 @@ export default function App() {
                 <ArrowLeft size={18} /> 返回首頁
               </button>
 
-              <div className="bg-white dark:bg-mystic-900 p-8 rounded-3xl shadow-xl border border-slate-100 dark:border-mystic-800">
+              <div className="bg-white dark:bg-mystic-900 p-8 rounded-2xl shadow-xl border border-slate-100 dark:border-mystic-800">
                 <div className="text-center mb-8">
                   <h2 className="text-3xl font-bold mb-2 bg-gradient-to-r from-mystic-700 to-indigo-500 bg-clip-text text-transparent dark:from-mystic-200 dark:to-indigo-300 drop-shadow-sm">{selectedSpread.name}</h2>
                   <p className="text-slate-500 dark:text-mystic-400">{selectedSpread.hint}</p>
@@ -1190,7 +1190,7 @@ export default function App() {
                     <>
                       <button
                         onClick={handleDraw}
-                        className="w-full py-4 bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 dark:hover:from-mystic-500 dark:hover:to-mystic-400 text-stone-50 dark:text-white rounded-xl font-bold text-lg shadow-lg shadow-stone-800/20 dark:shadow-mystic-500/20 transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2"
+                        className="w-full py-4 bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 dark:hover:from-mystic-500 dark:hover:to-mystic-400 text-stone-50 dark:text-white rounded-lg font-bold text-lg shadow-lg shadow-stone-800/20 dark:shadow-mystic-500/20 transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2"
                       >
                         <Compass size={20} /> 開始抽牌
                       </button>
@@ -1241,7 +1241,7 @@ export default function App() {
                       </div>
                       <button
                         onClick={handleManualSubmit}
-                        className="w-full py-4 bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 dark:hover:from-mystic-500 dark:hover:to-mystic-400 text-stone-50 dark:text-white rounded-xl font-bold text-lg shadow-lg shadow-stone-800/20 dark:shadow-mystic-500/20 transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2"
+                        className="w-full py-4 bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 dark:hover:from-mystic-500 dark:hover:to-mystic-400 text-stone-50 dark:text-white rounded-lg font-bold text-lg shadow-lg shadow-stone-800/20 dark:shadow-mystic-500/20 transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2"
                       >
                         <CheckCircle2 size={20} /> 確認輸入
                       </button>
@@ -1348,7 +1348,7 @@ export default function App() {
                   {mode === 'lenormand' && <span className="text-xs font-bold text-teal-700 dark:text-teal-300 bg-teal-400/25 dark:bg-teal-400/20 px-2 py-0.5 rounded-full border border-teal-500/50 dark:border-teal-400/30 mb-1 inline-block">雷諾曼</span>}
                   {mode === 'thoth' && <span className="text-xs font-bold text-mystic-700 dark:text-mystic-300 bg-mystic-400/25 dark:bg-mystic-400/20 px-2 py-0.5 rounded-full border border-mystic-500/50 dark:border-mystic-400/30 mb-1 inline-block">托特塔羅</span>}
                   {mode === 'tarot' && <span className="text-xs font-bold text-amber-700 dark:text-amber-300 bg-amber-400/25 dark:bg-amber-400/20 px-2 py-0.5 rounded-full border border-amber-500/50 dark:border-amber-400/30 mb-1 inline-block">偉特塔羅</span>}
-                  <h2 className="text-2xl font-bold bg-gradient-to-r from-mystic-700 to-indigo-500 bg-clip-text text-transparent dark:from-mystic-200 dark:to-indigo-300 drop-shadow-sm font-[--font-serif-tc]">{selectedSpread?.name}</h2>
+                  <h2 className="text-2xl font-bold bg-gradient-to-r from-mystic-700 to-indigo-500 bg-clip-text text-transparent dark:from-mystic-200 dark:to-indigo-300 drop-shadow-sm font-serif-tc">{selectedSpread?.name}</h2>
                   <p className="text-slate-500 dark:text-mystic-400">問題：{question.trim() || '探索當下整體狀態'}</p>
                 </div>
                 <div className="flex gap-3">
@@ -1388,7 +1388,7 @@ export default function App() {
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ duration: 0.25, ease: 'easeOut', delay: 0.15 }}
-                            className={`w-full px-6 py-4 rounded-[2rem] border-2 ${bg} shadow-lg flex flex-col items-center gap-2 transition-all backdrop-blur-sm`}
+                            className={`w-full px-6 py-4 rounded-2xl border-2 ${bg} shadow-lg flex flex-col items-center gap-2 transition-all backdrop-blur-sm`}
                           >
                             <div className="flex items-center gap-3">
                               <span className={`text-[10px] sm:text-xs font-black ${theme} opacity-70 uppercase tracking-[0.2em]`}>神諭指引</span>
@@ -1406,7 +1406,7 @@ export default function App() {
                         <React.Fragment key={index}>
                           <LenormandCardDisplay card={card} index={index} isCenter={false} />
                           {index < lenormandDrawnCards.length - 1 && (
-                            <span className="flex-shrink-0 text-emerald-400 dark:text-emerald-500 text-xl sm:text-2xl font-bold leading-none select-none">→</span>
+                            <span className="flex-shrink-0 text-stone-400 dark:text-stone-600 text-xl sm:text-2xl font-bold leading-none select-none">→</span>
                           )}
                         </React.Fragment>
                       ))}
@@ -1792,7 +1792,7 @@ export default function App() {
                           )}
                           <div className="flex-1 min-w-0">
                             <div className="flex justify-between items-start mb-2">
-                              <h3 className="text-lg font-bold gold-text leading-tight font-[--font-serif-tc]">{record.spread.name}</h3>
+                              <h3 className="text-lg font-bold gold-text leading-tight font-serif-tc">{record.spread.name}</h3>
                               <span className="text-[11px] text-stone-600 dark:text-slate-400 bg-stone-200/50 dark:bg-mystic-800/50 px-2 py-1 rounded-md shrink-0 ml-2">
                                 {new Date(record.date).toLocaleString('zh-TW', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })}
                               </span>
@@ -1906,7 +1906,7 @@ export default function App() {
                         <h3 className="text-lg font-bold text-red-600 dark:text-red-400">確定要清空所有紀錄嗎？</h3>
                         <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">此動作無法復原，請確認是否要繼續。</p>
                         <div className="flex w-full gap-3 mt-1">
-                          <button onClick={() => setShowClearConfirm(false)} className="flex-1 py-2.5 rounded-xl font-bold bg-slate-100 dark:bg-mystic-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-mystic-700 transition-colors">取消</button>
+                          <button onClick={() => setShowClearConfirm(false)} className="flex-1 py-2.5 rounded-lg font-bold bg-slate-100 dark:bg-mystic-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-mystic-700 transition-colors">取消</button>
                           <button
                             onClick={() => {
                                setHistory([]);
@@ -2087,13 +2087,13 @@ const SpreadCard = React.memo(function SpreadCard({ spread, isCustom, onSelect, 
   return (
     <div
       onClick={() => onSelect(spread)}
-      className="relative bg-white/70 dark:bg-mystic-900/60 p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] border border-amber-100 dark:border-mystic-800 hover:border-amber-300 dark:hover:border-mystic-600 shadow-sm hover:shadow-md transition-all cursor-pointer group flex flex-col min-h-[160px] sm:min-h-[220px] overflow-hidden"
+      className="relative bg-white dark:bg-mystic-900/80 p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-stone-200/80 dark:border-mystic-800 hover:border-stone-300 dark:hover:border-mystic-600 shadow-sm hover:shadow-md transition-all cursor-pointer group flex flex-col min-h-[160px] sm:min-h-[220px] overflow-hidden"
     >
       <div className="flex justify-between items-start mb-2 sm:mb-4 relative z-10 gap-2">
-        <h3 className="text-base sm:text-xl font-bold text-amber-900 dark:text-mystic-100 group-hover:text-amber-600 dark:group-hover:text-indigo-400 transition-colors drop-shadow-sm leading-tight line-clamp-2">
+        <h3 className="text-base sm:text-xl font-bold text-stone-800 dark:text-mystic-100 group-hover:text-stone-600 dark:group-hover:text-mystic-300 transition-colors drop-shadow-sm leading-tight line-clamp-2">
           {spread.name}
         </h3>
-        <span className="shrink-0 px-2 sm:px-3 py-1 bg-amber-50 dark:bg-mystic-800 text-amber-700 dark:text-mystic-400 text-[10px] sm:text-xs font-bold rounded-full border border-amber-200 dark:border-mystic-700 shadow-sm whitespace-nowrap">
+        <span className="shrink-0 px-2 sm:px-3 py-1 bg-stone-100 dark:bg-mystic-800 text-stone-600 dark:text-mystic-400 text-[10px] sm:text-xs font-bold rounded-full border border-stone-200 dark:border-mystic-700 shadow-sm whitespace-nowrap">
           {spread.count} 張牌
         </span>
       </div>
@@ -2113,7 +2113,7 @@ const SpreadCard = React.memo(function SpreadCard({ spread, isCustom, onSelect, 
             {spread.positions.map((pos, idx) => (
               <div key={idx} className="flex items-center gap-2.5 shrink-0">
                 <div className="flex items-center gap-1.5 px-2 py-1.5 bg-white dark:bg-mystic-900/80 rounded-md text-slate-700 dark:text-mystic-200 text-xs sm:text-sm font-semibold whitespace-nowrap shadow-sm border border-stone-200 dark:border-mystic-700">
-                  <span className="w-5 h-5 rounded-full bg-amber-100 dark:bg-mystic-800 text-amber-700 dark:text-mystic-400 flex items-center justify-center text-[10px] sm:text-xs">
+                  <span className="w-5 h-5 rounded-full bg-stone-100 dark:bg-mystic-800 text-stone-600 dark:text-mystic-300 flex items-center justify-center text-[10px] sm:text-xs">
                     {idx + 1}
                   </span>
                   {pos}
@@ -2169,12 +2169,12 @@ interface OracleUI {
 
 function oracleUI(effectiveScore: number): OracleUI {
   switch (effectiveScore) {
-    case  2: return { label: '是 (Yes)',           theme: 'text-green-600 dark:text-green-400',       bg: 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-800' };
-    case  1: return { label: '偏向是 (Maybe Yes)',  theme: 'text-green-500/80 dark:text-green-400/80', bg: 'bg-green-50/60 dark:bg-green-900/20 border-green-100 dark:border-green-800/50' };
-    case  0: return { label: '不確定 (Maybe)',       theme: 'text-amber-600 dark:text-amber-400',       bg: 'bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800' };
-    case -1: return { label: '偏向否 (Maybe No)',   theme: 'text-orange-600 dark:text-orange-400',     bg: 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800/50' };
-    case -2: return { label: '否 (No)',             theme: 'text-red-600 dark:text-red-400',           bg: 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800' };
-    default: return { label: '不確定 (Maybe)',       theme: 'text-amber-600 dark:text-amber-400',       bg: 'bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800' };
+    case  2: return { label: '是 (Yes)',           theme: 'text-teal-700 dark:text-teal-400',          bg: 'bg-teal-50/80 dark:bg-teal-900/30 border-teal-200/60 dark:border-teal-800/50' };
+    case  1: return { label: '偏向是 (Maybe Yes)',  theme: 'text-teal-600/80 dark:text-teal-400/70',    bg: 'bg-teal-50/50 dark:bg-teal-900/20 border-teal-200/40 dark:border-teal-800/30' };
+    case  0: return { label: '不確定 (Maybe)',       theme: 'text-stone-600 dark:text-stone-400',         bg: 'bg-stone-100/80 dark:bg-stone-800/30 border-stone-300/50 dark:border-stone-700/40' };
+    case -1: return { label: '偏向否 (Maybe No)',   theme: 'text-rose-700/80 dark:text-rose-400/60',    bg: 'bg-rose-100/50 dark:bg-rose-900/10 border-rose-300/40 dark:border-rose-800/20' };
+    case -2: return { label: '否 (No)',             theme: 'text-rose-800 dark:text-rose-400',           bg: 'bg-rose-100/70 dark:bg-rose-900/20 border-rose-300/60 dark:border-rose-800/30' };
+    default: return { label: '不確定 (Maybe)',       theme: 'text-stone-600 dark:text-stone-400',         bg: 'bg-stone-100/80 dark:bg-stone-800/30 border-stone-300/50 dark:border-stone-700/40' };
   }
 }
 
@@ -2201,7 +2201,7 @@ function TarotSpreadLayout({ spread, cards, mode }: { spread: Spread; cards: Dra
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.25, ease: 'easeOut', delay: 0.15 }}
-            className={`px-8 py-5 rounded-[2.5rem] border-2 ${bg} shadow-xl flex flex-col items-center gap-2 transition-all backdrop-blur-md`}
+            className={`px-8 py-5 rounded-2xl border-2 ${bg} shadow-xl flex flex-col items-center gap-2 transition-all backdrop-blur-md`}
           >
             <div className="flex items-center gap-3">
               <span className={`text-[10px] sm:text-xs font-black ${theme} opacity-70 uppercase tracking-[0.2em]`}>神諭指引</span>
@@ -2371,7 +2371,7 @@ function TarotCardDisplay({ card, index, isExtra, system }: { card: DrawnCard; i
         </div>
       )}
 
-      <div className={`relative w-[110px] sm:w-[130px] aspect-[2/3] rounded-2xl overflow-hidden border-2 ${
+      <div className={`relative w-[110px] sm:w-[130px] aspect-[2/3] rounded-xl overflow-hidden border-2 ${
         card.isReversed ? 'border-red-300/70 dark:border-red-400/45 shadow-red-400/20 dark:shadow-red-500/15' :
         isExtra ? 'border-amber-300/70 dark:border-amber-500/45 shadow-amber-400/20 dark:shadow-amber-500/15' :
           'border-amber-200/80 dark:border-gold-500/45 shadow-amber-400/20 dark:shadow-gold-500/15'
@@ -2437,7 +2437,7 @@ function LenormandCardDisplay({ card, index, isCenter }: { card: DrawnLenormandC
         {card.positionName}
       </div>
 
-      <div className={`relative w-[90px] sm:w-[110px] aspect-[2/3] rounded-xl sm:rounded-2xl overflow-hidden border-2 shadow-lg transition-all duration-300 ${
+      <div className={`relative w-[90px] sm:w-[110px] aspect-[2/3] rounded-lg sm:rounded-xl overflow-hidden border-2 shadow-lg transition-all duration-300 ${
         isCenter
           ? 'border-teal-400/50 dark:border-teal-600/40 shadow-teal-400/15 scale-110 ring-2 ring-teal-300/30 dark:ring-teal-700/25'
           : 'border-teal-300/50 dark:border-teal-700/35 shadow-teal-400/10'
