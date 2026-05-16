@@ -12,6 +12,7 @@ export interface Spread {
   hint: string;
   isCustom?: boolean;
   exampleQuestion?: string;
+  category?: string;
 }
 
 export const MAJOR_ARCANA: TarotCard[] = [

@@ -288,6 +288,8 @@ export default function App() {
   const [manualInputs, setManualInputs] = useState<{ name: string; reversed: boolean }[]>([]);
   const [isShuffling, setIsShuffling] = useState(false);
   const [bottomCard, setBottomCard] = useState<DrawnCard | null>(null);
+  const [isCustomOpen, setIsCustomOpen] = useState(true);
+  const [isBuiltinOpen, setIsBuiltinOpen] = useState(true);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -890,7 +892,8 @@ export default function App() {
       count: 3,
       positions: ['', '', ''],
       hint: '',
-      isCustom: true
+      isCustom: true,
+      category: ''
     });
     setIsModalOpen(true);
   }, []);
@@ -1017,93 +1020,147 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Lenormand Home */}
+              {/* Lenormand Home — collapsible */}
               {mode === 'lenormand' && (
                 <section>
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="text-2xl">🃏</span>
-                    <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 font-serif-tc">雷諾曼牌陣</h2>
+                  <div
+                    className="flex items-center justify-between mb-0 cursor-pointer select-none"
+                    onClick={() => setIsBuiltinOpen(v => !v)}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">🃏</span>
+                      <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 font-serif-tc">雷諾曼牌陣</h2>
+                    </div>
+                    <span className={`text-stone-400 dark:text-mystic-500 transition-transform duration-300 ${isBuiltinOpen ? 'rotate-180' : ''}`}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6"/></svg>
+                    </span>
                   </div>
-                  <p className="text-sm text-slate-500 dark:text-mystic-400 mb-6">共 36 張牌・無正逆位・著重具體事件與組合連讀</p>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mx-auto">
-                    {LENORMAND_SPREADS.map((spread) => (
-                      <SpreadCard
-                        key={spread.id}
-                        spread={spread}
-                        onSelect={handleLenormandSpreadSelect}
-                      />
-                    ))}
+                  <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isBuiltinOpen ? 'max-h-[2000px] opacity-100 mt-4' : 'max-h-0 opacity-0 mt-0'}`}>
+                    <p className="text-sm text-slate-500 dark:text-mystic-400 mb-6">共 36 張牌・無正逆位・著重具體事件與組合連讀</p>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mx-auto">
+                      {LENORMAND_SPREADS.map((spread) => (
+                        <SpreadCard
+                          key={spread.id}
+                          spread={spread}
+                          onSelect={handleLenormandSpreadSelect}
+                        />
+                      ))}
+                    </div>
                   </div>
                 </section>
               )}
 
-              {/* Spreads — tarot / thoth */}
+              {/* Spreads — tarot / thoth — collapsible */}
               {(mode === 'tarot' || mode === 'thoth') && (
-              <section className="space-y-8">
-                <div>
-                  <div className="flex items-center gap-3 mb-2">
+              <section>
+                <div
+                  className="flex items-center justify-between mb-0 cursor-pointer select-none"
+                  onClick={() => setIsBuiltinOpen(v => !v)}
+                >
+                  <div className="flex items-center gap-3">
                     <span className="text-2xl">{mode === 'tarot' ? '🔮' : '🌌'}</span>
                     <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 font-serif-tc">
                       {mode === 'tarot' ? '偉特牌陣' : '托特牌陣'}
                     </h2>
                   </div>
-                  <p className="text-sm text-slate-500 dark:text-mystic-400">
+                  <span className={`text-stone-400 dark:text-mystic-500 transition-transform duration-300 ${isBuiltinOpen ? 'rotate-180' : ''}`}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6"/></svg>
+                  </span>
+                </div>
+                <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isBuiltinOpen ? 'max-h-[2000px] opacity-100 mt-4' : 'max-h-0 opacity-0 mt-0'}`}>
+                  <p className="text-sm text-slate-500 dark:text-mystic-400 mb-6">
                     {mode === 'tarot'
                       ? '共 78 張牌・含正逆位・適合敘事與心理探索'
                       : '共 78 張牌・無逆位・著重能量狀態與深層解析'}
                   </p>
-                </div>
-                {categorizedSpreads.map(({ label, catSpreads }) => (
-                  <div key={label}>
-                    <p className="text-xs font-bold text-stone-500 dark:text-mystic-400 uppercase tracking-widest mb-3">{label}</p>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
-                      {catSpreads.map(spread => (
-                        <SpreadCard
-                          key={spread.id}
-                          spread={spread}
-                          onSelect={handleTarotSpreadSelect}
-                        />
-                      ))}
-                    </div>
+                  <div className="space-y-8">
+                    {categorizedSpreads.map(({ label, catSpreads }) => (
+                      <div key={label}>
+                        <p className="text-xs font-bold text-stone-500 dark:text-mystic-400 uppercase tracking-widest mb-3">{label}</p>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
+                          {catSpreads.map(spread => (
+                            <SpreadCard
+                              key={spread.id}
+                              spread={spread}
+                              onSelect={handleTarotSpreadSelect}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                </div>
               </section>
               )}
 
 
-              {/* Custom Spreads (Tarot & Thoth) */}
+              {/* Custom Spreads (Tarot & Thoth) — collapsible */}
               {(mode === 'tarot' || mode === 'thoth') && (
                 <section>
-                  <div className="flex items-center justify-between mb-6">
+                  {/* Toggle header */}
+                  <div
+                    className="flex items-center justify-between mb-0 cursor-pointer select-none group"
+                    onClick={() => setIsCustomOpen(v => !v)}
+                  >
                     <div className="flex items-center gap-3">
                       <Edit2 className="text-stone-600 dark:text-mystic-500" size={24} />
-                      <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 font-serif-tc">我的牌陣</h2>
+                      <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 font-serif-tc">
+                        我的牌陣
+                        {customSpreads.length > 0 && (
+                          <span className="ml-2 text-sm font-semibold text-stone-500 dark:text-mystic-500">{customSpreads.length}</span>
+                        )}
+                      </h2>
                     </div>
-                    <button
-                      onClick={openAddModal}
-                      className="flex items-center gap-2 px-4 py-2 bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 text-stone-50 dark:text-white rounded-lg transition-colors text-sm font-medium shadow-md dark:shadow-mystic-500/20"
-                    >
-                      <Plus size={18} /> 新增牌陣
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); openAddModal(); }}
+                        className="flex items-center gap-2 px-4 py-2 bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 text-stone-50 dark:text-white rounded-lg transition-colors text-sm font-medium shadow-md dark:shadow-mystic-500/20"
+                      >
+                        <Plus size={18} /> 新增牌陣
+                      </button>
+                      <span className={`text-stone-400 dark:text-mystic-500 transition-transform duration-300 ${isCustomOpen ? 'rotate-180' : ''}`}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6"/></svg>
+                      </span>
+                    </div>
                   </div>
-                  {customSpreads.length > 0 ? (
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6 mx-auto">
-                      {customSpreads.map((spread) => (
-                        <SpreadCard
-                          key={spread.id}
-                          spread={spread}
-                          isCustom
-                          onSelect={handleCustomSpreadSelect}
-                          onEdit={handleSpreadEdit}
-                          onDelete={handleSpreadDelete}
-                        />
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-12 border-2 border-dashed border-slate-200 dark:border-mystic-800 rounded-2xl text-slate-500 dark:text-mystic-400">
-                      <p>尚未建立自訂牌陣</p>
-                    </div>
-                  )}
+
+                  {/* Collapsible content */}
+                  <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isCustomOpen ? 'max-h-[2000px] opacity-100 mt-6' : 'max-h-0 opacity-0 mt-0'}`}>
+                    {customSpreads.length > 0 ? (
+                      <div className="space-y-6">
+                        {Object.entries(
+                          customSpreads.reduce<Record<string, typeof customSpreads>>((acc, s) => {
+                            const key = s.category?.trim() || '其他';
+                            acc[key] = acc[key] ? [...acc[key], s] : [s];
+                            return acc;
+                          }, {})
+                        )
+                          .sort(([a], [b]) => a === '其他' ? 1 : b === '其他' ? -1 : a.localeCompare(b, 'zh'))
+                          .map(([cat, spreads]) => (
+                            <div key={cat}>
+                              <p className="text-xs font-bold text-stone-500 dark:text-mystic-400 uppercase tracking-widest mb-3">{cat}</p>
+                              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
+                                {spreads.map((spread) => (
+                                  <SpreadCard
+                                    key={spread.id}
+                                    spread={spread}
+                                    isCustom
+                                    onSelect={handleCustomSpreadSelect}
+                                    onEdit={handleSpreadEdit}
+                                    onDelete={handleSpreadDelete}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+                          ))
+                        }
+                      </div>
+                    ) : (
+                      <div className="text-center py-12 border-2 border-dashed border-slate-200 dark:border-mystic-800 rounded-xl text-slate-500 dark:text-mystic-400">
+                        <p>尚未建立自訂牌陣</p>
+                      </div>
+                    )}
+                  </div>
                 </section>
               )}
 
@@ -1198,55 +1255,95 @@ export default function App() {
                         ✨ 抽牌後可一鍵複製 AI 解讀 Prompt，貼入 ChatGPT・Claude・Gemini 獲得深度解讀
                       </p>
                     </>
-                  ) : (
-                    <div className="space-y-2">
-                      <p className="text-xs text-slate-400 dark:text-mystic-500 text-center">
-                        輸入你實體抽到的牌名{mode === 'tarot' ? '，按「逆」切換逆位' : ''}
-                      </p>
-                      <div className="max-h-64 overflow-y-auto space-y-2 pr-1">
-                        {selectedSpread.positions.map((pos, i) => (
-                          <div key={i} className="flex items-start gap-2">
-                            <span className="mt-2.5 text-xs font-bold text-amber-600 dark:text-mystic-400 w-5 flex-shrink-0 text-right">{i + 1}</span>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-[10px] text-slate-400 dark:text-mystic-600 mb-0.5 truncate">{pos}</p>
-                              <input
-                                type="text"
-                                value={manualInputs[i]?.name || ''}
-                                onChange={e => setManualInputs(prev => {
-                                  const next = [...prev];
-                                  next[i] = { ...(next[i] || { name: '', reversed: false }), name: e.target.value };
-                                  return next;
-                                })}
-                                placeholder="牌名..."
-                                className="w-full px-2.5 py-1.5 rounded-lg border border-amber-200/70 dark:border-mystic-700 bg-white/80 dark:bg-mystic-950 text-sm outline-none focus:ring-1 focus:ring-amber-400 dark:focus:ring-mystic-500 transition-all"
-                              />
-                            </div>
-                            {mode === 'tarot' && (
-                              <button
-                                onClick={() => setManualInputs(prev => {
-                                  const next = [...prev];
-                                  next[i] = { ...(next[i] || { name: '', reversed: false }), reversed: !next[i]?.reversed };
-                                  return next;
-                                })}
-                                className={`mt-5 flex-shrink-0 px-2 py-1 rounded-md text-[11px] font-bold border transition-colors ${manualInputs[i]?.reversed
-                                  ? 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 border-purple-300 dark:border-purple-700'
-                                  : 'bg-slate-100 dark:bg-mystic-800 text-slate-400 dark:text-mystic-500 border-slate-200 dark:border-mystic-700'
-                                  }`}
-                              >
-                                逆
-                              </button>
-                            )}
+                  ) : (() => {
+                      const deck = mode === 'lenormand'
+                        ? LENORMAND_CARDS
+                        : mode === 'thoth' ? THOTH_ALL_CARDS : ALL_CARDS;
+                      return (
+                        <div className="space-y-2">
+                          <p className="text-xs text-slate-400 dark:text-mystic-500 text-center">
+                            搜尋你實體抽到的牌名{mode === 'tarot' ? '，按「逆」切換逆位' : ''}
+                          </p>
+                          <div className="space-y-2 pr-1 mx-auto">
+                            {selectedSpread.positions.map((pos, i) => {
+                              const query = manualInputs[i]?.name || '';
+                              const isExactMatch = deck.some(c => c.nameCN === query);
+                              const matches = query.length > 0 && !isExactMatch
+                                ? deck.filter(c =>
+                                    c.nameCN.includes(query) ||
+                                    c.nameEN.toLowerCase().includes(query.toLowerCase())
+                                  ).slice(0, 8)
+                                : [];
+                              return (
+                                <div key={i} className="flex items-start gap-2 max-w-sm">
+                                  <span className="mt-2.5 text-xs font-bold text-amber-600 dark:text-mystic-400 w-5 flex-shrink-0 text-right">{i + 1}</span>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-[10px] text-slate-400 dark:text-mystic-600 mb-0.5 truncate">{pos}</p>
+                                    <div className="relative">
+                                      <input
+                                        type="text"
+                                        value={query}
+                                        onChange={e => setManualInputs(prev => {
+                                          const next = [...prev];
+                                          next[i] = { ...(next[i] || { name: '', reversed: false }), name: e.target.value };
+                                          return next;
+                                        })}
+                                        placeholder="輸入牌名搜尋…"
+                                        autoComplete="off"
+                                        className={`w-full px-2.5 py-1.5 rounded-lg border border-amber-200/70 dark:border-mystic-700 bg-white/80 dark:bg-mystic-950 text-sm outline-none focus:ring-1 focus:ring-amber-400 dark:focus:ring-mystic-500 transition-all ${mode === 'tarot' ? 'pr-10' : ''}`}
+                                      />
+                                      {mode === 'tarot' && (
+                                        <button
+                                          onClick={() => setManualInputs(prev => {
+                                            const next = [...prev];
+                                            next[i] = { ...(next[i] || { name: '', reversed: false }), reversed: !next[i]?.reversed };
+                                            return next;
+                                          })}
+                                          className={`absolute right-1 top-1/2 -translate-y-1/2 text-xs px-2 py-1 rounded border transition-colors ${manualInputs[i]?.reversed
+                                            ? 'border-purple-400/60 dark:border-purple-600/50 text-purple-600 dark:text-purple-400 bg-purple-50/60 dark:bg-purple-900/20'
+                                            : 'border-stone-400/40 dark:border-mystic-600/50 text-stone-500 dark:text-mystic-400 bg-transparent hover:bg-stone-100/50 dark:hover:bg-mystic-700/50'
+                                          }`}
+                                        >
+                                          逆
+                                        </button>
+                                      )}
+                                      {matches.length > 0 && (
+                                        <div className="absolute z-50 left-0 right-0 top-full mt-1 bg-white dark:bg-mystic-900 border border-stone-200 dark:border-mystic-700 rounded-lg shadow-lg overflow-hidden max-h-48 overflow-y-auto">
+                                          {matches.map(card => (
+                                            <button
+                                              key={card.id}
+                                              type="button"
+                                              onMouseDown={e => {
+                                                e.preventDefault();
+                                                setManualInputs(prev => {
+                                                  const next = [...prev];
+                                                  next[i] = { ...(next[i] || { name: '', reversed: false }), name: card.nameCN };
+                                                  return next;
+                                                });
+                                              }}
+                                              className="w-full text-left px-3 py-2 text-sm hover:bg-stone-100 dark:hover:bg-mystic-800 transition-colors flex items-center justify-between gap-2"
+                                            >
+                                              <span className="font-medium text-stone-800 dark:text-mystic-100">{card.nameCN}</span>
+                                              <span className="text-xs text-stone-400 dark:text-mystic-500 shrink-0">{card.nameEN}</span>
+                                            </button>
+                                          ))}
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
                           </div>
-                        ))}
-                      </div>
-                      <button
-                        onClick={handleManualSubmit}
-                        className="w-full py-4 bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 dark:hover:from-mystic-500 dark:hover:to-mystic-400 text-stone-50 dark:text-white rounded-lg font-bold text-lg shadow-lg shadow-stone-800/20 dark:shadow-mystic-500/20 transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2"
-                      >
-                        <CheckCircle2 size={20} /> 確認輸入
-                      </button>
-                    </div>
-                  )}
+                          <button
+                            onClick={handleManualSubmit}
+                            className="w-full py-4 bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 dark:hover:from-mystic-500 dark:hover:to-mystic-400 text-stone-50 dark:text-white rounded-lg font-bold text-lg shadow-lg shadow-stone-800/20 dark:shadow-mystic-500/20 transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2"
+                          >
+                            <CheckCircle2 size={20} /> 確認輸入
+                          </button>
+                        </div>
+                      );
+                    })()}
 
                   {selectedSpread.id === 'choice' && (
                     <div className="bg-indigo-50/50 dark:bg-mystic-800/30 p-4 rounded-xl border border-indigo-100 dark:border-mystic-700/50">
@@ -1994,6 +2091,15 @@ export default function App() {
                     value={editingSpread.hint}
                     onChange={e => setEditingSpread({ ...editingSpread, hint: e.target.value })}
                     placeholder="例如：深入剖析..."
+                    className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-mystic-800 bg-slate-50 dark:bg-mystic-950"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">分類標籤 <span className="text-slate-400 font-normal">(選填)</span></label>
+                  <input
+                    value={editingSpread.category ?? ''}
+                    onChange={e => setEditingSpread({ ...editingSpread, category: e.target.value })}
+                    placeholder="例如：關係、日常、工作…"
                     className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-mystic-800 bg-slate-50 dark:bg-mystic-950"
                   />
                 </div>
