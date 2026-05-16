@@ -98,35 +98,25 @@ const GlobalBackground = ({ theme }: { theme: 'light' | 'dark' }) => (
 // Shuffle animation duration — change here to adjust the animation length
 const SHUFFLE_ANIMATION_MS = 2300; // 2s animation + 0.3s hold at gathered pile state
 
-/** Card back component for shuffle overlay — always dark-themed for ritual atmosphere */
-function CardBack({ featured = false }: { featured?: boolean }) {
+/** Card back component — shows system-specific card back image */
+const CardBack = ({ system, featured }: { system?: 'tarot' | 'thoth' | 'lenormand'; featured?: boolean }) => {
+  const backImage = system ? ({
+    tarot: '/cards/back_waite.webp',
+    thoth: '/cards/back_thoth.webp',
+    lenormand: '/cards/back_lenormand.webp',
+  } as const)[system] : '/cards/back_waite.webp';
+
   return (
     <div
-      className="rounded-2xl relative overflow-hidden flex-shrink-0"
+      className={`w-full h-full rounded-lg overflow-hidden${featured ? ' ring-2 ring-white/20' : ''}`}
       style={{
-        width: '100%',
-        height: '100%',
-        background: 'linear-gradient(145deg, #3a2d6b 0%, #1a1035 60%, #0f0a1e 100%)',
-        border: '2px solid rgba(255,255,255,0.28)',
-        boxShadow: featured
-          ? '0 0 32px rgba(139,92,246,0.55), 0 8px 32px rgba(0,0,0,0.6)'
-          : '0 4px 20px rgba(0,0,0,0.5)',
+        backgroundImage: `url(${backImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
       }}
-    >
-      {/* Diagonal stripe pattern — higher opacity for visibility */}
-      <div className="absolute inset-0" style={{
-        backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(180,150,255,0.18) 6px, rgba(180,150,255,0.18) 7px)',
-      }} />
-      {/* Inner border */}
-      <div className="absolute inset-[7px] rounded-xl" style={{ border: '1px solid rgba(255,255,255,0.15)' }} />
-      {/* Center star glyph */}
-      <div className="absolute inset-0 flex items-center justify-center select-none"
-        style={{ color: 'rgba(200,170,255,0.45)', fontSize: featured ? '1.8rem' : '1.4rem' }}>
-        ✦
-      </div>
-    </div>
+    />
   );
-}
+};
 
 const SHUFFLE_ANIMATIONS = ['slide', 'arc', 'diagonal'] as const;
 type ShuffleAnim = typeof SHUFFLE_ANIMATIONS[number];
@@ -180,7 +170,7 @@ function getCardAnimation(offset: number, animType: ShuffleAnim, gatherX: number
 
 
 /** Full-screen shuffle animation overlay — random card count (5-7) and random style */
-function ShuffleOverlay({ question }: { question: string }) {
+function ShuffleOverlay({ question, mode }: { question: string; mode: 'tarot' | 'thoth' | 'lenormand' }) {
   const [animType] = useState<ShuffleAnim>(
     () => SHUFFLE_ANIMATIONS[Math.floor(Math.random() * SHUFFLE_ANIMATIONS.length)]
   );
@@ -209,7 +199,7 @@ function ShuffleOverlay({ question }: { question: string }) {
   return (
     <motion.div
       className="fixed inset-0 z-[200] flex flex-col items-center justify-center gap-14"
-      style={{ background: 'rgba(12, 7, 26, 0.98)', backdropFilter: 'blur(4px)' }}
+      style={{ background: 'rgba(10, 6, 20, 0.96)', backdropFilter: 'blur(6px)' }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -230,7 +220,7 @@ function ShuffleOverlay({ question }: { question: string }) {
               animate={getCardAnimation(offset, animType, cardGatherX[i])}
               transition={useStagger ? T_stagger : T}
             >
-              <CardBack featured={isCenter} />
+              <CardBack featured={isCenter} system={mode} />
             </motion.div>
           );
         })}
@@ -585,6 +575,7 @@ export default function App() {
       const newHistoryId = Date.now().toString() + Math.random().toString(36).substring(2, 9);
       setCurrentHistoryId(newHistoryId);
       setHistory(prev => [{ id: newHistoryId, date: Date.now(), question: question || '', spread: selectedSpread, cards: [], lenormandCards: lenResults, mode: 'lenormand' as const }, ...prev]);
+      drawn.forEach(card => { const img = new Image(); img.src = getCardImagePath('lenormand', card.id); });
       setIsShuffling(true);
       trackEvent('draw_cards', { spread_name: selectedSpread.name, spread_count: selectedSpread.count, system: mode, has_question: (question.trim().length > 0) });
       setTimeout(() => { setIsShuffling(false); navigate('/result'); }, SHUFFLE_ANIMATION_MS);
@@ -613,6 +604,7 @@ export default function App() {
     const newHistoryId = Date.now().toString() + Math.random().toString(36).substring(2, 9);
     setCurrentHistoryId(newHistoryId);
     setHistory(prev => [{ id: newHistoryId, date: Date.now(), question: question || '', spread: selectedSpread, cards: results, mode }, ...prev]);
+    drawn.forEach(card => { const img = new Image(); img.src = getCardImagePath(mode === 'thoth' ? 'thoth' : 'tarot', card.id); });
     setIsShuffling(true);
     trackEvent('draw_cards', { spread_name: selectedSpread.name, spread_count: selectedSpread.count, system: mode, has_question: (question.trim().length > 0) });
     setTimeout(() => { setIsShuffling(false); navigate('/result'); }, SHUFFLE_ANIMATION_MS);
@@ -924,7 +916,7 @@ export default function App() {
 
       {/* Shuffle animation overlay — appears on top of everything */}
       <AnimatePresence>
-        {isShuffling && <ShuffleOverlay question={question} />}
+        {isShuffling && <ShuffleOverlay question={question} mode={mode} />}
       </AnimatePresence>
       {/* Navbar */}
       <nav className="sticky top-0 z-50 bg-white/60 dark:bg-mystic-950/50 backdrop-blur-xl border-b border-white/20 dark:border-mystic-800/50 px-4 py-4 flex justify-between items-center transition-colors duration-500">
@@ -933,7 +925,7 @@ export default function App() {
           onClick={() => navigate('/')}
         >
           <TarotLogoSVG />
-          <h1 className="hidden sm:block text-xl sm:text-2xl font-extrabold tracking-tight gold-text drop-shadow-sm">Tarot Draw</h1>
+          <h1 className="hidden sm:block text-xl sm:text-2xl font-extrabold tracking-tight gold-text drop-shadow-sm font-[--font-serif-tc]">Tarot Draw</h1>
         </div>
         {/* System selector — two groups: Tarot systems | Lenormand */}
         <div className="flex items-center gap-1">
@@ -942,7 +934,7 @@ export default function App() {
             <button
               onClick={() => { setMode('tarot'); navigate('/'); setSelectedSpread(null); trackEvent('select_system', { system: 'tarot' }); }}
               className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${mode === 'tarot'
-                ? 'bg-amber-600 dark:bg-mystic-600 text-white shadow-sm'
+                ? 'bg-amber-700/70 dark:bg-mystic-600/80 text-white shadow-sm'
                 : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
                 }`}
             >
@@ -967,7 +959,7 @@ export default function App() {
             <button
               onClick={() => { setMode('lenormand'); navigate('/'); setSelectedSpread(null); trackEvent('select_system', { system: 'lenormand' }); }}
               className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${mode === 'lenormand'
-                ? 'bg-emerald-600 dark:bg-emerald-700 text-white shadow-sm'
+                ? 'bg-teal-700/70 dark:bg-teal-700/70 text-white shadow-sm'
                 : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
                 }`}
             >
@@ -978,13 +970,13 @@ export default function App() {
         <div className="flex items-center gap-1 sm:gap-2">
           <button
             onClick={() => { setIsHistoryOpen(true); trackEvent('open_history'); }}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl hover:bg-amber-100/50 dark:hover:bg-mystic-800/50 transition-colors text-sm font-semibold text-amber-900 dark:text-mystic-200"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl hover:bg-stone-300/50 dark:hover:bg-mystic-800/50 transition-colors text-sm font-semibold text-stone-700 dark:text-mystic-200"
           >
             <History size={18} /> <span className="hidden sm:inline">歷史紀錄</span>
           </button>
           <button
             onClick={() => { toggleTheme(); trackEvent('toggle_theme', { theme: theme === 'light' ? 'dark' : 'light' }); }}
-            className="p-2.5 rounded-xl hover:bg-amber-100/50 dark:hover:bg-mystic-800/50 transition-colors text-amber-900 dark:text-mystic-200"
+            className="p-2.5 rounded-xl hover:bg-stone-300/50 dark:hover:bg-mystic-800/50 transition-colors text-stone-700 dark:text-mystic-200"
           >
             {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
           </button>
@@ -1030,7 +1022,7 @@ export default function App() {
                 <section>
                   <div className="flex items-center gap-3 mb-2">
                     <span className="text-2xl">🃏</span>
-                    <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">雷諾曼牌陣</h2>
+                    <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 font-[--font-serif-tc]">雷諾曼牌陣</h2>
                   </div>
                   <p className="text-sm text-slate-500 dark:text-mystic-400 mb-6">共 36 張牌・無正逆位・著重具體事件與組合連讀</p>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mx-auto">
@@ -1051,7 +1043,7 @@ export default function App() {
                 <div>
                   <div className="flex items-center gap-3 mb-2">
                     <span className="text-2xl">{mode === 'tarot' ? '🔮' : '🌌'}</span>
-                    <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">
+                    <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 font-[--font-serif-tc]">
                       {mode === 'tarot' ? '偉特牌陣' : '托特牌陣'}
                     </h2>
                   </div>
@@ -1085,7 +1077,7 @@ export default function App() {
                   <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-3">
                       <Edit2 className="text-stone-600 dark:text-mystic-500" size={24} />
-                      <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">我的牌陣</h2>
+                      <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 font-[--font-serif-tc]">我的牌陣</h2>
                     </div>
                     <button
                       onClick={openAddModal}
@@ -1282,8 +1274,8 @@ export default function App() {
                   )}
 
                   {(selectedSpread.id === 'mirror' || selectedSpread.id === 'energy-resonance' || selectedSpread.id === 'mirror-mirror') && (
-                    <div className="bg-emerald-50/50 dark:bg-emerald-950/20 p-4 rounded-xl border border-emerald-100 dark:border-emerald-900/30">
-                      <label className="text-sm font-bold text-emerald-900 dark:text-emerald-300 block mb-3">
+                    <div className="bg-teal-50/50 dark:bg-teal-950/20 p-4 rounded-xl border border-teal-200/50 dark:border-teal-800/30">
+                      <label className="text-sm font-bold text-teal-900 dark:text-teal-300 block mb-3">
                         這段關係牽涉多少人？（包含你，目前：{peopleCount} 人）
                       </label>
                       <div className="flex flex-wrap gap-2">
@@ -1292,34 +1284,34 @@ export default function App() {
                             key={num}
                             onClick={() => setPeopleCount(num)}
                             className={`w-[42px] h-[42px] sm:w-11 sm:h-11 rounded-full font-bold text-sm sm:text-base flex items-center justify-center transition-all duration-300 ${peopleCount === num
-                              ? 'bg-emerald-600 dark:bg-emerald-600 text-white shadow-md shadow-emerald-500/30 scale-105 ring-2 ring-emerald-300 dark:ring-emerald-700 ring-offset-1 dark:ring-offset-mystic-900'
-                              : 'bg-white/80 dark:bg-mystic-900 shadow-sm text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-mystic-600 hover:bg-emerald-100 dark:hover:bg-mystic-800'
+                              ? 'bg-teal-600/80 dark:bg-teal-600/80 text-white shadow-md shadow-teal-500/20 scale-105 ring-2 ring-teal-300/50 dark:ring-teal-700 ring-offset-1 dark:ring-offset-mystic-900'
+                              : 'bg-white/80 dark:bg-mystic-900 shadow-sm text-teal-700 dark:text-teal-400 border border-teal-200/50 dark:border-mystic-600 hover:bg-teal-50 dark:hover:bg-mystic-800'
                               }`}
                           >
                             {num}
                           </button>
                         ))}
                       </div>
-                      <p className="text-xs text-emerald-700/80 dark:text-emerald-400 mt-4 leading-relaxed">
+                      <p className="text-xs text-teal-700/80 dark:text-teal-400 mt-4 leading-relaxed">
                         最高支援 6 人局。系統將為每一位「對象」配置專屬的心態牌，協助你跳脫框架看清全局。
                       </p>
                     </div>
                   )}
 
-                  <div className="bg-amber-50 dark:bg-mystic-800/50 p-4 sm:px-5 rounded-2xl border border-amber-100/80 dark:border-mystic-700 flex items-start gap-3">
-                    <Info className="text-amber-500/80 dark:text-mystic-400 mt-0.5 flex-shrink-0" size={18} />
+                  <div className="bg-mystic-50/80 dark:bg-mystic-800/50 p-4 sm:px-5 rounded-2xl border border-mystic-200/50 dark:border-mystic-700/30 flex items-start gap-3">
+                    <Info className="text-mystic-500/80 dark:text-mystic-400 mt-0.5 flex-shrink-0" size={18} />
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-bold text-amber-900 dark:text-mystic-100 mb-2 tracking-wide">牌陣資訊</p>
-                      <p className="text-xs text-amber-700/70 dark:text-mystic-500 mb-2">將抽取 {selectedSpread.count} 張牌，位置如下：</p>
+                      <p className="text-sm font-bold text-mystic-900 dark:text-mystic-100 mb-2 tracking-wide">牌陣資訊</p>
+                      <p className="text-xs text-mystic-700/70 dark:text-mystic-500 mb-2">將抽取 {selectedSpread.count} 張牌，位置如下：</p>
                       {/* Scrollable pill row with fade mask */}
                       <div className="relative">
                         <div className="flex gap-2 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                           {selectedSpread.positions.map((pos, i) => (
                             <span
                               key={i}
-                              className="shrink-0 text-[11px] font-semibold text-amber-800 dark:text-mystic-300 bg-amber-100/80 dark:bg-mystic-700/60 border border-amber-200 dark:border-mystic-600 px-2.5 py-1 rounded-full whitespace-nowrap"
+                              className="shrink-0 text-[11px] font-semibold text-mystic-800 dark:text-mystic-300 bg-mystic-100/80 dark:bg-mystic-700/60 border border-mystic-200/50 dark:border-mystic-600 px-2.5 py-1 rounded-full whitespace-nowrap"
                             >
-                              <span className="text-amber-500 dark:text-mystic-500 mr-1">{i + 1}.</span>{pos}
+                              <span className="text-mystic-500 dark:text-mystic-500 mr-1">{i + 1}.</span>{pos}
                             </span>
                           ))}
                         </div>
@@ -1353,10 +1345,10 @@ export default function App() {
             >
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                  {mode === 'lenormand' && <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800 mb-1 inline-block">雷諾曼</span>}
-                  {mode === 'thoth' && <span className="text-xs font-bold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 px-2 py-0.5 rounded-full border border-purple-200 dark:border-purple-800 mb-1 inline-block">托特塔羅</span>}
-                  {mode === 'tarot' && <span className="text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2 py-0.5 rounded-full border border-amber-200 dark:border-amber-800 mb-1 inline-block">偉特塔羅</span>}
-                  <h2 className="text-2xl font-bold bg-gradient-to-r from-mystic-700 to-indigo-500 bg-clip-text text-transparent dark:from-mystic-200 dark:to-indigo-300 drop-shadow-sm">{selectedSpread?.name}</h2>
+                  {mode === 'lenormand' && <span className="text-xs font-bold text-teal-700 dark:text-teal-300 bg-teal-400/25 dark:bg-teal-400/20 px-2 py-0.5 rounded-full border border-teal-500/50 dark:border-teal-400/30 mb-1 inline-block">雷諾曼</span>}
+                  {mode === 'thoth' && <span className="text-xs font-bold text-mystic-700 dark:text-mystic-300 bg-mystic-400/25 dark:bg-mystic-400/20 px-2 py-0.5 rounded-full border border-mystic-500/50 dark:border-mystic-400/30 mb-1 inline-block">托特塔羅</span>}
+                  {mode === 'tarot' && <span className="text-xs font-bold text-amber-700 dark:text-amber-300 bg-amber-400/25 dark:bg-amber-400/20 px-2 py-0.5 rounded-full border border-amber-500/50 dark:border-amber-400/30 mb-1 inline-block">偉特塔羅</span>}
+                  <h2 className="text-2xl font-bold bg-gradient-to-r from-mystic-700 to-indigo-500 bg-clip-text text-transparent dark:from-mystic-200 dark:to-indigo-300 drop-shadow-sm font-[--font-serif-tc]">{selectedSpread?.name}</h2>
                   <p className="text-slate-500 dark:text-mystic-400">問題：{question.trim() || '探索當下整體狀態'}</p>
                 </div>
                 <div className="flex gap-3">
@@ -1800,7 +1792,7 @@ export default function App() {
                           )}
                           <div className="flex-1 min-w-0">
                             <div className="flex justify-between items-start mb-2">
-                              <h3 className="text-lg font-bold gold-text leading-tight">{record.spread.name}</h3>
+                              <h3 className="text-lg font-bold gold-text leading-tight font-[--font-serif-tc]">{record.spread.name}</h3>
                               <span className="text-[11px] text-stone-600 dark:text-slate-400 bg-stone-200/50 dark:bg-mystic-800/50 px-2 py-1 rounded-md shrink-0 ml-2">
                                 {new Date(record.date).toLocaleString('zh-TW', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })}
                               </span>
@@ -1809,9 +1801,9 @@ export default function App() {
                               {record.question?.trim() || '探索當下整體狀態'}
                             </p>
                             <div className="flex items-center justify-between text-xs font-semibold text-stone-600 dark:text-mystic-400">
-                              {record.mode === 'lenormand' && <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-1.5 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800">雷諾曼</span>}
-                              {record.mode === 'thoth'    && <span className="text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 px-1.5 py-0.5 rounded-md border border-purple-200 dark:border-purple-800">托特</span>}
-                              {record.mode === 'tarot'    && <span className="text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-1.5 py-0.5 rounded-md border border-amber-200 dark:border-amber-800">偉特</span>}
+                              {record.mode === 'lenormand' && <span className="text-teal-700 dark:text-teal-300 bg-teal-400/25 dark:bg-teal-400/20 px-1.5 py-0.5 rounded-md border border-teal-500/50 dark:border-teal-400/30">雷諾曼</span>}
+                              {record.mode === 'thoth'    && <span className="text-mystic-700 dark:text-mystic-300 bg-mystic-400/25 dark:bg-mystic-400/20 px-1.5 py-0.5 rounded-md border border-mystic-500/50 dark:border-mystic-400/30">托特</span>}
+                              {record.mode === 'tarot'    && <span className="text-amber-700 dark:text-amber-300 bg-amber-400/25 dark:bg-amber-400/20 px-1.5 py-0.5 rounded-md border border-amber-500/50 dark:border-amber-400/30">偉特</span>}
                               <span>{(record.lenormandCards?.length ?? record.cards.length)} 張牌卡</span>
                             </div>
                           </div>
@@ -1839,13 +1831,13 @@ export default function App() {
                                 setIsHistoryOpen(false);
                                 navigate('/result');
                               }}
-                              className="flex-[3] py-3.5 bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 dark:hover:from-mystic-500 dark:hover:to-mystic-400 text-stone-50 dark:text-white rounded-xl shadow-lg shadow-stone-800/10 dark:shadow-mystic-500/20 transition-all active:scale-95 text-[15px] font-bold flex items-center justify-center gap-2"
+                              className="flex-[3] py-3.5 bg-mystic-600/70 dark:bg-mystic-700/70 text-white hover:bg-mystic-600/90 dark:hover:bg-mystic-700/90 rounded-xl shadow-sm transition-all active:scale-95 text-[15px] font-bold flex items-center justify-center gap-2"
                             >
                               👁️ 查看
                             </button>
                             <button
                               onClick={(e) => { e.stopPropagation(); copyToClipboard('all', record); }}
-                              className="flex-[3] py-3.5 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-all rounded-xl active:scale-95 text-[15px] font-bold flex items-center justify-center gap-2"
+                              className="flex-[3] py-3.5 bg-transparent border border-mystic-400/40 text-mystic-300 hover:bg-mystic-400/10 transition-all rounded-xl active:scale-95 text-[15px] font-bold flex items-center justify-center gap-2"
                               title="直接複製完整 AI 解讀 Prompt"
                             >
                               <Copy size={18} />
@@ -1858,7 +1850,7 @@ export default function App() {
                                 trackEvent('delete_history', { type: 'single', count: 1 });
                                 showToast('已刪除紀錄');
                               }}
-                              className="flex-1 py-3.5 bg-red-50 dark:bg-red-900/20 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/40 transition-all rounded-xl active:scale-95 flex items-center justify-center"
+                              className="flex-1 py-3.5 bg-transparent text-red-400/90 hover:text-red-400 hover:scale-110 transition-all rounded-xl active:scale-95 flex items-center justify-center"
                               aria-label="刪除紀錄"
                             >
                               <Trash2 size={20} />
@@ -1889,7 +1881,7 @@ export default function App() {
                       <button
                         disabled={selectedHistoryIds.size === 0}
                         onClick={() => setShowBatchDeleteConfirm(true)}
-                        className="px-5 py-2 rounded-xl font-bold text-sm bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/20 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="px-5 py-2 rounded-xl font-bold text-sm bg-red-400/80 hover:bg-red-500/80 text-white shadow-lg shadow-red-500/20 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
                       >
                         刪除選取
                       </button>
@@ -1927,7 +1919,7 @@ export default function App() {
                                setShowClearConfirm(false);
                                showToast('已清空所有紀錄');
                              }}
-                            className="flex-1 py-2.5 rounded-xl font-bold bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/20 transition-all active:scale-95"
+                            className="flex-1 py-2.5 rounded-xl font-bold bg-red-400/80 hover:bg-red-500/80 text-white shadow-lg shadow-red-500/20 transition-all active:scale-95"
                           >
                             確認清空
                           </button>
@@ -2379,10 +2371,10 @@ function TarotCardDisplay({ card, index, isExtra, system }: { card: DrawnCard; i
         </div>
       )}
 
-      <div className={`relative w-[110px] sm:w-[130px] aspect-[2/3] rounded-2xl overflow-hidden border-4 ${
-        card.isReversed ? 'border-red-400/80 dark:border-red-500/50 shadow-red-500/20' :
-        isExtra ? 'border-amber-400/80 dark:border-mystic-500/50 shadow-amber-500/20 dark:shadow-mystic-500/20' :
-          'border-amber-300/80 dark:border-gold-500/50 shadow-amber-500/20 dark:shadow-gold-500/20'
+      <div className={`relative w-[110px] sm:w-[130px] aspect-[2/3] rounded-2xl overflow-hidden border-2 ${
+        card.isReversed ? 'border-red-300/70 dark:border-red-400/45 shadow-red-400/20 dark:shadow-red-500/15' :
+        isExtra ? 'border-amber-300/70 dark:border-amber-500/45 shadow-amber-400/20 dark:shadow-amber-500/15' :
+          'border-amber-200/80 dark:border-gold-500/45 shadow-amber-400/20 dark:shadow-gold-500/15'
         } shadow-lg`}>
 
         {imgSrc ? (
@@ -2390,7 +2382,7 @@ function TarotCardDisplay({ card, index, isExtra, system }: { card: DrawnCard; i
             src={imgSrc}
             alt={card.nameCN}
             loading="lazy"
-            className="w-full h-full object-cover block"
+            className="absolute inset-0 w-full h-full object-cover block"
             style={{ transform: card.isReversed ? 'rotate(180deg)' : 'none' }}
           />
         ) : (
@@ -2411,7 +2403,7 @@ function TarotCardDisplay({ card, index, isExtra, system }: { card: DrawnCard; i
 
         {/* Reversed badge */}
         {card.isReversed && (
-          <div className="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm z-10">
+          <div className="absolute top-2 right-2 bg-red-400/80 text-white text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm z-10">
             逆
           </div>
         )}
@@ -2447,15 +2439,15 @@ function LenormandCardDisplay({ card, index, isCenter }: { card: DrawnLenormandC
 
       <div className={`relative w-[90px] sm:w-[110px] aspect-[2/3] rounded-xl sm:rounded-2xl overflow-hidden border-2 shadow-lg transition-all duration-300 ${
         isCenter
-          ? 'border-emerald-400 dark:border-emerald-500 shadow-emerald-400/30 scale-110 ring-2 ring-emerald-300/50 dark:ring-emerald-600/30'
-          : 'border-teal-200/80 dark:border-teal-900/50 shadow-teal-600/10'
+          ? 'border-teal-400/50 dark:border-teal-600/40 shadow-teal-400/15 scale-110 ring-2 ring-teal-300/30 dark:ring-teal-700/25'
+          : 'border-teal-300/50 dark:border-teal-700/35 shadow-teal-400/10'
         }`}>
         {imgSrc ? (
           <img
             src={imgSrc}
             alt={card.nameCN}
             loading="lazy"
-            className="w-full h-full object-cover block"
+            className="absolute inset-0 w-full h-full object-cover block"
           />
         ) : (
           /* Fallback emoji for unmatched cards */
@@ -2475,7 +2467,7 @@ function LenormandCardDisplay({ card, index, isCenter }: { card: DrawnLenormandC
         <div className="text-[10px] sm:text-xs text-slate-500 dark:text-mystic-400 leading-snug">{card.nameEN}</div>
         <div className="flex flex-wrap justify-center gap-1 mt-1">
           {card.keywords.map((kw, i) => (
-            <span key={i} className="text-[9px] sm:text-[10px] px-1.5 py-0.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900 rounded-full font-medium">
+            <span key={i} className="text-[9px] sm:text-[10px] px-1.5 py-0.5 bg-teal-50/80 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 border border-teal-200/50 dark:border-teal-700/30 rounded-full font-medium">
               {kw}
             </span>
           ))}

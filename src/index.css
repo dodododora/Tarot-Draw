@@ -1,10 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700&display=swap');
 @import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme {
   --font-sans: "Inter", "Noto Sans TC", ui-sans-serif, system-ui, sans-serif;
+  --font-serif-tc: "Noto Serif TC", serif;
   --color-mystic-50: #f4f2ff;
   --color-mystic-100: #eae5ff;
   --color-mystic-200: #d6ccff;
@@ -15,7 +16,7 @@
   --color-mystic-700: #43367a;
   --color-mystic-800: #2d2451;
   --color-mystic-900: #1a1433;
-  --color-mystic-950: #0f0a1e;
+  --color-mystic-950: #141614;
   --color-gold-500: #d4af37;
   --color-gold-400: #f1c40f;
 }
@@ -23,10 +24,10 @@
 @layer base {
   html {
     /* Pre-paint background — script in index.html adds .dark before first paint */
-    background-color: #f7f3e8; /* light mode cream */
+    background-color: #d4d8dc; /* light mode cool grey */
   }
   html.dark {
-    background-color: #0f0a1e; /* dark mode = mystic-950 */
+    background-color: #141614; /* dark mode = mystic-950 */
   }
   body {
     @apply font-sans bg-transparent text-slate-900 transition-colors duration-500 min-h-screen bg-fixed relative overflow-x-hidden;
