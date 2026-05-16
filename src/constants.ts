@@ -290,6 +290,71 @@ export const THOTH_SPREAD_IDS = [
   'breakthrough', 'choice', 'resource',
 ];
 
+export function getCardImagePath(
+  system: 'waite' | 'thoth' | 'lenormand',
+  cardId: number
+): string {
+  const base = '/cards';
+
+  if (system === 'lenormand') {
+    const LENORMAND_NAMES = [
+      'rider', 'clover', 'ship', 'house', 'tree',
+      'clouds', 'snake', 'coffin', 'bouquet', 'scythe',
+      'whip', 'birds', 'child', 'fox', 'bear',
+      'stars', 'stork', 'dog', 'tower', 'garden',
+      'mountain', 'crossroads', 'mice', 'heart', 'ring',
+      'book', 'letter', 'gentleman', 'lady', 'lily',
+      'sun', 'moon', 'key', 'fish', 'anchor', 'cross',
+    ];
+    const num = String(cardId).padStart(2, '0');
+    return `${base}/lenormand_${num}_${LENORMAND_NAMES[cardId - 1]}.webp`;
+  }
+
+  // ── Major Arcana (id 0–21) ───────────────────────────────────────────
+  if (cardId < 22) {
+    const num = String(cardId).padStart(2, '0');
+    const WAITE_MAJOR: Record<number, string> = {
+      0: 'the-fool', 1: 'the-magician', 2: 'the-high-priestess',
+      3: 'the-empress', 4: 'the-emperor', 5: 'the-hierophant',
+      6: 'the-lovers', 7: 'the-chariot', 8: 'strength',
+      9: 'the-hermit', 10: 'wheel-of-fortune', 11: 'justice',
+      12: 'the-hanged-man', 13: 'death', 14: 'temperance',
+      15: 'the-devil', 16: 'the-tower', 17: 'the-star',
+      18: 'the-moon', 19: 'the-sun', 20: 'judgement', 21: 'the-world',
+    };
+    const THOTH_MAJOR: Record<number, string> = {
+      0: 'the-fool', 1: 'the-magus', 2: 'the-priestess',
+      3: 'the-empress', 4: 'the-emperor', 5: 'the-hierophant',
+      6: 'the-lovers', 7: 'the-chariot', 8: 'adjustment',
+      9: 'the-hermit', 10: 'fortune', 11: 'lust',
+      12: 'the-hanged-man', 13: 'death', 14: 'art',
+      15: 'the-devil', 16: 'the-tower', 17: 'the-star',
+      18: 'the-moon', 19: 'the-sun', 20: 'the-aeon', 21: 'the-universe',
+    };
+    const name = system === 'thoth' ? THOTH_MAJOR[cardId] : WAITE_MAJOR[cardId];
+    return `${base}/${system}_major_${num}_${name}.webp`;
+  }
+
+  // ── Minor Arcana (id 22–77) ──────────────────────────────────────────
+  const WAITE_SUITS  = ['wands', 'cups', 'swords', 'pentacles'];
+  const THOTH_SUITS  = ['wands', 'cups', 'swords', 'disks'];
+  const WAITE_MINOR  = ['ace','two','three','four','five','six','seven','eight','nine','ten','page','knight','queen','king'];
+  const THOTH_WANDS  = ['ace','dominion','virtue','completion','strife','victory','valour','swiftness','strength','oppression','princess','prince','queen','knight'];
+  const THOTH_CUPS   = ['ace','love','abundance','luxury','disappointment','pleasure','debauch','indolence','happiness','satiety','princess','prince','queen','knight'];
+  const THOTH_SWORDS = ['ace','peace','sorrow','truce','defeat','science','futility','interference','cruelty','ruin','princess','prince','queen','knight'];
+  const THOTH_DISKS  = ['ace','change','works','power','worry','success','failure','prudence','gain','wealth','princess','prince','queen','knight'];
+  const THOTH_MINOR  = [THOTH_WANDS, THOTH_CUPS, THOTH_SWORDS, THOTH_DISKS];
+
+  const minorId   = cardId - 22;
+  const suitIndex = Math.floor(minorId / 14);
+  const cardIndex = minorId % 14;
+  const suit      = system === 'thoth' ? THOTH_SUITS[suitIndex] : WAITE_SUITS[suitIndex];
+  const num       = String(cardIndex + 1).padStart(2, '0');
+  const cardName  = system === 'thoth' ? THOTH_MINOR[suitIndex][cardIndex] : WAITE_MINOR[cardIndex];
+
+  return `${base}/${system}_${suit}_${num}_${cardName}.webp`;
+}
+
 export function getCardEmoji(cardId: number, system?: 'waite' | 'thoth'): string {
   if (cardId < 22) {
     const MAJOR_EMOJIS = [

@@ -3,7 +3,7 @@ import { flushSync } from 'react-dom';
 import { useNavigate, useLocation, Routes, Route, Navigate } from 'react-router-dom';
 import { Moon, Sun, Plus, Trash2, Edit2, Copy, ArrowLeft, Sparkles, Wand2, Info, X, History, CheckCircle2, Compass, Lightbulb } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ALL_CARDS, THOTH_SPREADS, WAITE_SPREADS, WAITE_SPREAD_IDS, THOTH_SPREAD_IDS, getCardEmoji, TAROT_TRIVIA, LENORMAND_CARDS, LENORMAND_SPREADS, LENORMAND_TRIVIA, THOTH_ALL_CARDS, THOTH_TRIVIA, ORACLE_DATA, type Spread, type TarotCard, type LenormandCard } from './constants';
+import { ALL_CARDS, THOTH_SPREADS, WAITE_SPREADS, WAITE_SPREAD_IDS, THOTH_SPREAD_IDS, getCardEmoji, getCardImagePath, TAROT_TRIVIA, LENORMAND_CARDS, LENORMAND_SPREADS, LENORMAND_TRIVIA, THOTH_ALL_CARDS, THOTH_TRIVIA, ORACLE_DATA, type Spread, type TarotCard, type LenormandCard } from './constants';
 import { shuffleAndDraw } from './deckEngine';
 import { downloadShareCard, type ShareCardCard } from './shareCard';
 import { trackEvent } from './analytics';
@@ -2360,7 +2360,7 @@ function TarotSpreadLayout({ spread, cards, mode }: { spread: Spread; cards: Dra
 }
 
 function TarotCardDisplay({ card, index, isExtra, system }: { card: DrawnCard; index: number; isExtra?: boolean; system?: 'waite' | 'thoth' }) {
-  const emoji = getCardEmoji(card.id, system);
+  const imgSrc = card.id >= 0 ? getCardImagePath(system ?? 'waite', card.id) : null;
   const isMajor = card.id < 22;
 
   return (
@@ -2379,41 +2379,37 @@ function TarotCardDisplay({ card, index, isExtra, system }: { card: DrawnCard; i
         </div>
       )}
 
-      <div className={`relative aspect-square w-[110px] sm:w-[130px] rounded-2xl overflow-hidden border-4 ${card.isReversed ? 'border-red-400/80 dark:border-red-500/50 shadow-red-500/20' :
+      <div className={`relative w-[110px] sm:w-[130px] rounded-2xl overflow-hidden border-4 ${
+        card.isReversed ? 'border-red-400/80 dark:border-red-500/50 shadow-red-500/20' :
         isExtra ? 'border-amber-400/80 dark:border-mystic-500/50 shadow-amber-500/20 dark:shadow-mystic-500/20' :
           'border-amber-300/80 dark:border-gold-500/50 shadow-amber-500/20 dark:shadow-gold-500/20'
         } shadow-lg`}>
-        {/* Card Background Decoration */}
-        <div className={`absolute inset-0 flex flex-col items-center justify-center p-4 transition-colors ${isMajor ? 'bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-100/80 via-orange-50/50 to-white dark:from-mystic-800/80 dark:via-mystic-900 dark:to-mystic-950' : 'bg-white/90 dark:bg-mystic-900'
+
+        {imgSrc ? (
+          <img
+            src={imgSrc}
+            alt={card.nameCN}
+            loading="lazy"
+            className="w-full h-full object-cover block"
+            style={{ transform: card.isReversed ? 'rotate(180deg)' : 'none', aspectRatio: '2/3' }}
+          />
+        ) : (
+          /* Fallback for manually-entered cards with no id */
+          <div className={`absolute inset-0 flex flex-col items-center justify-center p-4 ${
+            isMajor ? 'bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-100/80 via-orange-50/50 to-white dark:from-mystic-800/80 dark:via-mystic-900 dark:to-mystic-950' : 'bg-white/90 dark:bg-mystic-900'
           }`}>
-          <div className={`absolute inset-2 border rounded-lg pointer-events-none ${isMajor ? 'border-amber-300/40 dark:border-gold-700/20' : 'border-amber-100 dark:border-mystic-800/50'
-            }`} />
-
-          {/* Mystical Symbols */}
-          <div className="absolute top-3 left-3 flex items-center justify-center opacity-40 dark:opacity-30">
-            {isMajor ? <Sparkles size={12} className="text-amber-500 dark:text-gold-400" /> : <div className="w-1.5 h-1.5 rounded-full bg-amber-300 dark:bg-mystic-500" />}
-          </div>
-          <div className="absolute top-3 right-3 flex items-center justify-center opacity-40 dark:opacity-30">
-            {isMajor ? <Sparkles size={12} className="text-amber-500 dark:text-gold-400" /> : <div className="w-1.5 h-1.5 rounded-full bg-amber-300 dark:bg-mystic-500" />}
-          </div>
-          <div className="absolute bottom-3 left-3 flex items-center justify-center opacity-40 dark:opacity-30">
-            {isMajor ? <Sparkles size={12} className="text-amber-500 dark:text-gold-400" /> : <div className="w-1.5 h-1.5 rounded-full bg-amber-300 dark:bg-mystic-500" />}
-          </div>
-          <div className="absolute bottom-3 right-3 flex items-center justify-center opacity-40 dark:opacity-30">
-            {isMajor ? <Sparkles size={12} className="text-amber-500 dark:text-gold-400" /> : <div className="w-1.5 h-1.5 rounded-full bg-amber-300 dark:bg-mystic-500" />}
-          </div>
-
-          {/* Card Content */}
-          <div className={`flex flex-col items-center justify-center text-center transition-transform duration-700 h-full w-full p-2 ${card.isReversed ? 'rotate-180' : ''}`}>
-            <div className="text-4xl sm:text-5xl mb-2">{emoji}</div>
-            <div className={`font-extrabold text-sm sm:text-base mb-0.5 leading-tight ${isMajor ? 'text-amber-900 dark:text-amber-50 drop-shadow-sm' : 'text-slate-800 dark:text-mystic-100'
+            <div className={`flex flex-col items-center justify-center text-center h-full w-full p-2 ${
+              card.isReversed ? 'rotate-180' : ''
+            }`}>
+              <div className="text-4xl sm:text-5xl mb-2">{getCardEmoji(card.id, system)}</div>
+              <div className={`font-extrabold text-sm sm:text-base mb-0.5 leading-tight ${
+                isMajor ? 'text-amber-900 dark:text-amber-50' : 'text-slate-800 dark:text-mystic-100'
               }`}>{card.nameCN}</div>
-            <div className={`text-[9px] sm:text-[10px] tracking-wide uppercase leading-tight max-w-full line-clamp-1 ${isMajor ? 'text-amber-600 font-bold dark:text-gold-400/80' : 'text-amber-700/60 dark:text-mystic-400 font-semibold'
-              }`}>{card.nameEN}</div>
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* Reversed Badge */}
+        {/* Reversed badge */}
         {card.isReversed && (
           <div className="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm z-10">
             逆
@@ -2423,7 +2419,9 @@ function TarotCardDisplay({ card, index, isExtra, system }: { card: DrawnCard; i
 
       <div className="text-center w-[110px] sm:w-[130px]">
         <div className="font-bold text-sm text-slate-800 dark:text-mystic-100 truncate">{card.nameCN}</div>
-        <div className={`text-xs font-bold ${card.isReversed ? 'text-red-500 dark:text-red-400' : 'text-amber-600 dark:text-mystic-400'}`}>
+        <div className={`text-xs font-bold ${
+          card.isReversed ? 'text-red-500 dark:text-red-400' : 'text-amber-600 dark:text-mystic-400'
+        }`}>
           {card.isReversed ? '逆位' : '正位'}
         </div>
       </div>
@@ -2432,6 +2430,8 @@ function TarotCardDisplay({ card, index, isExtra, system }: { card: DrawnCard; i
 }
 
 function LenormandCardDisplay({ card, index, isCenter }: { card: DrawnLenormandCard; index: number; isCenter?: boolean }) {
+  const imgSrc = card.id > 0 ? getCardImagePath('lenormand', card.id) : null;
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.85 }}
@@ -2439,27 +2439,36 @@ function LenormandCardDisplay({ card, index, isCenter }: { card: DrawnLenormandC
       transition={{ delay: Math.min(index * 0.05, 0.25), duration: 0.22, ease: 'easeOut' }}
       className="flex flex-col items-center gap-2"
     >
-      <div className={`text-[10px] sm:text-xs font-bold uppercase tracking-widest text-center leading-tight ${isCenter ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-mystic-400'}`}>
+      <div className={`text-[10px] sm:text-xs font-bold uppercase tracking-widest text-center leading-tight ${
+        isCenter ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-mystic-400'
+      }`}>
         {card.positionName}
       </div>
 
-      <div className={`relative w-[90px] sm:w-[110px] aspect-[2/3] rounded-xl sm:rounded-2xl overflow-hidden border-2 shadow-lg transition-all duration-300 ${isCenter
-        ? 'border-emerald-400 dark:border-emerald-500 shadow-emerald-400/30 scale-110 ring-2 ring-emerald-300/50 dark:ring-emerald-600/30'
-        : 'border-teal-200/80 dark:border-teal-900/50 shadow-teal-600/10'
+      <div className={`relative w-[90px] sm:w-[110px] rounded-xl sm:rounded-2xl overflow-hidden border-2 shadow-lg transition-all duration-300 ${
+        isCenter
+          ? 'border-emerald-400 dark:border-emerald-500 shadow-emerald-400/30 scale-110 ring-2 ring-emerald-300/50 dark:ring-emerald-600/30'
+          : 'border-teal-200/80 dark:border-teal-900/50 shadow-teal-600/10'
         }`}>
-        <div className="absolute inset-0 bg-gradient-to-br from-stone-50 via-teal-50/30 to-emerald-50/50 dark:from-slate-900 dark:via-teal-950/40 dark:to-emerald-950/30" />
-        <div className="absolute top-1.5 left-1.5 text-[10px] font-bold text-slate-600 dark:text-slate-400 bg-white/70 dark:bg-black/40 px-1 py-0.5 rounded leading-none">
-          {card.suit}
-        </div>
-        <div className="absolute top-1.5 right-1.5 text-[10px] font-bold text-teal-700 dark:text-teal-400 bg-teal-50/80 dark:bg-teal-900/50 px-1 py-0.5 rounded leading-none">
-          {card.id}
-        </div>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-4xl sm:text-5xl drop-shadow-sm select-none" role="img" aria-label={card.nameEN}>
-            {card.emoji}
-          </span>
-        </div>
-        <div className="absolute bottom-0 inset-x-0 h-10 bg-gradient-to-t from-black/20 to-transparent" />
+        {imgSrc ? (
+          <img
+            src={imgSrc}
+            alt={card.nameCN}
+            loading="lazy"
+            className="w-full h-full object-cover block"
+            style={{ aspectRatio: '2/3' }}
+          />
+        ) : (
+          /* Fallback emoji for unmatched cards */
+          <>
+            <div className="absolute inset-0 bg-gradient-to-br from-stone-50 via-teal-50/30 to-emerald-50/50 dark:from-slate-900 dark:via-teal-950/40 dark:to-emerald-950/30" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-4xl sm:text-5xl drop-shadow-sm select-none" role="img" aria-label={card.nameEN}>
+                {card.emoji}
+              </span>
+            </div>
+          </>
+        )}
       </div>
 
       <div className="text-center">
