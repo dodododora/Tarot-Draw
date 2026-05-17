@@ -614,8 +614,14 @@ export default function App() {
 
   const handleManualSubmit = () => {
     if (!selectedSpread) return;
+    setIsShuffling(false); // reset stale shuffle state
     const filled = manualInputs.filter(i => i.name.trim());
     if (filled.length === 0) { showToast('請至少填入一張牌'); return; }
+    const unfilled = selectedSpread.positions.map((pos, i) => ({ pos, i, name: manualInputs[i]?.name?.trim() || '' })).filter(x => !x.name);
+    if (unfilled.length > 0) {
+      showToast(`請填入第 ${unfilled.map(x => x.i + 1).join('、')} 張牌`);
+      return;
+    }
 
     trackEvent('manual_submit', { spread_name: selectedSpread.name, system: mode });
     if (mode === 'lenormand') {
