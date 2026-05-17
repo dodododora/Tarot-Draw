@@ -634,8 +634,7 @@ export default function App() {
       const newId = Date.now().toString() + Math.random().toString(36).substring(2, 9);
       setCurrentHistoryId(newId);
       setHistory(prev => [{ id: newId, date: Date.now(), question: question || '', spread: selectedSpread, cards: [], lenormandCards: results, mode: 'lenormand' as const }, ...prev]);
-      setIsShuffling(true);
-      setTimeout(() => { setIsShuffling(false); navigate('/result'); }, SHUFFLE_ANIMATION_MS);
+      navigate('/result');
     } else {
       const deck = mode === 'thoth' ? THOTH_ALL_CARDS : ALL_CARDS;
       const results: DrawnCard[] = selectedSpread.positions.map((pos, i) => {
@@ -654,8 +653,7 @@ export default function App() {
       const newId = Date.now().toString() + Math.random().toString(36).substring(2, 9);
       setCurrentHistoryId(newId);
       setHistory(prev => [{ id: newId, date: Date.now(), question: question || '', spread: selectedSpread, cards: results, mode }, ...prev]);
-      setIsShuffling(true);
-      setTimeout(() => { setIsShuffling(false); navigate('/result'); }, SHUFFLE_ANIMATION_MS);
+      navigate('/result');
     }
   };
 
@@ -1264,7 +1262,7 @@ export default function App() {
                           <p className="text-xs text-slate-400 dark:text-mystic-500 text-center">
                             搜尋你實體抽到的牌名{mode === 'tarot' ? '，按「逆」切換逆位' : ''}
                           </p>
-                          <div className="space-y-2 pr-1 mx-auto">
+                          <div className="space-y-2 w-fit mx-auto">
                             {selectedSpread.positions.map((pos, i) => {
                               const query = manualInputs[i]?.name || '';
                               const isExactMatch = deck.some(c => c.nameCN === query);
@@ -1299,9 +1297,9 @@ export default function App() {
                                             next[i] = { ...(next[i] || { name: '', reversed: false }), reversed: !next[i]?.reversed };
                                             return next;
                                           })}
-                                          className={`absolute right-1 top-1/2 -translate-y-1/2 text-xs px-2 py-1 rounded border transition-colors ${manualInputs[i]?.reversed
-                                            ? 'border-purple-400/60 dark:border-purple-600/50 text-purple-600 dark:text-purple-400 bg-purple-50/60 dark:bg-purple-900/20'
-                                            : 'border-stone-400/40 dark:border-mystic-600/50 text-stone-500 dark:text-mystic-400 bg-transparent hover:bg-stone-100/50 dark:hover:bg-mystic-700/50'
+                                          className={`absolute right-1 top-1/2 -translate-y-1/2 text-xs px-2 py-1 rounded border transition-all ${manualInputs[i]?.reversed
+                                            ? 'border-purple-500/70 dark:border-purple-500/60 text-purple-700 dark:text-purple-300 bg-purple-100/80 dark:bg-purple-900/40 font-semibold'
+                                            : 'border-stone-400/40 dark:border-mystic-600/50 text-stone-400 dark:text-mystic-500 bg-transparent hover:bg-stone-100/50 dark:hover:bg-mystic-700/50'
                                           }`}
                                         >
                                           逆
