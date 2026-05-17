@@ -1317,7 +1317,7 @@ export default function App() {
                                             <button
                                               key={card.id}
                                               type="button"
-                                              onMouseDown={e => {
+                                              onPointerDown={e => {
                                                 e.preventDefault();
                                                 setManualInputs(prev => {
                                                   const next = [...prev];
