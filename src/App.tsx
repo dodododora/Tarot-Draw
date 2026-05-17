@@ -16,6 +16,7 @@ export interface DrawHistory {
   cards: DrawnCard[];
   lenormandCards?: DrawnLenormandCard[];
   mode?: 'tarot' | 'lenormand' | 'thoth';
+  bottomCard?: DrawnCard;
 }
 
 interface DrawnCard extends TarotCard {
@@ -525,6 +526,7 @@ export default function App() {
   // ─── Stable spread selection handlers (keep React.memo on SpreadCard effective)
   const handleTarotSpreadSelect = useCallback((spread: Spread) => {
     setSelectedSpread(spread);
+    setBottomCard(null);
     if (spread.id === 'choice') setChoiceCount(2);
     if (spread.id === 'mirror') setPeopleCount(2);
     trackEvent('select_spread', { spread_name: spread.name, spread_count: spread.count, system: mode });
@@ -605,7 +607,7 @@ export default function App() {
     setDrawnCards(results);
     const newHistoryId = Date.now().toString() + Math.random().toString(36).substring(2, 9);
     setCurrentHistoryId(newHistoryId);
-    setHistory(prev => [{ id: newHistoryId, date: Date.now(), question: question || '', spread: selectedSpread, cards: results, mode }, ...prev]);
+    setHistory(prev => [{ id: newHistoryId, date: Date.now(), question: question || '', spread: selectedSpread, cards: results, mode, bottomCard: bottomResult }, ...prev]);
     drawn.forEach(card => { const img = new Image(); img.src = getCardImagePath(mode === 'thoth' ? 'thoth' : 'tarot', card.id); });
     setIsShuffling(true);
     trackEvent('draw_cards', { spread_name: selectedSpread.name, spread_count: selectedSpread.count, system: mode, has_question: (question.trim().length > 0) });
@@ -869,10 +871,14 @@ export default function App() {
 
     const systemHeader = targetMode === 'thoth' ? thothHeader : waiteHeader;
     const modeName = targetMode === 'thoth' ? '托特' : '偉特';
+    const effectiveBottomCard = record?.bottomCard ?? (record ? undefined : bottomCard);
+    const bottomText = effectiveBottomCard
+      ? `\n\n【底牌】${effectiveBottomCard.nameCN} ${effectiveBottomCard.nameEN}${targetMode === 'thoth' ? '' : `（${effectiveBottomCard.isReversed ? '逆位' : '正位'}）`}\n（底牌反映潛藏動機或心理狀態，請在解讀結尾補充說明其意涵）`
+      : '';
     if (type === 'all') {
-      text = `${systemHeader}\n\n我想透過${modeName}塔羅牌占卜以下問題：\n\n【問題】${targetQuestion.trim() || '探索當下整體狀態'}\n\n【牌陣】${targetSpread.name}\n\n抽出的牌：\n${mainText}${extraText}${analysisPrompt}`;
+      text = `${systemHeader}\n\n我想透過${modeName}塔羅牌占卜以下問題：\n\n【問題】${targetQuestion.trim() || '探索當下整體狀態'}\n\n【牌陣】${targetSpread.name}\n\n抽出的牌：\n${mainText}${bottomText}${extraText}${analysisPrompt}`;
     } else if (type === 'main') {
-      text = `${systemHeader}\n\n我想透過${modeName}塔羅牌占卜以下問題：\n\n【問題】${targetQuestion.trim() || '探索當下整體狀態'}\n\n【牌陣】${targetSpread.name}（主牌陣）\n\n抽出的牌：\n${mainText}${analysisPrompt}`;
+      text = `${systemHeader}\n\n我想透過${modeName}塔羅牌占卜以下問題：\n\n【問題】${targetQuestion.trim() || '探索當下整體狀態'}\n\n【牌陣】${targetSpread.name}（主牌陣）\n\n抽出的牌：\n${mainText}${bottomText}${analysisPrompt}`;
     } else if (type === 'extra') {
       text = `我想針對剛剛的${modeName}塔羅牌占卜結果，進行進一步的提問。請為我解讀以下補抽的牌卡：\n\n【原問題】${targetQuestion.trim() || '探索當下整體狀態'}\n\n【衍生自牌陣】${targetSpread.name}\n\n${extraText.replace('【補充指引】以下為針對子問題補抽的牌，請在原牌陣基礎上聚焦解讀，視為放大鏡而非新占卜。\n', '')}\n\n請為我解讀這幾張補抽牌的具體含義，以及它們如何回應我的提問。`;
     }
