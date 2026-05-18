@@ -291,6 +291,7 @@ export default function App() {
   const [bottomCard, setBottomCard] = useState<DrawnCard | null>(null);
   const [isCustomOpen, setIsCustomOpen] = useState(true);
   const [isBuiltinOpen, setIsBuiltinOpen] = useState(true);
+  const [forceUpdate, setForceUpdate] = useState(0);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -515,6 +516,16 @@ export default function App() {
       localStorage.setItem('tarot-history', JSON.stringify(history));
     }
   }, [customSpreads, history, isLoaded]);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        setForceUpdate(prev => prev + 1);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, []);
 
   const toggleTheme = useCallback(() => setTheme(t => t === 'light' ? 'dark' : 'light'), []);
 
