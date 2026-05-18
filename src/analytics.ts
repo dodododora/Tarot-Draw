@@ -7,8 +7,5 @@ export function trackEvent(
   params?: Record<string, string | number | boolean>,
 ) {
   if (typeof window === 'undefined' || !window.gtag) return;
-  const normalized = params?.system === 'tarot'
-    ? { ...params, system: 'waite' }
-    : params;
-  window.gtag('event', eventName, normalized);
+  window.gtag('event', eventName, params);
 }

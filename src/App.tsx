@@ -15,7 +15,7 @@ export interface DrawHistory {
   spread: Spread;
   cards: DrawnCard[];
   lenormandCards?: DrawnLenormandCard[];
-  mode?: 'tarot' | 'lenormand' | 'thoth';
+  mode?: 'waite' | 'lenormand' | 'thoth';
   bottomCard?: DrawnCard;
 }
 
@@ -100,9 +100,9 @@ const GlobalBackground = ({ theme }: { theme: 'light' | 'dark' }) => (
 const SHUFFLE_ANIMATION_MS = 2300; // 2s animation + 0.3s hold at gathered pile state
 
 /** Card back component — shows system-specific card back image */
-const CardBack = ({ system, featured }: { system?: 'tarot' | 'thoth' | 'lenormand'; featured?: boolean }) => {
+const CardBack = ({ system, featured }: { system?: 'waite' | 'thoth' | 'lenormand'; featured?: boolean }) => {
   const backImage = system ? ({
-    tarot: '/cards/back_waite.webp',
+    waite: '/cards/back_waite.webp',
     thoth: '/cards/back_thoth.webp',
     lenormand: '/cards/back_lenormand.webp',
   } as const)[system] : '/cards/back_waite.webp';
@@ -171,7 +171,7 @@ function getCardAnimation(offset: number, animType: ShuffleAnim, gatherX: number
 
 
 /** Full-screen shuffle animation overlay — random card count (5-7) and random style */
-function ShuffleOverlay({ question, mode }: { question: string; mode: 'tarot' | 'thoth' | 'lenormand' }) {
+function ShuffleOverlay({ question, mode }: { question: string; mode: 'waite' | 'thoth' | 'lenormand' }) {
   const [animType] = useState<ShuffleAnim>(
     () => SHUFFLE_ANIMATIONS[Math.floor(Math.random() * SHUFFLE_ANIMATIONS.length)]
   );
@@ -266,7 +266,7 @@ function ScrollToTop() {
 }
 
 export default function App() {
-  const [mode, setMode] = useState<'tarot' | 'lenormand' | 'thoth'>('tarot');
+  const [mode, setMode] = useState<'waite' | 'lenormand' | 'thoth'>('waite');
   const [lenormandDrawnCards, setLenormandDrawnCards] = useState<DrawnLenormandCard[]>([]);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -639,7 +639,7 @@ export default function App() {
     const newHistoryId = Date.now().toString() + Math.random().toString(36).substring(2, 9);
     setCurrentHistoryId(newHistoryId);
     setHistory(prev => [{ id: newHistoryId, date: Date.now(), question: question || '', spread: selectedSpread, cards: results, mode, bottomCard: bottomResult }, ...prev]);
-    drawn.forEach(card => { const img = new Image(); img.src = getCardImagePath(mode === 'thoth' ? 'thoth' : 'tarot', card.id); });
+    drawn.forEach(card => { const img = new Image(); img.src = getCardImagePath(mode === 'thoth' ? 'thoth' : 'waite', card.id); });
     setIsShuffling(true);
     trackEvent('draw_cards', { spread_name: selectedSpread.name, spread_count: selectedSpread.count, system: mode, has_question: (question.trim().length > 0) });
     setTimeout(() => { setIsShuffling(false); navigate('/result'); }, SHUFFLE_ANIMATION_MS);
@@ -741,9 +741,11 @@ export default function App() {
         `  ${i + 1}. ${card.positionName}：${card.nameCN} (${card.nameEN})`
       ).join('\n');
 
-      const systemHeader = `【系統】雷諾曼（獨立占卜體系，非塔羅）
-【核心邏輯】意義來自牌與牌的組合，單牌意義模糊。請優先解讀相鄰牌對，再建立整體敘事。
-【解讀提示】以具體事務導向解讀，勿心理化或靈性化。無卡巴拉、星座、元素等塔羅框架，圖像取其字面象徵即可。結尾請給一句直接回答問題的結論。`;
+      const systemHeader = `【系統】雷諾曼（常規牌陣）
+【規則】
+1. 必須以相鄰牌對組合建立敘事，嚴禁單牌解讀。
+2. 鎖定具體現實事務，絕對禁止延伸至靈性或心理學層面。
+3. 結尾必須用一句話給出最明確、直接的結論。`;
 
       let prompt = `${systemHeader}\n\n我想透過 Lenormand 卡牌占卜以下問題：\n\n【問題】${targetQuestion.trim() || '探索當下整體狀態'}\n\n【牌陣】${targetSpread.name}\n\n抽出的牌：\n${cardList}`;
 
@@ -781,7 +783,15 @@ export default function App() {
         const f = (c: DrawnLenormandCard) => `${c.nameCN}${c.nameEN ? ` (${c.nameEN})` : ''}`;
         prompt += `\n\n請從以下層次解讀這三張牌：\n\n（一）左右流向\n  ${f(c1)} → ${f(c2)} → ${f(c3)}\n\n（二）鄰牌配對解讀（注意方向性，A+B ≠ B+A）\n  - 左+中：${f(c1)} + ${f(c2)}的組合含義\n  - 中+右：${f(c2)} + ${f(c3)}的組合含義\n  請依序解析，並說明方向改變如何影響解讀。\n\n（三）整體訊息\n  三張牌合在一起描述的核心主題與答案。`;
       } else {
-        prompt += `\n\n請為我解讀這張牌的含義。`;
+        // len-1: Lenormand single — direct Yes/No format, no analysis
+        const card = cards[0];
+        prompt = `【系統】雷諾曼
+【牌】${card.nameCN}（${card.nameEN}）
+【問題】${targetQuestion.trim() || '請直接解讀此牌當下的指引'}
+【核心指令】
+1. 不做組合解讀，僅根據此牌的字面象徵，直接給出一個具體的「是／否／中性」判斷。
+2. 嚴禁任何靈性、心理延伸或說教。
+3. 輸出簡短俧落，絕對不得超過 3 句話。`;
       }
 
       navigator.clipboard.writeText(prompt).then(() => {
@@ -819,72 +829,63 @@ export default function App() {
       switch (targetSpread.id) {
         // Thoth Spreads
         case 'celtic':
-          analysisPrompt = `\n\n請從以下角度為我深入解讀這個牌陣：\n（一）核心狀況：分析【現況】與【挑戰】的交鋒。\n（二）深層心理：對比【顯意識】與【潛意識】的拉扯。\n（三）時間流向：從【過去】看往【近未來】的演化趨勢。\n（四）內外解析：結合【自我認知】與【環境變數】的互動。\n（五）最終走向：綜觀【焦慮與渴望】，推演【最終演化】。`;
+          analysisPrompt = `\n\n請依序完成：①從【現況】與【主要挑戰】切入核心問題。②對比【潛意識】動力與【顯意識】的落差。③分析時間演進（【過去】→【近未來】）。④整合【內外環境變數】。⑤推演【最終走向】。`;
           break;
         case 'choice': {
           const numChoices = (mainCards.length - 1) / 2;
           const letters = Array.from({ length: numChoices }, (_, i) => String.fromCharCode(65 + i));
-          const pathDesc = letters.map(l => `選擇${l}（發展軌跡→結果）`).join('、');
-          analysisPrompt = `\n\n請從以下角度為我深入解讀這個 ${numChoices} 選項的決策牌陣：\n（一）底層邏輯：評估【決策當下的現況】揭示的核心變數與限制條件。\n（二）路徑推演：分別解讀 ${pathDesc} 的發展軌跡與機會成本差異。\n（三）決策指引：綜合 ${numChoices} 條路徑，給予具體且高維度的決策建議，並明確指出你認為最值得關注的選擇及原因。`;
+          const pathDesc = letters.map(l => `選擇${l}`).join('、');
+          analysisPrompt = `\n\n請依序完成：①從【底層邏輯】評估做決定的核心前提。②分別推演 ${pathDesc} 的動態發展與各自代價。③給出最終決策指引，明確指出哪條路徑更值得關注。`;
           break;
         }
         case 'mirror': {
           const numPeople = Math.round(mainCards.length / 3);
           if (numPeople <= 2) {
-            analysisPrompt = `\n\n請從以下角度為我深入解讀這段雙方關係的系統性結構：\n（一）認知落差：對比雙方視角——【對象眼中的主角】vs【主角眼中的對象】——點出彼此的投射與盲點。\n（二）自我定位：分析【主角眼中的自己】與【對象眼中的自己】各自揭示的深層狀態。\n（三）互動動力：深挖【互動產生的誤解】的根源，以及雙方之間的隱形拉力。\n（四）破冰策略：基於上述洞察，給出具體且成熟的互動建議。`;
+            analysisPrompt = `\n\n請依序完成：①對比雙方的認知落差，點出各自的投射盲點。②分析核心互動模式與系統性摩擦來源。③給出破冰或升溫關係的具體行動策略。`;
           } else {
             const chars = Array.from({ length: numPeople - 1 }, (_, i) => String.fromCharCode(65 + i));
             const peopleList = chars.map(c => `對象${c}`).join('、');
-            analysisPrompt = `\n\n請從以下角度為我深入解讀這個 ${numPeople} 人局的關係系統：\n（一）自我視角：分析【主角眼中的自己】揭示的核心自我認知。\n（二）多方關係：逐一解讀 ${peopleList} 各自的視角差異（他眼中的主角、主角眼中的他、他眼中的自己），找出最關鍵的感知落差。\n（三）系統盲點：分析【多方互動的盲點】與整體關係網絡的張力來源。\n（四）群體建議：基於全局視角，給出在 ${numPeople} 人關係中找到平衡的具體建議。`;
+            analysisPrompt = `\n\n請依序完成：①分析主角的自我認知基準。②逐一解讀 ${peopleList} 各自的認知落差與互動模式。③點出整體關係網絡的核心盲點。④給出在 ${numPeople} 人關係中找到平衡的具體策略。`;
           }
           break;
         }
         case 'johari':
-          analysisPrompt = `\n\n請依據周哈里窗模型為我深入解讀，特別點出【盲目區】與【隱藏區】揭示的認知盲點，並說明如何探索【未知區】的潛能以達成自我整合。`;
+          analysisPrompt = `\n\n請依序完成：①揭開【盲目區】中你可能不自知的行為模式。②提取【隱藏區】中你已擁有但未善用的優勢。③指引【未知潛能】的具體開發方向。`;
           break;
         case 'breakthrough':
-          analysisPrompt = `\n\n請為我深入解讀目前的僵局，殘酷地指出我的【錯誤的發力點】，並告訴我如何利用【隱藏的槓桿】作為【關鍵行動】來突破【核心限制】。`;
+          analysisPrompt = `\n\n請依序完成：①殘酷指出目前錯誤的施力點（即【核心瓶頸】與【沉沒成本】）。②找出最具槓桿效益的突破口。③給出突破現狀的第一個關鍵行動。`;
           break;
         case 'cycle':
-          analysisPrompt = `\n\n請為我深入解讀這段生命週期的能量代謝，明確指出【正在消亡的】與【正在萌芽的】之間，【此刻的張力】正在製造什麼樣的臨界狀態，並指導我如何將【必須放下的】包袱留下，把【必須帶走的】資產投入到【正在萌芽的】事物中。`;
-          break;
-        case 'pattern':
-          analysisPrompt = `\n\n請為我進行深度的心理模式解構，分析【觸發機制】與【表層防禦】背後的【核心恐懼】，點出我留在【舒適圈的代價】，並給出【阻斷慣性的行動】建議。`;
+          analysisPrompt = `\n\n請依序完成：①分析【正在消亡的】舊狀態與【正在萌芽的】新契機之間的張力。②指出必須放下的包袱。③點出可帶往下一階段的關鍵資產。`;
           break;
         case 'iceberg':
-          analysisPrompt = `\n\n請依據薩提爾冰山理論為我深入解讀，穿透【表層行為】與【理性認知】，看見底下的【真實情緒】與【核心價值觀】，分析我的【防衛機制】，並給出【整合策略】。`;
+          analysisPrompt = `\n\n請依序完成：①穿透【表層行為】，看見被壓抑的【真實情緒】。②挖出驅動一切的【核心信念】。③分析【防衛機制】如何影響你的選擇。④給出【整合策略】。`;
           break;
         case 'resource':
-          analysisPrompt = `\n\n請為我進行全盤的局勢審計。分析【內部可用資源】與【隱藏的推力】如何對抗【外部不可控變數】與【系統性阻力】，並評估這是否能帶領我達成【當前北極星目標】與【下階段里程碑】。`;
+          analysisPrompt = `\n\n請依序完成：①盤點現有資源（可用的）與阻力（系統性的）之間的現實差距。②評估關鍵外部變數的影響。③鎖定最終目標，指出下一個里程碑。`;
           break;
         case 'hero':
-          analysisPrompt = `\n\n請將這段經歷視作一場「英雄之旅」，為我解讀目前所在的階段。分析我面臨的【冒險的召喚】與【最深的試煉】，以及我將如何透過【關鍵的導師與工具】獲得啟示，最終【帶著恩賜歸來】。`;
+          analysisPrompt = `\n\n請依序完成：①定位這段旅程中「改變的召喚」與當前試煉的本質。②指出可用的工具或導師象徵。③點出最終將獲得的成長或帶回的禮物。`;
+          break;
+        case 'energy-resonance':
+          analysisPrompt = `\n\n請依序完成：①揭示兩人能量場真實的共鳴點（去除投射後）。②分析彼此如何私下影響對方的狀態。③給出調整互動節奏的具體建議。`;
+          break;
+        case 'mirror-mirror':
+          analysisPrompt = `\n\n請依序完成：①點出你在對方身上看到的，其實是你內心哪個部分的投射。②分析這些主觀認定對現實關係造成的影響。③戳破盲點，幫助看清真實狀態。`;
           break;
 
         // Waite Spreads
         case 'waite-triangle':
-          analysisPrompt = `\n\n請為我解讀這三張牌如何分別反映出我目前【身體的感受】、【心智的邏輯】與【靈魂的渴望】。幫助我釐清這三個維度是否有衝突，並給我整合身心靈的建議。`;
+          analysisPrompt = `\n\n請依序完成：①分析身體感知、理智邏輯、靈魂渴望三者之間的具體衝突點。②給出三方達到平衡的具體建議。`;
           break;
-        case 'waite-clarity':
-          analysisPrompt = `\n\n請幫我穿透迷霧，對比【我以為的問題】與【真正的核心問題】，點出我正在【逃避的恐懼】，並解析【宇宙給予的建議】來幫助我破局。`;
+        case 'attraction':
+          analysisPrompt = `\n\n請依序完成：①解析核心渴望與當前散發頻率的落差。②點出阻礙顯化的現實盲點。③給出對齊目標的實際行動建議。`;
           break;
-        case 'waite-healing':
-          analysisPrompt = `\n\n請引導我進行情緒釋放。分析【當前糾結的情緒結】背後【未被滿足的需求】，指出我目前【錯誤的索求或防禦方式】，並給予【正確的情緒釋放管道】的具體建議。`;
+        case 'rel-seasons':
+          analysisPrompt = `\n\n請依序完成：①判斷這段關係目前處於哪個季節狀態。②指出潛在的轉變契機。③給出最適應該階段的互動法則。`;
           break;
-        case 'waite-focus':
-          analysisPrompt = `\n\n請為我校準焦點。指出我【浪費能量的地方】與【真正該專注的核心】，揭示【隱藏的內在動力】與【即將面臨的考驗】，並給予【最高指引】。`;
-          break;
-        case 'waite-shadow':
-          analysisPrompt = `\n\n請帶領我進行陰影整合。探索【我極力隱藏的特質】與它帶給我的【保護機制】。分析這份陰影【造成的破壞】，並指導我【如何溫柔地接納它】，以獲得【整合後的完整力量】。`;
-          break;
-        case 'waite-connection':
-          analysisPrompt = `\n\n請為這段關係提供滋養的指引。分析【我在關係中的匱乏】與【對方的真實狀態】，透視【當下的能量流動】與【共同的學習課題】，最後給予【如何給予彼此對等滋養】的建議。`;
-          break;
-        case 'waite-crossroad':
-          analysisPrompt = `\n\n請為站在十字路口的我提供指引。盤點【過去未解的遺憾】與【當下的籌碼】，對齊【內心的真實渴望】。推演【未來的可能性】與【隱藏的危機】，並指出【邁出下一步的關鍵行動】。`;
-          break;
-        case 'waite-year':
-          analysisPrompt = `\n\n請為我進行深度的階段總結。分析本階段的【核心主題】與【已學會的靈性教訓】。盤點【尚未跨越的世俗障礙】、【物質事業發展】與【情感內在進化】。最後點出【宇宙的潛在資源】與即將【收穫的果實】。`;
+        case 'single':
+          analysisPrompt = `\n\n請依序完成：①從這張牌的能量切入當下核心狀態。②給出一個具體且不迴避的結論建議。`;
           break;
         default:
           analysisPrompt = `\n\n請依據牌陣中每個位置的定義，結合正逆位牌意，為我進行綜合解讀，並點出值得注意的牌組互動與最終建議。`;
@@ -892,19 +893,23 @@ export default function App() {
       }
     }
 
-    const waiteHeader = `【系統】偉特塔羅（含逆位）
-【逆位邏輯】逆位不代表相反，而是該牌能量受阻、內化或尚未顯化。請依位置語境判斷，勿套用固定逆位牌義。
-【解讀提示】注意大小阿爾克那的比例——大牌多代表命運性力量主導，小牌多代表個人能動性較強。相鄰位置的張力與同花色重複出現的主題同樣重要。`;
+    const waiteHeader = `【系統】偉特塔羅
+【規則】
+1. 逆位代表能量受阻或內化，切勿解讀為絕對相反。
+2. 留意牌陣中大牌（命運主導）與小牌（個人意志）的比例。
+3. 綜合評估相鄰牌的張力與重複出現的花色主題。`;
 
-    const thothHeader = `【系統】托特塔羅（無逆位／Crowley體系）
-【體系差異】小牌有專屬命名（如Sorrow、Debauch），請以該名稱的能量本質解讀，勿套用偉特圖像敘事。宮廷牌結構不同：騎士＝偉特國王，王子＝偉特騎士。
-【解讀提示】托特關注能量狀態而非事件走向。請從驅動力與意識層次切入，並留意元素分佈的失衡方向。`;
+    const thothHeader = `【系統】托特塔羅
+【規則】
+1. 本系統無逆位。
+2. 嚴禁套用偉特圖像敘事。請依小牌專屬命名（如愛、財富、失敗等）直擊能量本質。
+3. 聚焦於個案的內在驅動力、意識層次，並點出元素分佈的失衡狀態。`;
 
     const systemHeader = targetMode === 'thoth' ? thothHeader : waiteHeader;
     const modeName = targetMode === 'thoth' ? '托特' : '偉特';
     const effectiveBottomCard = record?.bottomCard ?? (record ? undefined : bottomCard);
     const bottomText = effectiveBottomCard
-      ? `\n\n【底牌】${effectiveBottomCard.nameCN} ${effectiveBottomCard.nameEN}${targetMode === 'thoth' ? '' : `（${effectiveBottomCard.isReversed ? '逆位' : '正位'}）`}\n（底牌反映潛藏動機或心理狀態，請在解讀結尾補充說明其意涵）`
+      ? `\n\n【底牌】${effectiveBottomCard.nameCN} ${effectiveBottomCard.nameEN}${targetMode === 'thoth' ? '' : `（${effectiveBottomCard.isReversed ? '逆位' : '正位'}）`}\n代表潛藏動機或底層狀態。請在整體解讀的最後，獨立用一段話補充其關鍵影響。`
       : '';
     if (type === 'all') {
       text = `${systemHeader}\n\n我想透過${modeName}塔羅牌占卜以下問題：\n\n【問題】${targetQuestion.trim() || '探索當下整體狀態'}\n\n【牌陣】${targetSpread.name}\n\n抽出的牌：\n${mainText}${bottomText}${extraText}${analysisPrompt}`;
@@ -1908,15 +1913,15 @@ export default function App() {
                                 setLenormandDrawnCards(record.lenormandCards);
                                 setDrawnCards([]);
                               } else {
-                                setMode(record.mode === 'thoth' ? 'thoth' : 'tarot');
+                                setMode(record.mode === 'thoth' ? 'thoth' : 'waite');
                                 setDrawnCards(record.cards);
                                 setBottomCard(record.bottomCard ?? null);
                                 setLenormandDrawnCards([]);
                               }
                               setCurrentHistoryId(record.id);
                             });
-                            trackEvent('view_history_record', { spread_name: record.spread?.name ?? '', system: record.mode ?? 'tarot' });
-                            trackEvent('revisit_history', { spread_name: record.spread?.name ?? '', system: record.mode ?? 'tarot' });
+                            trackEvent('view_history_record', { spread_name: record.spread?.name ?? '', system: record.mode ?? 'waite' });
+                            trackEvent('revisit_history', { spread_name: record.spread?.name ?? '', system: record.mode ?? 'waite' });
                             setIsHistoryOpen(false);
                             navigate('/result');
                           }}
