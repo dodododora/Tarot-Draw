@@ -1845,6 +1845,17 @@ export default function App() {
                     <label htmlFor="select-all-history" className="text-sm font-semibold text-slate-600 dark:text-mystic-300 cursor-pointer select-none">
                       全選（{filteredHistory.length} 筆）
                     </label>
+                    <button
+                      onClick={() => {
+                        const noQuestionIds = filteredHistory
+                          .filter(r => !r.question?.trim() || r.question.trim() === '探索當下整體狀態')
+                          .map(r => r.id);
+                        setSelectedHistoryIds(prev => new Set([...prev, ...noQuestionIds]));
+                      }}
+                      className="ml-auto text-xs font-semibold px-2.5 py-1 rounded-lg border border-stone-300/60 dark:border-mystic-700 text-slate-500 dark:text-mystic-400 hover:bg-stone-100 dark:hover:bg-mystic-800 transition-colors select-none"
+                    >
+                      選取未提問的紀錄
+                    </button>
                   </div>
                 )}
 
