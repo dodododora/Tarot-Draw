@@ -1528,7 +1528,7 @@ export default function App() {
                                 'grid-cols-3 sm:grid-cols-4'
                       }`}>
                       {lenormandDrawnCards.map((card, index) => (
-                        <LenormandCardDisplay key={index} card={card} index={index} isCenter={lenormandDrawnCards.length === 9 && index === 4} />
+                        <LenormandCardDisplay key={card.id} card={card} index={index} isCenter={lenormandDrawnCards.length === 9 && index === 4} />
                       ))}
                     </div>
                   )}
@@ -1594,11 +1594,6 @@ export default function App() {
                       <p className="text-[11px] text-slate-500 dark:text-mystic-500 mt-0.5">牌堆最底的一張，反映潛藏的動機或心理狀態</p>
                     </div>
                     <TarotCardDisplay card={bottomCard} index={0} isExtra={true} system={mode === 'thoth' ? 'thoth' : 'waite'} />
-                    {mode === 'tarot' && (
-                      <p className={`text-xs font-bold ${bottomCard.isReversed ? 'text-red-500 dark:text-red-400' : 'text-amber-600 dark:text-mystic-400'}`}>
-                        {bottomCard.isReversed ? '逆位' : '正位'}
-                      </p>
-                    )}
                   </div>
                 </div>
               )}
@@ -1876,6 +1871,7 @@ export default function App() {
                               } else {
                                 setMode(record.mode === 'thoth' ? 'thoth' : 'tarot');
                                 setDrawnCards(record.cards);
+                                setBottomCard(record.bottomCard ?? null);
                                 setLenormandDrawnCards([]);
                               }
                               setCurrentHistoryId(record.id);
@@ -2020,7 +2016,7 @@ export default function App() {
                                if (currentHistoryId && history.find(h => h.id === currentHistoryId)) {
                                  setCurrentHistoryId(null);
                                  setDrawnCards([]);
-                                 setView('home');
+                                 navigate('/');
                                }
                                trackEvent('delete_history', { type: 'all', count: history.length });
                                setShowClearConfirm(false);
@@ -2297,7 +2293,7 @@ function oracleUI(effectiveScore: number): OracleUI {
 function TarotSpreadLayout({ spread, cards, mode }: { spread: Spread; cards: DrawnCard[]; mode: 'tarot' | 'thoth' }) {
   const renderCard = (index: number) => {
     if (index >= cards.length) return null;
-    return <TarotCardDisplay key={index} card={cards[index]} index={index} system={mode} />;
+    return <TarotCardDisplay card={cards[index]} index={index} system={mode} />;
   };
 
   switch (spread.id) {
