@@ -531,6 +531,22 @@ export default function App() {
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, []);
 
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', 'page_view', {
+        page_path: location.pathname,
+        page_title: document.title,
+      });
+    }
+    if (location.pathname === '/result') {
+      trackEvent('view_result', {
+        spread_name: selectedSpread?.name ?? '',
+        system: mode,
+        has_question: question.trim().length > 0 ? 'true' : 'false',
+      });
+    }
+  }, [location.pathname]);
+
   const toggleTheme = useCallback(() => setTheme(t => t === 'light' ? 'dark' : 'light'), []);
 
   const showToast = useCallback((msg: string) => {
@@ -1900,6 +1916,7 @@ export default function App() {
                               setCurrentHistoryId(record.id);
                             });
                             trackEvent('view_history_record', { spread_name: record.spread?.name ?? '', system: record.mode ?? 'tarot' });
+                            trackEvent('revisit_history', { spread_name: record.spread?.name ?? '', system: record.mode ?? 'tarot' });
                             setIsHistoryOpen(false);
                             navigate('/result');
                           }}
