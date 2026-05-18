@@ -1097,16 +1097,16 @@ export default function App() {
                 )}
 
                 {/* Spreads — tarot / thoth — collapsible */}
-                {(mode === 'tarot' || mode === 'thoth') && (
+                {(mode === 'waite' || mode === 'thoth') && (
                   <section>
                     <div
                       className="flex items-center justify-between mb-0 cursor-pointer select-none"
                       onClick={() => setIsBuiltinOpen(v => !v)}
                     >
                       <div className="flex items-center gap-3">
-                        <span className="text-2xl">{mode === 'tarot' ? '🔮' : '🌌'}</span>
+                        <span className="text-2xl">{mode === 'waite' ? '🔮' : '🌌'}</span>
                         <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 font-serif-tc">
-                          {mode === 'tarot' ? '偉特牌陣' : '托特牌陣'}
+                          {mode === 'waite' ? '偉特牌陣' : '托特牌陣'}
                         </h2>
                       </div>
                       <span className={`text-stone-400 dark:text-mystic-500 transition-transform duration-300 ${isBuiltinOpen ? 'rotate-180' : ''}`}>
@@ -1115,7 +1115,7 @@ export default function App() {
                     </div>
                     <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isBuiltinOpen ? 'max-h-[2000px] opacity-100 mt-4' : 'max-h-0 opacity-0 mt-0'}`}>
                       <p className="text-sm text-slate-500 dark:text-mystic-400 mb-6">
-                        {mode === 'tarot'
+                        {mode === 'waite'
                           ? '共 78 張牌・含正逆位・適合敘事與心理探索'
                           : '共 78 張牌・無逆位・著重能量狀態與深層解析'}
                       </p>
@@ -1141,7 +1141,7 @@ export default function App() {
 
 
                 {/* Custom Spreads (Tarot & Thoth) — collapsible */}
-                {(mode === 'tarot' || mode === 'thoth') && (
+                {(mode === 'waite' || mode === 'thoth') && (
                   <section>
                     {/* Toggle header */}
                     <div
@@ -1308,7 +1308,7 @@ export default function App() {
                       return (
                         <div className="space-y-2">
                           <p className="text-xs text-slate-400 dark:text-mystic-500 text-center">
-                            搜尋你實體抽到的牌名{mode === 'tarot' ? '，按「逆」切換逆位' : ''}
+                            搜尋你實體抽到的牌名{mode === 'waite' ? '，按「逆」切換逆位' : ''}
                           </p>
                           <div className="space-y-2 w-fit mx-auto">
                             {selectedSpread.positions.map((pos, i) => {
@@ -1336,9 +1336,9 @@ export default function App() {
                                         })}
                                         placeholder="輸入牌名搜尋…"
                                         autoComplete="off"
-                                        className={`w-full px-2.5 py-1.5 rounded-lg border border-amber-200/70 dark:border-mystic-700 bg-white/80 dark:bg-mystic-950 text-sm outline-none focus:ring-1 focus:ring-amber-400 dark:focus:ring-mystic-500 transition-all ${mode === 'tarot' ? 'pr-10' : ''}`}
+                                        className={`w-full px-2.5 py-1.5 rounded-lg border border-amber-200/70 dark:border-mystic-700 bg-white/80 dark:bg-mystic-950 text-sm outline-none focus:ring-1 focus:ring-amber-400 dark:focus:ring-mystic-500 transition-all ${mode === 'waite' ? 'pr-10' : ''}`}
                                       />
-                                      {mode === 'tarot' && (
+                                      {mode === 'waite' && (
                                         <button
                                           onClick={() => setManualInputs(prev => {
                                             const next = [...prev];
