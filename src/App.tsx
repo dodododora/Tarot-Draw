@@ -345,20 +345,20 @@ export default function App() {
       ...THOTH_SPREADS,
       ...WAITE_SPREADS.filter(s => !THOTH_SPREADS.some(t => t.id === s.id)),
     ];
-    const allowedIds = mode === 'tarot' ? WAITE_SPREAD_IDS : THOTH_SPREAD_IDS;
+    const allowedIds = mode === 'waite' ? WAITE_SPREAD_IDS : THOTH_SPREAD_IDS;
     const spreads = masterPool.filter(s => allowedIds.includes(s.id));
-    const cats = mode === 'tarot'
+    const cats = mode === 'waite'
       ? [
         { label: '✦ 快速一問', ids: ['single', 'waite-triangle'] },
-        { label: '✦ 關係與他人', ids: ['attraction', 'rel-seasons', 'mirror'] },
         { label: '✦ 做決定', ids: ['breakthrough', 'choice'] },
         { label: '✦ 深入探索', ids: ['celtic', 'cycle', 'hero', 'resource'] },
+        { label: '✦ 關係與他人', ids: ['attraction', 'rel-seasons', 'mirror'] },
       ]
       : [
         { label: '✦ 快速一問', ids: ['single', 'waite-triangle'] },
-        { label: '✦ 關係與他人', ids: ['energy-resonance', 'mirror-mirror', 'mirror'] },
         { label: '✦ 做決定', ids: ['breakthrough', 'choice'] },
         { label: '✦ 深入探索', ids: ['johari', 'cycle', 'iceberg', 'resource'] },
+        { label: '✦ 關係與他人', ids: ['energy-resonance', 'mirror-mirror', 'mirror'] },
       ];
     return cats
       .map(({ label, ids }) => ({ label, catSpreads: spreads.filter(s => ids.includes(s.id)) }))
@@ -981,8 +981,8 @@ export default function App() {
           {/* Tarot group */}
           <div className="flex items-center bg-stone-100/80 dark:bg-mystic-900/80 rounded-xl p-1 border border-stone-200 dark:border-mystic-800">
             <button
-              onClick={() => { setMode('tarot'); navigate('/'); setSelectedSpread(null); trackEvent('select_system', { system: 'tarot' }); }}
-              className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${mode === 'tarot'
+              onClick={() => { setMode('waite'); navigate('/'); setSelectedSpread(null); trackEvent('select_system', { system: 'waite' }); }}
+              className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${mode === 'waite'
                 ? 'bg-amber-700/70 dark:bg-mystic-600/80 text-white shadow-sm'
                 : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
                 }`}
@@ -1572,12 +1572,12 @@ export default function App() {
                   )}
 
                   {/* Tarot Tablecloth Layout */}
-                  {(mode === 'tarot' || mode === 'thoth') && (
+                  {(mode === 'waite' || mode === 'thoth') && (
                     <div className="relative bg-white/40 dark:bg-mystic-950 rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-12 shadow-2xl shadow-amber-900/5 dark:shadow-mystic-900/50 border-4 border-amber-100/50 dark:border-mystic-800/30 overflow-hidden backdrop-blur-sm">
                       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-amber-50/40 via-white/40 to-amber-100/30 dark:from-mystic-800/20 dark:via-mystic-900/80 dark:to-mystic-950 pointer-events-none"></div>
 
                       <div className="relative z-10 w-full max-w-6xl mx-auto">
-                        <TarotSpreadLayout spread={selectedSpread} cards={mainCards} mode={mode === 'thoth' ? 'thoth' : 'tarot'} />
+                        <TarotSpreadLayout spread={selectedSpread} cards={mainCards} mode={mode === 'thoth' ? 'thoth' : 'waite'} />
                       </div>
 
                       {hasExtraCards && (
@@ -1622,7 +1622,7 @@ export default function App() {
                   )}
 
                   {/* Bottom Card — tarot/thoth only */}
-                  {(mode === 'tarot' || mode === 'thoth') && bottomCard && (
+                  {(mode === 'waite' || mode === 'thoth') && bottomCard && (
                     <div className="relative bg-white/40 dark:bg-mystic-950 rounded-[2rem] p-6 sm:p-8 shadow-xl border-2 border-dashed border-amber-200/60 dark:border-mystic-700/40 backdrop-blur-sm">
                       <div className="flex flex-col items-center gap-3">
                         <div className="text-center">
@@ -2335,7 +2335,7 @@ function oracleUI(effectiveScore: number): OracleUI {
   }
 }
 
-function TarotSpreadLayout({ spread, cards, mode }: { spread: Spread; cards: DrawnCard[]; mode: 'tarot' | 'thoth' }) {
+function TarotSpreadLayout({ spread, cards, mode }: { spread: Spread; cards: DrawnCard[]; mode: 'waite' | 'thoth' }) {
   const renderCard = (index: number) => {
     if (index >= cards.length) return null;
     return <TarotCardDisplay card={cards[index]} index={index} system={mode} />;

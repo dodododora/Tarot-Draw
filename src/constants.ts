@@ -200,7 +200,7 @@ export const LENORMAND_CARDS: LenormandCard[] = [
 export const LENORMAND_SPREADS: Spread[] = [
   {
     id: "len-1",
-    name: "單張速覽",
+    name: "單張神諭",
     count: 1,
     positions: ["指引"],
     hint: "適合 Yes/No，快速確認當下方向。",
@@ -253,7 +253,7 @@ export const LENORMAND_TRIVIA: string[] = [
 ];
 
 export const THOTH_SPREADS: Spread[] = [
-  { id: "single",           name: "單張神諭",    count: 1,  positions: ["當下指引"],                                                                                                                hint: "抽一張牌，快速確認 Yes/No。",                                    exampleQuestion: "針對今天的重要會議，我最該穩住的心態是什麼？" },
+  { id: "single",           name: "單張速覽",    count: 1,  positions: ["當下指引"],                                                                                                                hint: "抽一張牌，快速確認 Yes/No。",                                    exampleQuestion: "針對今天的重要會議，我最該穩住的心態是什麼？" },
   { id: "johari",           name: "盲點揭露",    count: 4,  positions: ["公開區", "盲目區", "隱藏區", "未知潛能"],                                                                                  hint: "看清自我認知與他人眼中的落差。",                                  exampleQuestion: "在目前團隊中，我對自己角色的認知與實際情況有何落差？" },
   { id: "cycle",            name: "過渡期指引",  count: 5,  positions: ["正在消亡的", "正在萌芽的", "此刻的張力", "必須放下的", "必須帶走的"],                                                              hint: "看清現狀結束與新階段的開展。",                                    exampleQuestion: "邁入30歲的轉折，我該如何看待目前的職涯過渡期？" },
   { id: "breakthrough",     name: "破局策略",    count: 4,  positions: ["核心瓶頸", "沉沒成本", "隱藏槓桿", "第一步"],                                                                              hint: "陷入僵局時，找出最佳的突破點。",                                  exampleQuestion: "這個專案推動不下去，我該如何調整策略來破局？" },
@@ -268,7 +268,7 @@ export const THOTH_SPREADS: Spread[] = [
 ];
 
 export const WAITE_SPREADS: Spread[] = [
-  { id: "single",         name: "單張神諭",  count: 1, positions: ["當下指引"],                                        hint: "抽一張牌，快速確認 Yes/No。",                        exampleQuestion: "這份工作對我目前的靈性發展是否有益？" },
+  { id: "single",         name: "單張速覽",  count: 1, positions: ["當下指引"],                                        hint: "抽一張牌，快速確認 Yes/No。",                        exampleQuestion: "這份工作對我目前的靈性發展是否有益？" },
   { id: "waite-triangle", name: "身心靈對話", count: 3, positions: ["身體感受", "心智邏輯", "靈魂渴望"],                  hint: "思緒混亂時，重新對齊內外狀態。",                     exampleQuestion: "我最近疲憊且提不起勁，身心靈分別在傳遞什麼訊息？" },
   { id: "attraction",     name: "個人引力",  count: 3, positions: ["我目前散發的頻率", "正在召喚的連結模式", "值得鬆開的舊有慣性"],  hint: "解析你目前的狀態正吸引哪種人事物。",              exampleQuestion: "我目前的狀態在感情關係中吸引著什麼？" },
   { id: "rel-seasons",    name: "感情四季",  count: 4, positions: ["現在的關係節奏", "推動這個節奏的核心力量", "需要給予的滋養", "即將來臨的自然轉變"],  hint: "找出當下最順其自然的相處模式。",    exampleQuestion: "這段感情現在處於什麼節奏？我將如何與它同行？" },
