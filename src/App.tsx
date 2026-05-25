@@ -282,7 +282,6 @@ export default function App() {
   const [showCopySuccess, setShowCopySuccess] = useState<'all' | 'main' | 'extra' | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [extraQuestion, setExtraQuestion] = useState('');
-  const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [choiceCount, setChoiceCount] = useState(2);
   const [peopleCount, setPeopleCount] = useState(2);
   const [drawInputMode, setDrawInputMode] = useState<'random' | 'manual'>('random');
@@ -1819,14 +1818,18 @@ export default function App() {
                     <History size={20} className="text-stone-600 dark:text-mystic-500" /> 歷史紀錄
                   </h2>
                   <div className="flex items-center gap-2">
-                    {history.length > 0 && !historySelectMode && (
+
+                    {history.some(r => !r.question.trim()) && !historySelectMode && (
                       <button
-                        onClick={(e) => { e.stopPropagation(); setShowClearConfirm(true); }}
-                        className="p-2 text-slate-400 hover:text-red-500 transition-colors flex items-center gap-1 text-sm font-medium bg-slate-100/50 hover:bg-red-50 dark:bg-mystic-800/50 dark:hover:bg-red-900/20 rounded-lg px-3"
-                        title="清空全部紀錄"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setHistory(prev => prev.filter(r => r.question.trim() !== ''));
+                        }}
+                        className="p-2 text-slate-400 hover:text-amber-600 transition-colors flex items-center gap-1 text-sm font-medium bg-slate-100/50 hover:bg-amber-50 dark:bg-mystic-800/50 dark:hover:bg-amber-900/20 rounded-lg px-3"
+                        title="清除未輸入問題的紀錄"
                       >
                         <Trash2 size={16} />
-                        <span className="hidden sm:inline">清空全部</span>
+                        <span className="hidden sm:inline">清空未填</span>
                       </button>
                     )}
                     {history.length > 0 && (
@@ -2033,46 +2036,6 @@ export default function App() {
                       >
                         刪除選取
                       </button>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {/* Clear-all confirm panel */}
-                <AnimatePresence>
-                  {showClearConfirm && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 50 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 50 }}
-                      className="absolute bottom-6 left-4 right-4 bg-white dark:bg-mystic-900 rounded-2xl shadow-2xl border-2 border-red-200 dark:border-red-900/50 p-5 z-50 overflow-hidden"
-                    >
-                      <div className="absolute inset-0 bg-red-50/50 dark:bg-red-900/10 pointer-events-none" />
-                      <div className="relative z-10 flex flex-col items-center text-center gap-3">
-                        <div className="w-12 h-12 bg-red-100 dark:bg-red-900/40 rounded-full flex items-center justify-center text-red-500 mb-1">
-                          <Trash2 size={24} />
-                        </div>
-                        <h3 className="text-lg font-bold text-red-600 dark:text-red-400">確定要清空所有紀錄嗎？</h3>
-                        <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">此動作無法復原，請確認是否要繼續。</p>
-                        <div className="flex w-full gap-3 mt-1">
-                          <button onClick={() => setShowClearConfirm(false)} className="flex-1 py-2.5 rounded-lg font-bold bg-slate-100 dark:bg-mystic-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-mystic-700 transition-colors">取消</button>
-                          <button
-                            onClick={() => {
-                              setHistory([]);
-                              if (currentHistoryId && history.find(h => h.id === currentHistoryId)) {
-                                setCurrentHistoryId(null);
-                                setDrawnCards([]);
-                                navigate('/');
-                              }
-                              trackEvent('delete_history', { type: 'all', count: history.length });
-                              setShowClearConfirm(false);
-                              showToast('已清空所有紀錄');
-                            }}
-                            className="flex-1 py-2.5 rounded-xl font-bold bg-red-400/80 hover:bg-red-500/80 text-white shadow-lg shadow-red-500/20 transition-all active:scale-95"
-                          >
-                            確認清空
-                          </button>
-                        </div>
-                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>

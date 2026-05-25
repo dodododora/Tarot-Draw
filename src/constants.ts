@@ -211,7 +211,7 @@ export const LENORMAND_SPREADS: Spread[] = [
     name: "過去現在未來",
     count: 3,
     positions: ["過去的影響", "現在的狀態", "未來的走向"],
-    hint: "秒懂事件來龍去脈與後續走向。",
+    hint: "了解事件來龍去脈與後續走向。",
     exampleQuestion: "這段感情的過去、現在、未來走向？"
   },
   {
