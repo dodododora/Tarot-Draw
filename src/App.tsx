@@ -523,6 +523,11 @@ export default function App() {
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
+        document.querySelectorAll('img').forEach((img) => {
+          if (!img.complete || img.naturalHeight === 0) {
+            img.src = img.src;
+          }
+        });
         setForceUpdate(prev => prev + 1);
       }
     };
