@@ -351,13 +351,13 @@ export default function App() {
         { label: '✦ 快速一問', ids: ['single', 'waite-triangle'] },
         { label: '✦ 做決定', ids: ['breakthrough', 'choice'] },
         { label: '✦ 深入探索', ids: ['celtic', 'cycle', 'hero', 'resource'] },
-        { label: '✦ 關係與他人', ids: ['attraction', 'rel-seasons', 'mirror'] },
+        { label: '✦ 關係與他人', ids: ['attraction', 'rel-seasons', 'mirror', 'now-connect'] },
       ]
       : [
         { label: '✦ 快速一問', ids: ['single', 'waite-triangle'] },
         { label: '✦ 做決定', ids: ['breakthrough', 'choice'] },
         { label: '✦ 深入探索', ids: ['johari', 'cycle', 'iceberg', 'resource'] },
-        { label: '✦ 關係與他人', ids: ['energy-resonance', 'mirror-mirror', 'mirror'] },
+        { label: '✦ 關係與他人', ids: ['energy-resonance', 'mirror-mirror', 'mirror', 'now-connect'] },
       ];
     return cats
       .map(({ label, ids }) => ({ label, catSpreads: spreads.filter(s => ids.includes(s.id)) }))
@@ -384,7 +384,7 @@ export default function App() {
       if (selectedSpread.count !== expectedCount) {
         setSelectedSpread({
           ...selectedSpread,
-          name: choiceCount === 2 ? "命運二擇一" : `命運多擇一 (${choiceCount} 選項)`,
+          name: "岔路推演",
           count: expectedCount,
           positions,
           exampleQuestion: choiceCount > 2 ? "我該如何從多個不同的潛在選擇中做出決定？" : "我該留在原公司，還是接受獵頭提供的新 offer？"

@@ -265,6 +265,8 @@ export const THOTH_SPREADS: Spread[] = [
   { id: "energy-resonance", name: "交會效應",    count: 5,  positions: ["我的底層渴望", "對方的底層渴望", "碰撞製造的東西", "各自迴避的部分", "去除投射後的核心"],         hint: "兩人相會時，檯面下的真實互動。",                                 exampleQuestion: "我與這個人之間的互動底層透露了什麼？" },
   { id: "mirror-mirror",    name: "內在投射鏡",  count: 5,  positions: ["你在對方身上受不了的", "這件事在你身上的根", "對方從你身上照見的", "你們共同迴避的", "這段關係真正的課題"],      hint: "從他人身上看見自己隱藏的情緒。",                                 exampleQuestion: "我在這段關係中反覆被觸發，背後真正的課題是什麼？" },
   { id: "celtic",           name: "凱爾特十字",  count: 10, positions: ["現況", "主要挑戰", "顯意識", "潛意識", "過去", "近未來", "自我認知", "外在環境", "焦慮與渴望", "最終演化"],                hint: "層層剝開複雜局勢的深層因果。",                                    exampleQuestion: "我目前面臨人生的巨大低潮，請幫我全盤檢視各維度的問題與解法。" },
+  { id: "elements",         name: "四元素平衡",  count: 4,  positions: ["火・行動力", "水・情感", "風・思維", "土・物質"],                                                                          hint: "從行動、情感、思維與物質全面剖析現狀。",                           exampleQuestion: "目前的處境從四個面向來看，各自透露了什麼訊息？",         category: "深入探索" },
+  { id: "now-connect",       name: "當下連結",    count: 3,  positions: ["這段關係現在的樣子", "我目前傳遞給對方的狀態", "對方目前傳遞給我的狀態"],                                                              hint: "純粹照見這段關係此刻的樣子。",                                    exampleQuestion: "不問對錯，這段關係此刻各自的狀態是什麼？" },
 ];
 
 export const WAITE_SPREADS: Spread[] = [
@@ -272,6 +274,7 @@ export const WAITE_SPREADS: Spread[] = [
   { id: "waite-triangle", name: "身心靈對話", count: 3, positions: ["身體感受", "心智邏輯", "靈魂渴望"],                  hint: "思緒混亂時，重新對齊內外狀態。",                     exampleQuestion: "我最近疲憊且提不起勁，身心靈分別在傳遞什麼訊息？" },
   { id: "attraction",     name: "個人引力",  count: 3, positions: ["我目前散發的頻率", "正在召喚的連結模式", "值得鬆開的舊有慣性"],  hint: "解析你目前的狀態正吸引哪種人事物。",              exampleQuestion: "我目前的狀態在感情關係中吸引著什麼？" },
   { id: "rel-seasons",    name: "感情四季",  count: 4, positions: ["現在的關係節奏", "推動這個節奏的核心力量", "需要給予的滋養", "即將來臨的自然轉變"],  hint: "找出當下最順其自然的相處模式。",    exampleQuestion: "這段感情現在處於什麼節奏？我將如何與它同行？" },
+  { id: "now-connect",    name: "當下連結",    count: 3, positions: ["這段關係現在的樣子", "我目前傳遞給對方的狀態", "對方目前傳遞給我的狀態"],              hint: "純粹照見這段關係此刻的樣子。",          exampleQuestion: "不問對錯，這段關係此刻各自的狀態是什麼？" },
 ];
 
 // Which spread IDs are available in each system
@@ -279,7 +282,7 @@ export const WAITE_SPREADS: Spread[] = [
 export const WAITE_SPREAD_IDS = [
   'single', 'waite-triangle', 'celtic',
   'cycle', 'hero',
-  'attraction', 'rel-seasons', 'mirror',
+  'attraction', 'rel-seasons', 'mirror', 'now-connect',
   'breakthrough', 'choice', 'resource',
 ];
 // Thoth: energy-state / psychological structure
@@ -287,8 +290,9 @@ export const THOTH_SPREAD_IDS = [
   'single', 'waite-triangle',
   'johari', 'iceberg',
   'cycle',
-  'energy-resonance', 'mirror-mirror', 'mirror',
+  'energy-resonance', 'mirror-mirror', 'mirror', 'now-connect',
   'breakthrough', 'choice', 'resource',
+  'elements',
 ];
 
 export function getCardImagePath(
