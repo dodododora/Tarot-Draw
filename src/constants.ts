@@ -266,7 +266,7 @@ export const THOTH_SPREADS: Spread[] = [
   { id: "mirror-mirror",    name: "內在投射鏡",  count: 5,  positions: ["你在對方身上受不了的", "這件事在你身上的根", "對方從你身上照見的", "你們共同迴避的", "這段關係真正的課題"],      hint: "從他人身上看見自己隱藏的情緒。",                                 exampleQuestion: "我在這段關係中反覆被觸發，背後真正的課題是什麼？" },
   { id: "celtic",           name: "凱爾特十字",  count: 10, positions: ["現況", "主要挑戰", "顯意識", "潛意識", "過去", "近未來", "自我認知", "外在環境", "焦慮與渴望", "最終演化"],                hint: "層層剝開複雜局勢的深層因果。",                                    exampleQuestion: "我目前面臨人生的巨大低潮，請幫我全盤檢視各維度的問題與解法。" },
   { id: "elements",         name: "四元素平衡",  count: 4,  positions: ["火・行動力", "水・情感", "風・思維", "土・物質"],                                                                          hint: "從行動、情感、思維與物質全面剖析現狀。",                           exampleQuestion: "目前的處境從四個面向來看，各自透露了什麼訊息？",         category: "深入探索" },
-  { id: "now-connect",       name: "當下連結",    count: 3,  positions: ["這段關係現在的樣子", "我目前傳遞給對方的狀態", "對方目前傳遞給我的狀態"],                                                              hint: "純粹照見這段關係此刻的樣子。",                                    exampleQuestion: "不問對錯，這段關係此刻各自的狀態是什麼？" },
+  { id: "now-connect",       name: "當下連結",    count: 3,  positions: ["這段關係的現狀", "我此刻展現的模樣", "對方此刻展現的模樣"],                                                              hint: "純粹照見這段關係此刻的樣子。",                                    exampleQuestion: "不問對錯，這段關係此刻各自的狀態是什麼？" },
 ];
 
 export const WAITE_SPREADS: Spread[] = [

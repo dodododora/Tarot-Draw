@@ -351,13 +351,13 @@ export default function App() {
         { label: '✦ 快速一問', ids: ['single', 'waite-triangle'] },
         { label: '✦ 做決定', ids: ['breakthrough', 'choice'] },
         { label: '✦ 深入探索', ids: ['celtic', 'cycle', 'hero', 'resource'] },
-        { label: '✦ 關係與他人', ids: ['attraction', 'rel-seasons', 'mirror', 'now-connect'] },
+        { label: '✦ 關係與他人', ids: ['now-connect', 'attraction', 'rel-seasons', 'mirror'] },
       ]
       : [
         { label: '✦ 快速一問', ids: ['single', 'waite-triangle'] },
         { label: '✦ 做決定', ids: ['breakthrough', 'choice'] },
         { label: '✦ 深入探索', ids: ['johari', 'cycle', 'iceberg', 'resource'] },
-        { label: '✦ 關係與他人', ids: ['energy-resonance', 'mirror-mirror', 'mirror', 'now-connect'] },
+        { label: '✦ 關係與他人', ids: ['now-connect', 'energy-resonance', 'mirror-mirror', 'mirror'] },
       ];
     return cats
       .map(({ label, ids }) => ({ label, catSpreads: spreads.filter(s => ids.includes(s.id)) }))
