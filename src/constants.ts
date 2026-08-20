@@ -239,14 +239,14 @@ export const LENORMAND_SPREADS: Spread[] = [
     name: "大展開",
     count: 36,
     positions: [
-      // Row 1 (1–9): 過去與根源層
-      "R1C1·過去的根源", "R1C2·舊有的影響", "R1C3·遠方的因", "R1C4·埋下的種子", "R1C5·過去的核心", "R1C6·留下的印記", "R1C7·已結束的篇章", "R1C8·遠因的方向", "R1C9·過去的終點",
-      // Row 2 (10–18): 現實與環境層
-      "R2C1·外在現況", "R2C2·近期環境", "R2C3·身邊的人", "R2C4·現實阻力", "R2C5·當下核心", "R2C6·外在助力", "R2C7·他人眼中的你", "R2C8·近期的事件", "R2C9·外在走向",
-      // Row 3 (19–27): 內在與心理層
-      "R3C1·內心的感受", "R3C2·隱藏的想法", "R3C3·潛意識的恐懼", "R3C4·內在的阻力", "R3C5·心理核心", "R3C6·內在的渴望", "R3C7·你真正想要的", "R3C8·情感的走向", "R3C9·內在的結局",
-      // Row 4 (28–36): 未來與命運層
-      "R4C1·最終的根基", "R4C2·未來的線索", "R4C3·即將到來的事", "R4C4·發展的阻礙", "R4C5·命運的核心", "R4C6·最終的助力", "R4C7·結果的形成", "R4C8·最終的方向", "R4C9·命運的歸宿"
+      "第1宮 (騎士)", "第2宮 (三葉草)", "第3宮 (船)", "第4宮 (房屋)", "第5宮 (樹)",
+      "第6宮 (雲)", "第7宮 (蛇)", "第8宮 (棺材)", "第9宮 (花束)", "第10宮 (大鐮刀)",
+      "第11宮 (鞭子)", "第12宮 (鳥)", "第13宮 (小孩)", "第14宮 (狐狸)", "第15宮 (熊)",
+      "第16宮 (星星)", "第17宮 (鸛鳥)", "第18宮 (狗)", "第19宮 (塔)", "第20宮 (花園)",
+      "第21宮 (山)", "第22宮 (十字路口)", "第23宮 (老鼠)", "第24宮 (心)", "第25宮 (戒指)",
+      "第26宮 (書)", "第27宮 (信)", "第28宮 (男人)", "第29宮 (女人)", "第30宮 (百合)",
+      "第31宮 (太陽)", "第32宮 (月亮)", "第33宮 (鑰匙)", "第34宮 (魚)", "第35宮 (錨)",
+      "第36宮 (十字架)"
     ],
     hint: "36 張全部鋪開，縱讀成時間脈絡，橫讀看人生各面向。",
     exampleQuestion: "請用大展開告訴我，接下來這段時間我的整體人生走勢如何？"
@@ -284,6 +284,8 @@ export const THOTH_SPREADS: Spread[] = [
   { id: "celtic",           name: "凱爾特十字",  count: 10, positions: ["現況", "主要挑戰", "顯意識", "潛意識", "過去", "近未來", "自我認知", "外在環境", "焦慮與渴望", "最終演化"],                hint: "層層剝開複雜局勢的深層因果。",                                    exampleQuestion: "我目前面臨人生的巨大低潮，請幫我全盤檢視各維度的問題與解法。" },
   { id: "elements",         name: "四元素平衡",  count: 4,  positions: ["火・行動力", "水・情感", "風・思維", "土・物質"],                                                                          hint: "從行動、情感、思維與物質全面剖析現狀。",                           exampleQuestion: "目前的處境從四個面向來看，各自透露了什麼訊息？",         category: "深入探索" },
   { id: "now-connect",       name: "當下連結",    count: 3,  positions: ["這段關係的現狀", "我此刻展現的模樣", "對方此刻展現的模樣"],                                                              hint: "純粹照見這段關係此刻的樣子。",                                    exampleQuestion: "不問對錯，這段關係此刻各自的狀態是什麼？" },
+  { id: "lovers-pyramid", name: "戀人金字塔", count: 4, positions: ["你的現狀與心意", "對方的真實想法", "彼此關係的阻礙與張力", "未來發展結果"], hint: "經典感情牌陣，看清雙方心意與未來發展。", exampleQuestion: "我跟某某人接下來的感情發展走向會如何？" },
+  { id: "reconciliation", name: "關係復合推演", count: 5, positions: ["關係破裂或疏離的核心主因", "你對這段關係的真實執著", "對方目前的當下心意", "阻礙復合的主要絆腳石", "兩人的最終復合機率與走向"], hint: "適合斷聯、分手或爭執後評估復合可能性。", exampleQuestion: "我們分手兩個月了，還有機會復合嗎？" },
 ];
 
 export const WAITE_SPREADS: Spread[] = [
@@ -299,7 +301,7 @@ export const WAITE_SPREADS: Spread[] = [
 export const WAITE_SPREAD_IDS = [
   'single', 'waite-triangle', 'celtic',
   'cycle', 'hero',
-  'attraction', 'rel-seasons', 'mirror', 'now-connect',
+  'lovers-pyramid', 'reconciliation', 'attraction', 'rel-seasons', 'mirror', 'now-connect',
   'breakthrough', 'choice', 'resource',
 ];
 // Thoth: energy-state / psychological structure
@@ -307,7 +309,7 @@ export const THOTH_SPREAD_IDS = [
   'single', 'waite-triangle',
   'johari', 'iceberg',
   'cycle',
-  'energy-resonance', 'mirror-mirror', 'mirror', 'now-connect',
+  'lovers-pyramid', 'reconciliation', 'energy-resonance', 'mirror-mirror', 'mirror', 'now-connect',
   'breakthrough', 'choice', 'resource',
   'elements',
 ];
