@@ -348,19 +348,19 @@ export default function App() {
     const spreads = masterPool.filter(s => allowedIds.includes(s.id));
     const cats = mode === 'waite'
       ? [
-        { label: '✦ 快速一問', ids: ['single', 'waite-triangle'] },
-        { label: '✦ 做決定', ids: ['breakthrough', 'choice'] },
-        { label: '✦ 深入探索', ids: ['celtic', 'cycle', 'hero', 'resource'] },
-        { label: '✦ 關係與他人', ids: ['now-connect', 'attraction', 'rel-seasons', 'mirror'] },
+        { label: '✦ 快速指引', desc: '適合是非題、每日指引，或單純的現狀快照。', ids: ['single', 'waite-triangle'] },
+        { label: '✦ 選擇與決策', desc: '面臨二選一、工作抉擇，或遭遇瓶頸需要突破口時。', ids: ['breakthrough', 'choice'] },
+        { label: '✦ 感情與關係發展', desc: '最推薦！適合看雙方心態、互動狀態、感情走向與個人吸引力。', ids: ['now-connect', 'attraction', 'rel-seasons', 'mirror'] },
+        { label: '✦ 深度與運勢探索', desc: '針對長遠人生課題、心靈方向或大局勢資源的全面盤點。', ids: ['celtic', 'cycle', 'hero', 'resource'] },
       ]
       : [
-        { label: '✦ 快速一問', ids: ['single', 'waite-triangle'] },
-        { label: '✦ 做決定', ids: ['breakthrough', 'choice'] },
-        { label: '✦ 深入探索', ids: ['johari', 'cycle', 'iceberg', 'resource'] },
-        { label: '✦ 關係與他人', ids: ['now-connect', 'energy-resonance', 'mirror-mirror', 'mirror'] },
+        { label: '✦ 快速指引', desc: '適合是非題、每日指引，或單純的現狀快照。', ids: ['single', 'waite-triangle'] },
+        { label: '✦ 選擇與決策', desc: '面臨二選一、工作抉擇，或遭遇瓶頸需要突破口時。', ids: ['breakthrough', 'choice'] },
+        { label: '✦ 感情與關係發展', desc: '最推薦！適合看雙方心態、無形影響、內在投射與關係主軸。', ids: ['now-connect', 'energy-resonance', 'mirror-mirror', 'mirror'] },
+        { label: '✦ 深度與運勢探索', desc: '針對長遠人生課題、自我盲點、心理防衛或元素平衡的盤點。', ids: ['johari', 'cycle', 'iceberg', 'resource', 'elements'] },
       ];
     return cats
-      .map(({ label, ids }) => ({ label, catSpreads: spreads.filter(s => ids.includes(s.id)) }))
+      .map(({ label, desc, ids }) => ({ label, desc, catSpreads: spreads.filter(s => ids.includes(s.id)) }))
       .filter(c => c.catSpreads.length > 0);
   }, [mode]);
 
@@ -1259,9 +1259,12 @@ ${sigNote}
                           : '共 78 張牌・無逆位・著重能量狀態與深層解析'}
                       </p>
                       <div className="space-y-8">
-                        {categorizedSpreads.map(({ label, catSpreads }) => (
-                          <div key={label}>
-                            <p className="text-xs font-bold text-stone-500 dark:text-mystic-400 uppercase tracking-widest mb-3">{label}</p>
+                        {categorizedSpreads.map(({ label, desc, catSpreads }) => (
+                          <div key={label} className="space-y-3.5">
+                            <div>
+                              <p className="text-xs font-bold text-stone-600 dark:text-mystic-300 uppercase tracking-widest mb-0.5">{label}</p>
+                              <p className="text-[11px] sm:text-xs text-slate-400 dark:text-mystic-500 font-medium leading-tight">{desc}</p>
+                            </div>
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
                               {catSpreads.map(spread => (
                                 <SpreadCard
