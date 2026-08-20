@@ -786,6 +786,25 @@ export default function App() {
         const [c1, c2, c3] = cards;
         const f = (c: DrawnLenormandCard) => `${c.nameCN}${c.nameEN ? ` (${c.nameEN})` : ''}`;
         prompt += `\n\n請從以下層次解讀這三張牌：\n\n（一）左右流向\n  ${f(c1)} → ${f(c2)} → ${f(c3)}\n\n（二）鄰牌配對解讀（注意方向性，A+B ≠ B+A）\n  - 左+中：${f(c1)} + ${f(c2)}的組合含義\n  - 中+右：${f(c2)} + ${f(c3)}的組合含義\n  請依序解析，並說明方向改變如何影響解讀。\n\n（三）整體訊息\n  三張牌合在一起描述的核心主題與答案。`;
+      } else if (cards.length === 36) {
+        // Grand Tableau: row-by-row breakdown + indicator card focus
+        const rows = [
+          { label: '第一行（過去根源）', cards: cards.slice(0, 9) },
+          { label: '第二行（現實環境）', cards: cards.slice(9, 18) },
+          { label: '第三行（內在心理）', cards: cards.slice(18, 27) },
+          { label: '第四行（未來命運）', cards: cards.slice(27, 36) },
+        ];
+        const f = (c: DrawnLenormandCard) => `${c.nameCN}(${c.nameEN})`;
+        const rowText = rows.map(r => `  ${r.label}：${r.cards.map(f).join(' · ')}`).join('\n');
+        // Find indicator card positions
+        const manIdx = cards.findIndex(c => c.id === 28);
+        const womanIdx = cards.findIndex(c => c.id === 29);
+        const indicatorNote = [
+          manIdx >= 0 ? `男人牌在第 ${Math.floor(manIdx / 9) + 1} 行第 ${(manIdx % 9) + 1} 列（位置 ${manIdx + 1}）` : null,
+          womanIdx >= 0 ? `女人牌在第 ${Math.floor(womanIdx / 9) + 1} 行第 ${(womanIdx % 9) + 1} 列（位置 ${womanIdx + 1}）` : null,
+        ].filter(Boolean).join('；');
+
+        prompt += `\n\n牌面配置（4 行 × 9 列，從左至右、從上至下依序排列）：\n${rowText}\n\n${indicatorNote ? `指示牌位置：${indicatorNote}\n\n` : ''}請依照以下結構解讀：\n\n（一）指示牌焦點\n  定位問事者（男人／女人）所在位置，解讀其左右鄰牌對（各取 1–2 張）揭示的核心現況。\n\n（二）行列交叉解讀\n  - 縱覽四行：從「過去根源 → 現實環境 → 內在心理 → 未來命運」說明整體時間脈絡。\n  - 橫讀指示牌所在列：找出同列的重要牌對組合，說明該維度的主要影響力。\n\n（三）強力牌組\n  點出整個牌面中最關鍵的 3–4 組相鄰牌對（含方向性解讀），說明它們聯合透露的訊息。\n\n（四）最終一句結論\n  用一句話直接給出最明確的指引。`;
       } else {
         // len-1: Lenormand single — direct Yes/No format, no analysis
         const card = cards[0];
@@ -795,7 +814,7 @@ export default function App() {
 【核心指令】
 1. 不做組合解讀，僅根據此牌的字面象徵，直接給出一個具體的「是／否／中性」判斷。
 2. 嚴禁任何靈性、心理延伸或說教。
-3. 輸出簡短俧落，絕對不得超過 3 句話。`;
+3. 輸出簡短俐落，絕對不得超過 3 句話。`;
       }
 
       navigator.clipboard.writeText(prompt).then(() => {
@@ -1562,7 +1581,7 @@ export default function App() {
                         <div className="relative z-10 w-full overflow-x-auto pb-2">
                           <div className="grid gap-1.5 sm:gap-2 justify-center mx-auto" style={{ gridTemplateColumns: 'repeat(9, minmax(0, 1fr))', minWidth: '560px', maxWidth: '900px' }}>
                             {lenormandDrawnCards.map((card, index) => (
-                              <LenormandCardDisplay key={card.id} card={card} index={index} isCenter={false} />
+                              <LenormandCardDisplay key={card.id} card={card} index={index} isCenter={false} isCompact={true} />
                             ))}
                           </div>
                           <div className="mt-3 flex gap-4 justify-center text-xs text-stone-500 dark:text-stone-400 font-medium">
@@ -2557,25 +2576,36 @@ function TarotCardDisplay({ card, index, isExtra, system }: { card: DrawnCard; i
   );
 }
 
-function LenormandCardDisplay({ card, index, isCenter }: { card: DrawnLenormandCard; index: number; isCenter?: boolean }) {
+function LenormandCardDisplay({ card, index, isCenter, isCompact }: { card: DrawnLenormandCard; index: number; isCenter?: boolean; isCompact?: boolean }) {
   const imgSrc = card.id > 0 ? getCardImagePath('lenormand', card.id) : null;
+
+  const rowNum = isCompact ? Math.floor(index / 9) : -1;
+  const rowColors = ['text-amber-700 dark:text-amber-400', 'text-teal-700 dark:text-teal-400', 'text-violet-700 dark:text-violet-400', 'text-orange-700 dark:text-orange-400'];
 
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.85 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: Math.min(index * 0.05, 0.25), duration: 0.22, ease: 'easeOut' }}
-      className="flex flex-col items-center gap-2"
+      transition={{ delay: Math.min(index * 0.015, 0.3), duration: 0.18, ease: 'easeOut' }}
+      className="flex flex-col items-center gap-1"
     >
-      <div className={`text-[10px] sm:text-xs font-bold uppercase tracking-widest text-center leading-tight ${isCenter ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-mystic-400'
+      {!isCompact && (
+        <div className={`text-[10px] sm:text-xs font-bold uppercase tracking-widest text-center leading-tight ${
+          isCenter ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-mystic-400'
         }`}>
-        {card.positionName}
-      </div>
+          {card.positionName}
+        </div>
+      )}
 
-      <div className={`relative w-[90px] sm:w-[110px] aspect-[2/3] rounded-lg sm:rounded-xl overflow-hidden border-2 shadow-lg transition-all duration-300 ${isCenter
+      <div className={`relative aspect-[2/3] rounded-md overflow-hidden border shadow-sm transition-all duration-300 ${
+        isCompact ? 'w-[52px] sm:w-[68px] border-[1.5px]' : 'w-[90px] sm:w-[110px] rounded-lg sm:rounded-xl border-2 shadow-lg'
+      } ${
+        isCenter
           ? 'border-teal-400/50 dark:border-teal-600/40 shadow-teal-400/15 scale-110 ring-2 ring-teal-300/30 dark:ring-teal-700/25'
-          : 'border-teal-300/50 dark:border-teal-700/35 shadow-teal-400/10'
-        }`}>
+          : isCompact
+            ? `${rowColors[rowNum] ?? 'text-slate-500'} border-current/30`
+            : 'border-teal-300/50 dark:border-teal-700/35 shadow-teal-400/10'
+      }`}>
         {imgSrc ? (
           <img
             src={imgSrc}
@@ -2584,11 +2614,10 @@ function LenormandCardDisplay({ card, index, isCenter }: { card: DrawnLenormandC
             className="absolute inset-0 w-full h-full object-cover block"
           />
         ) : (
-          /* Fallback emoji for unmatched cards */
           <>
             <div className="absolute inset-0 bg-gradient-to-br from-stone-50 via-teal-50/30 to-emerald-50/50 dark:from-slate-900 dark:via-teal-950/40 dark:to-emerald-950/30" />
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-4xl sm:text-5xl drop-shadow-sm select-none" role="img" aria-label={card.nameEN}>
+              <span className={`drop-shadow-sm select-none ${isCompact ? 'text-xl' : 'text-4xl sm:text-5xl'}`} role="img" aria-label={card.nameEN}>
                 {card.emoji}
               </span>
             </div>
@@ -2597,15 +2626,21 @@ function LenormandCardDisplay({ card, index, isCenter }: { card: DrawnLenormandC
       </div>
 
       <div className="text-center">
-        <div className="font-bold text-sm sm:text-base text-slate-800 dark:text-mystic-100 leading-tight">{card.nameCN}</div>
-        <div className="text-[10px] sm:text-xs text-slate-500 dark:text-mystic-400 leading-snug">{card.nameEN}</div>
-        <div className="flex flex-wrap justify-center gap-1 mt-1">
-          {card.keywords.map((kw, i) => (
-            <span key={i} className="text-[9px] sm:text-[10px] px-1.5 py-0.5 bg-teal-50/80 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 border border-teal-200/50 dark:border-teal-700/30 rounded-full font-medium">
-              {kw}
-            </span>
-          ))}
-        </div>
+        <div className={`font-bold leading-tight text-slate-800 dark:text-mystic-100 ${
+          isCompact ? 'text-[9px] sm:text-[10px]' : 'text-sm sm:text-base'
+        }`}>{card.nameCN}</div>
+        {!isCompact && (
+          <>
+            <div className="text-[10px] sm:text-xs text-slate-500 dark:text-mystic-400 leading-snug">{card.nameEN}</div>
+            <div className="flex flex-wrap justify-center gap-1 mt-1">
+              {card.keywords.map((kw, i) => (
+                <span key={i} className="text-[9px] sm:text-[10px] px-1.5 py-0.5 bg-teal-50/80 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 border border-teal-200/50 dark:border-teal-700/30 rounded-full font-medium">
+                  {kw}
+                </span>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </motion.div>
   );
