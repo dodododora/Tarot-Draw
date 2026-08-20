@@ -1558,6 +1558,22 @@ export default function App() {
                             </React.Fragment>
                           ))}
                         </div>
+                      ) : lenormandDrawnCards.length === 36 ? (
+                        <div className="relative z-10 w-full overflow-x-auto pb-2">
+                          <div className="grid gap-1.5 sm:gap-2 justify-center mx-auto" style={{ gridTemplateColumns: 'repeat(9, minmax(0, 1fr))', minWidth: '560px', maxWidth: '900px' }}>
+                            {lenormandDrawnCards.map((card, index) => (
+                              <LenormandCardDisplay key={card.id} card={card} index={index} isCenter={false} />
+                            ))}
+                          </div>
+                          <div className="mt-3 flex gap-4 justify-center text-xs text-stone-500 dark:text-stone-400 font-medium">
+                            {['第一行·過去根源', '第二行·現實環境', '第三行·內在心理', '第四行·未來命運'].map((label, i) => (
+                              <span key={i} className="flex items-center gap-1">
+                                <span className="inline-block w-2 h-2 rounded-sm" style={{ background: ['#a16207','#0f766e','#6d28d9','#b45309'][i] }} />
+                                {label}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
                       ) : (
                         <div className={`relative z-10 grid gap-3 sm:gap-5 justify-center w-full max-w-3xl mx-auto ${lenormandDrawnCards.length === 9 ? 'grid-cols-3' :
                           lenormandDrawnCards.length === 1 ? 'grid-cols-1' :
