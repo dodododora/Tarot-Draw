@@ -1579,18 +1579,40 @@ export default function App() {
                         </div>
                       ) : lenormandDrawnCards.length === 36 ? (
                         <div className="relative z-10 w-full overflow-x-auto pb-2">
-                          <div className="grid gap-1.5 sm:gap-2 justify-center mx-auto" style={{ gridTemplateColumns: 'repeat(9, minmax(0, 1fr))', minWidth: '560px', maxWidth: '900px' }}>
-                            {lenormandDrawnCards.map((card, index) => (
-                              <LenormandCardDisplay key={card.id} card={card} index={index} isCenter={false} isCompact={true} />
+                          <div className="flex flex-col gap-2 mx-auto" style={{ minWidth: '580px', maxWidth: '920px' }}>
+                            {[
+                              { label: '第一行 · 過去根源', color: 'text-amber-700 dark:text-amber-400', bg: 'bg-amber-50/60 dark:bg-amber-950/20' },
+                              { label: '第二行 · 現實環境', color: 'text-teal-700 dark:text-teal-400',   bg: 'bg-teal-50/60 dark:bg-teal-950/20' },
+                              { label: '第三行 · 內在心理', color: 'text-violet-700 dark:text-violet-400', bg: 'bg-violet-50/60 dark:bg-violet-950/20' },
+                              { label: '第四行 · 未來命運', color: 'text-orange-700 dark:text-orange-400', bg: 'bg-orange-50/60 dark:bg-orange-950/20' },
+                            ].map((row, rowIdx) => (
+                              <div key={rowIdx} className={`rounded-xl px-2 pt-1 pb-2 ${row.bg}`}>
+                                <div className={`text-[10px] font-bold mb-1.5 flex items-center gap-2 ${row.color}`}>
+                                  <span className="uppercase tracking-widest">{row.label}</span>
+                                  <span className="text-[9px] opacity-60 normal-case tracking-normal">
+                                    {rowIdx === 0 ? '牌 1–9' : rowIdx === 1 ? '牌 10–18' : rowIdx === 2 ? '牌 19–27' : '牌 28–36'}
+                                  </span>
+                                </div>
+                                <div className="grid gap-1.5 sm:gap-2" style={{ gridTemplateColumns: 'repeat(9, minmax(0, 1fr))' }}>
+                                  {lenormandDrawnCards.slice(rowIdx * 9, rowIdx * 9 + 9).map((card, colIdx) => {
+                                    const globalIdx = rowIdx * 9 + colIdx;
+                                    return (
+                                      <LenormandCardDisplay
+                                        key={card.id}
+                                        card={card}
+                                        index={globalIdx}
+                                        isCenter={false}
+                                        isCompact={true}
+                                        isSpine={colIdx === 4}
+                                      />
+                                    );
+                                  })}
+                                </div>
+                              </div>
                             ))}
-                          </div>
-                          <div className="mt-3 flex gap-4 justify-center text-xs text-stone-500 dark:text-stone-400 font-medium">
-                            {['第一行·過去根源', '第二行·現實環境', '第三行·內在心理', '第四行·未來命運'].map((label, i) => (
-                              <span key={i} className="flex items-center gap-1">
-                                <span className="inline-block w-2 h-2 rounded-sm" style={{ background: ['#a16207','#0f766e','#6d28d9','#b45309'][i] }} />
-                                {label}
-                              </span>
-                            ))}
+                            <p className="text-center text-[10px] text-stone-400 dark:text-stone-500 mt-1">
+                              ✦ 金框為脊骨牌（第 5、14、23、32 張），是各行主題的核心
+                            </p>
                           </div>
                         </div>
                       ) : (
@@ -2576,11 +2598,8 @@ function TarotCardDisplay({ card, index, isExtra, system }: { card: DrawnCard; i
   );
 }
 
-function LenormandCardDisplay({ card, index, isCenter, isCompact }: { card: DrawnLenormandCard; index: number; isCenter?: boolean; isCompact?: boolean }) {
+function LenormandCardDisplay({ card, index, isCenter, isCompact, isSpine }: { card: DrawnLenormandCard; index: number; isCenter?: boolean; isCompact?: boolean; isSpine?: boolean }) {
   const imgSrc = card.id > 0 ? getCardImagePath('lenormand', card.id) : null;
-
-  const rowNum = isCompact ? Math.floor(index / 9) : -1;
-  const rowColors = ['text-amber-700 dark:text-amber-400', 'text-teal-700 dark:text-teal-400', 'text-violet-700 dark:text-violet-400', 'text-orange-700 dark:text-orange-400'];
 
   return (
     <motion.div
@@ -2597,14 +2616,16 @@ function LenormandCardDisplay({ card, index, isCenter, isCompact }: { card: Draw
         </div>
       )}
 
-      <div className={`relative aspect-[2/3] rounded-md overflow-hidden border shadow-sm transition-all duration-300 ${
-        isCompact ? 'w-[52px] sm:w-[68px] border-[1.5px]' : 'w-[90px] sm:w-[110px] rounded-lg sm:rounded-xl border-2 shadow-lg'
+      <div className={`relative aspect-[2/3] rounded-md overflow-hidden border transition-all duration-300 ${
+        isCompact ? 'w-[52px] sm:w-[68px]' : 'w-[90px] sm:w-[110px] rounded-lg sm:rounded-xl shadow-lg'
       } ${
-        isCenter
-          ? 'border-teal-400/50 dark:border-teal-600/40 shadow-teal-400/15 scale-110 ring-2 ring-teal-300/30 dark:ring-teal-700/25'
-          : isCompact
-            ? `${rowColors[rowNum] ?? 'text-slate-500'} border-current/30`
-            : 'border-teal-300/50 dark:border-teal-700/35 shadow-teal-400/10'
+        isSpine
+          ? 'border-2 border-amber-400/80 dark:border-amber-500/70 shadow-md shadow-amber-400/25 ring-1 ring-amber-300/40 dark:ring-amber-600/30 scale-105'
+          : isCenter
+            ? 'border-2 border-teal-400/50 dark:border-teal-600/40 shadow-teal-400/15 scale-110 ring-2 ring-teal-300/30 dark:ring-teal-700/25'
+            : isCompact
+              ? 'border border-stone-300/60 dark:border-stone-600/40 shadow-sm'
+              : 'border-2 border-teal-300/50 dark:border-teal-700/35 shadow-teal-400/10'
       }`}>
         {imgSrc ? (
           <img
