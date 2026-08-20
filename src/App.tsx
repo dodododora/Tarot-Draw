@@ -745,18 +745,31 @@ export default function App() {
         `  ${i + 1}. ${card.positionName}：${card.nameCN} (${card.nameEN})`
       ).join('\n');
 
-      const systemHeader = `【系統】雷諾曼（常規牌陣）
+      const systemHeaderRegular = `【系統】雷諾曼（常規牌陣）
 【規則】
 1. 必須以相鄰牌對組合建立敘事，嚴禁單牌解讀。
 2. 鎖定具體現實事務，絕對禁止延伸至靈性或心理學層面。
 3. 結尾必須用一句話給出最明確、直接的結論。`;
 
-      let prompt = `${systemHeader}\n\n我想透過 Lenormand 卡牌占卜以下問題：\n\n【問題】${targetQuestion.trim() || '探索當下整體狀態'}\n\n【牌陣】${targetSpread.name}\n\n抽出的牌：\n${cardList}`;
+      const systemHeaderGrand = `【系統】雷諾曼（大展開）
+【規則】
+1. 必須以相鄰牌對組合建立敘事，嚴禁單牌解讀。
+2. 鎖定具體現實事務，絕對禁止延伸至靈性或心理學層面。
+3. 結尾必須用一句話給出最明確、直接的結論。`;
+
+      let prompt = '';
 
       if (cards.length === 9) {
         const [c1, c2, c3, c4, c5, c6, c7, c8, c9] = cards;
         const f = (c: DrawnLenormandCard) => `${c.nameCN} (${c.nameEN})`;
-        prompt += `
+        prompt = `${systemHeaderRegular}
+
+我想透過 Lenormand 卡牌占卜以下問題：
+【問題】${targetQuestion.trim() || '探索當下整體狀態'}
+【牌陣】${targetSpread.name}
+
+抽出的牌：
+${cardList}
 
 請從以下三個角度為我解讀這個牌陣：
 
@@ -781,11 +794,57 @@ export default function App() {
       } else if (cards.length === 5) {
         const [c1, c2, c3, c4, c5] = cards;
         const f = (c: DrawnLenormandCard) => `${c.nameCN}${c.nameEN ? ` (${c.nameEN})` : ''}`;
-        prompt += `\n\n請從以下層次解讀這五張牌：\n\n（一）左右流向（時間軸）\n  ${f(c1)} → ${f(c2)} → ${f(c3)} → ${f(c4)} → ${f(c5)}\n  從左到右說明事件發展脈絡或因果關係。\n\n（二）鄰牌配對解讀（注意方向性，A+B ≠ B+A）\n  - 牌1+牌2：${f(c1)} + ${f(c2)}\n  - 牌2+牌3：${f(c2)} + ${f(c3)}（過渡核心）\n  - 牌3+牌4：${f(c3)} + ${f(c4)}\n  - 牌4+牌5：${f(c4)} + ${f(c5)}\n  請依序解析每組配對的具體含義。\n\n（三）中心牌的軸心\n  中心牌 ${f(c3)} 是整個牌陣的核心，分析它如何影響左右兩側的走向。\n\n（四）整體訊息\n  綜合五張牌的脈絡，給出具體且直接的答案。`;
+        prompt = `${systemHeaderRegular}
+
+我想透過 Lenormand 卡牌占卜以下問題：
+【問題】${targetQuestion.trim() || '探索當下整體狀態'}
+【牌陣】${targetSpread.name}
+
+抽出的牌：
+${cardList}
+
+請從以下層次解讀這五張牌：
+
+（一）左右流向（時間軸）
+  ${f(c1)} → ${f(c2)} → ${f(c3)} → ${f(c4)} → ${f(c5)}
+  從左到右說明事件發展脈絡或因果關係。
+
+（二）鄰牌配對解讀（注意方向性，A+B ≠ B+A）
+  - 牌1+牌2：${f(c1)} + ${f(c2)}
+  - 牌2+牌3：${f(c2)} + ${f(c3)}（過渡核心）
+  - 牌3+牌4：${f(c3)} + ${f(c4)}
+  - 牌4+牌5：${f(c4)} + ${f(c5)}
+  請依序解析每組配對的具體含義。
+
+（三）中心牌的軸心
+  中心牌 ${f(c3)} 是整個牌陣的核心，分析它如何影響左右兩側的走向。
+
+（四）整體訊息
+  綜合五張牌的脈絡，給出具體且直接的答案。`;
       } else if (cards.length === 3) {
         const [c1, c2, c3] = cards;
         const f = (c: DrawnLenormandCard) => `${c.nameCN}${c.nameEN ? ` (${c.nameEN})` : ''}`;
-        prompt += `\n\n請從以下層次解讀這三張牌：\n\n（一）左右流向\n  ${f(c1)} → ${f(c2)} → ${f(c3)}\n\n（二）鄰牌配對解讀（注意方向性，A+B ≠ B+A）\n  - 左+中：${f(c1)} + ${f(c2)}的組合含義\n  - 中+右：${f(c2)} + ${f(c3)}的組合含義\n  請依序解析，並說明方向改變如何影響解讀。\n\n（三）整體訊息\n  三張牌合在一起描述的核心主題與答案。`;
+        prompt = `${systemHeaderRegular}
+
+我想透過 Lenormand 卡牌占卜以下問題：
+【問題】${targetQuestion.trim() || '探索當下整體狀態'}
+【牌陣】${targetSpread.name}
+
+抽出的牌：
+${cardList}
+
+請從以下層次解讀這三張牌：
+
+（一）左右流向
+  ${f(c1)} → ${f(c2)} → ${f(c3)}
+
+（二）鄰牌配對解讀（注意方向性，A+B ≠ B+A）
+  - 左+中：${f(c1)} + ${f(c2)}的組合含義
+  - 中+右：${f(c2)} + ${f(c3)}的組合含義
+  請依序解析，並說明方向改變如何影響解讀。
+
+（三）整體訊息
+  三張牌合在一起描述的核心主題與答案。`;
       } else if (cards.length === 36) {
         const f = (c: DrawnLenormandCard) => `${c.nameCN}(${c.nameEN})`;
         const posMap = cards.map((c, i) => `位置${String(i+1).padStart(2,'0')} [第${String(i+1).padStart(2,'0')}宮·${LENORMAND_CARDS[i]?.nameCN ?? ''}宮] → ${f(c)}`);
@@ -844,7 +903,7 @@ export default function App() {
           ? `- 指示牌：${f(sigCard)} 落在位置 ${sigPos} (第 ${sigRow+1} 行第 ${sigCol+1} 列，${farNote})，其落入的宮位為：【${LENORMAND_CARDS[sigPos-1]?.nameCN ?? ''}宮】。`
           : '- 指示牌：未在牌陣中找到代表問卜者的指示牌。';
 
-        prompt += `
+        prompt = `${systemHeaderGrand}
 
 我想透過 Lenormand 大展開 (Grand Tableau 4x9) 占卜以下問題：
 【問題】${targetQuestion.trim() || '探索當下整體狀態'}
