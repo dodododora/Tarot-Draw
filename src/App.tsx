@@ -788,20 +788,12 @@ export default function App() {
         prompt += `\n\n請從以下層次解讀這三張牌：\n\n（一）左右流向\n  ${f(c1)} → ${f(c2)} → ${f(c3)}\n\n（二）鄰牌配對解讀（注意方向性，A+B ≠ B+A）\n  - 左+中：${f(c1)} + ${f(c2)}的組合含義\n  - 中+右：${f(c2)} + ${f(c3)}的組合含義\n  請依序解析，並說明方向改變如何影響解讀。\n\n（三）整體訊息\n  三張牌合在一起描述的核心主題與答案。`;
       } else if (cards.length === 36) {
         const f = (c: DrawnLenormandCard) => `${c.nameCN}(${c.nameEN})`;
-        // Build position map: position (1-based) → card
-        const posMap = cards.map((c, i) => `位置${String(i+1).padStart(2,'0')}[宮位${String(i+1).padStart(2,'0')}·${LENORMAND_CARDS[i]?.nameCN ?? ''}宮] → ${f(c)}`);
-        const rows = [
-          cards.slice(0, 9),
-          cards.slice(9, 18),
-          cards.slice(18, 27),
-          cards.slice(27, 36),
-        ];
-        const rowText = rows.map((r, i) => `  第${i+1}行：${r.map(f).join(' · ')}`).join('\n');
+        const posMap = cards.map((c, i) => `位置${String(i+1).padStart(2,'0')} [第${String(i+1).padStart(2,'0')}宮·${LENORMAND_CARDS[i]?.nameCN ?? ''}宮] → ${f(c)}`);
 
         // Significator detection
-        const manIdx  = cards.findIndex(c => c.id === 28); // 男人
-        const womanIdx = cards.findIndex(c => c.id === 29); // 女人
-        const sigIdx  = womanIdx >= 0 ? womanIdx : manIdx;  // prefer woman if both present
+        const manIdx  = cards.findIndex(c => c.id === 28);
+        const womanIdx = cards.findIndex(c => c.id === 29);
+        const sigIdx  = womanIdx >= 0 ? womanIdx : manIdx;
         const sigCard = sigIdx >= 0 ? cards[sigIdx] : null;
         const sigRow  = sigIdx >= 0 ? Math.floor(sigIdx / 9) : -1;
         const sigCol  = sigIdx >= 0 ? sigIdx % 9 : -1;
@@ -819,7 +811,7 @@ export default function App() {
         const diagBL = (sigRow < 3 && sigCol > 0)   ? f(cards[sigIdx + 8])  : '無';
         const diagBR = (sigRow < 3 && sigCol < 8)   ? f(cards[sigIdx + 10]) : '無';
 
-        // Knighting from significator (chess knight moves: ±1/±2 in any L-shape)
+        // Knighting from significator
         const knightOffsets = [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]];
         const knightCards = knightOffsets
           .map(([dr, dc]) => {
@@ -827,34 +819,57 @@ export default function App() {
             return (r2 >= 0 && r2 < 4 && c2 >= 0 && c2 < 9) ? f(cards[r2 * 9 + c2]) : null;
           }).filter(Boolean);
 
-        // Mirroring: reflect significator across center (row 1.5, col 4.5)
+        // Mirroring (center reflection)
         const mirrorRow = 3 - sigRow, mirrorCol = 8 - sigCol;
         const mirrorCard = sigIdx >= 0 ? f(cards[mirrorRow * 9 + mirrorCol]) : '無';
 
-        // House card: the card that sits in the house matching significator's card id
+        // House card
         const sigCardId = sigCard?.id ?? -1;
         const houseCard = sigCardId > 0 ? f(cards[sigCardId - 1]) : '無';
 
-        // Spine cards (col 4, 0-indexed = positions 5,14,23,32)
-        const spineCards = [4, 13, 22, 31].map(i => `位置${i+1}·${f(cards[i])}`).join('、');
+        // Spine cards (col 4 / index 4,13,22,31)
+        const spineCards = [4, 13, 22, 31].map(i => `位置${i+1} [第${i+1}宮·${LENORMAND_CARDS[i]?.nameCN ?? ''}宮] → ${f(cards[i])}`).join('、');
 
         // Corner cards
-        const corners = `左上:${f(cards[0])} 右上:${f(cards[8])} 左下:${f(cards[27])} 右下:${f(cards[35])}`;
+        const corners = `左上(位置1):${f(cards[0])}、右上(位置9):${f(cards[8])}、左下(位置28):${f(cards[27])}、右下(位置36):${f(cards[35])}`;
 
-        // Near/Far: cards in same row as significator (horizontal read)
-        const sigRowCards = rows[sigRow] ?? [];
+        const sigRowCards = (sigRow >= 0 && sigRow < 4) ? cards.slice(sigRow * 9, sigRow * 9 + 9) : [];
         const sigRowText = sigRowCards.map(f).join(' → ');
 
-        // Significator position label
-        const farNote = sigCol <= 2 ? '（位於左側，偏向過去／外在影響）'
-          : sigCol >= 6 ? '（位於右側，偏向未來／內在狀態）'
-          : '（位於中央，處於當下核心）';
+        const farNote = sigCol <= 2 ? '偏向左側（代表過去累積的影響）'
+          : sigCol >= 6 ? '偏向右側（代表未來發展的主動性）'
+          : '居於中央（代表當下核心）';
 
         const sigNote = sigCard
-          ? `${f(sigCard)} 落在位置 ${sigPos}（第 ${sigRow+1} 行第 ${sigCol+1} 列）${farNote}，其所在宮位為【${LENORMAND_CARDS[sigPos-1]?.nameCN ?? ''}宮】。`
-          : '未找到指示牌（男人 #28 / 女人 #29）。';
+          ? `- 指示牌：${f(sigCard)} 落在位置 ${sigPos} (第 ${sigRow+1} 行第 ${sigCol+1} 列，${farNote})，其落入的宮位為：【${LENORMAND_CARDS[sigPos-1]?.nameCN ?? ''}宮】。`
+          : '- 指示牌：未在牌陣中找到代表問卜者的指示牌。';
 
-        prompt += `\n\n【牌面配置】4 行 × 9 列，從左至右、從上至下依序排列：\n${rowText}\n\n【宮位對照】每個位置的宮位即對應該位置編號的雷諾曼牌義（位置1=騎士宮、位置2=三葉草宮……以此類推至位置36=十字架宮）。\n\n【指示牌分析】\n${sigNote}\n- 直接鄰牌：左=${left}、右=${right}、上=${above}、下=${below}\n- 對角鄰牌：左上=${diagTL}、右上=${diagTR}、左下=${diagBL}、右下=${diagBR}\n- 指示牌所在行（近/遠讀法）：${sigRowText}\n- 鏡像牌（對角線反射至對角位置）：${mirrorCard}\n- 騎士跳躍牌（L型跳法，揭示隱藏動機）：${knightCards.join('、') || '無'}\n- 指示牌落入宮位中的那張牌（House of Significator）：${houseCard}\n\n【四角牌】呈現整體牌局的起點與終點能量：${corners}\n\n【脊骨牌】各行中軸核心（位置5、14、23、32）：${spineCards}\n\n請依照以下真正的大牌陣解讀架構進行分析：\n\n（一）定位指示牌與宮位\n  說明指示牌落在哪個宮位（位置的背景主題），以及其在牌陣中偏左（過去）或偏右（未來）的位置含義，並解讀其直接鄰牌（上下左右四張）所呈現的核心現況。\n\n（二）騎士跳躍法（Knighting）\n  從指示牌出發，以西洋棋騎士走法（先走兩格再轉一格）找出所有可到達的牌，解讀這些牌揭示的隱藏動機或深層影響力。\n\n（三）鏡像法（Mirroring）\n  將指示牌沿中心軸反射至對角位置，解讀鏡像牌與指示牌的對話關係，揭示「另一面」的處境或無意識的訊息。\n\n（四）脊骨牌與四角牌\n  脊骨牌（各行第5張）為每行的主題核心，從上至下說明各行的主要能量；四角牌揭示整體牌局的起點與落點。\n\n（五）宮位交叉解讀（Houses）\n  找出 2–3 個最關鍵的宮位組合（牌落入對應宮位產生的共鳴或衝突），說明其揭示的具體人生事務主題。\n\n（六）最終一句話結論\n  整合所有層次，用一句話給出最直接、最具體的核心指引。`;
+        prompt += `
+
+我想透過 Lenormand 大展開 (Grand Tableau 4x9) 占卜以下問題：
+【問題】${targetQuestion.trim() || '探索當下整體狀態'}
+
+【牌陣配置與宮位對照】
+${posMap.join('\n')}
+
+【指示牌及關聯資訊】
+${sigNote}
+- 直接鄰牌（上下左右）：上=${above}、下=${below}、左=${left}、右=${right}
+- 對角鄰牌（周圍對角）：左上=${diagTL}、右上=${diagTR}、左下=${diagBL}、右下=${diagBR}
+- 橫讀指示牌所在整行：${sigRowText}
+- 鏡像反射牌：${mirrorCard}
+- 騎士跳躍牌（西洋棋 Knight 跳法）：${knightCards.join('、') || '無'}
+- 指示牌對應宮位的卡牌：${houseCard}
+
+【四角牌】${corners}
+【中軸脊骨牌 (位置 5、14、23、32)】${spineCards}
+
+請分析解讀：
+1. 結合指示牌所在宮位、周圍鄰牌、以及偏左或偏右的相對位置，分析問卜者當前處境與外在環境。
+2. 解讀騎士跳躍牌、鏡像牌與指示牌落入宮位卡牌，揭示隱藏影響力與潛意識動機。
+3. 分析四角牌（事件基調）與中軸脊骨牌（由上而下的生活主軸與關鍵課題）。
+4. 解讀 2-3 組重要的宮位對應關係（哪張牌落入了哪個宮位）。
+5. 用一句話給出最明確直接的解答。`;
       } else {
         // len-1: Lenormand single — direct Yes/No format, no analysis
         const card = cards[0];
@@ -1631,17 +1646,14 @@ export default function App() {
                         <div className="relative z-10 w-full overflow-x-auto pb-2">
                           <div className="flex flex-col gap-2 mx-auto" style={{ minWidth: '580px', maxWidth: '920px' }}>
                             {[
-                              { label: '第一行 · 過去根源', color: 'text-amber-700 dark:text-amber-400', bg: 'bg-amber-50/60 dark:bg-amber-950/20' },
-                              { label: '第二行 · 現實環境', color: 'text-teal-700 dark:text-teal-400',   bg: 'bg-teal-50/60 dark:bg-teal-950/20' },
-                              { label: '第三行 · 內在心理', color: 'text-violet-700 dark:text-violet-400', bg: 'bg-violet-50/60 dark:bg-violet-950/20' },
-                              { label: '第四行 · 未來命運', color: 'text-orange-700 dark:text-orange-400', bg: 'bg-orange-50/60 dark:bg-orange-950/20' },
+                              { label: '第一行 (位置 1–9)', color: 'text-stone-700 dark:text-stone-300', bg: 'bg-stone-100/50 dark:bg-mystic-900/40' },
+                              { label: '第二行 (位置 10–18)', color: 'text-stone-700 dark:text-stone-300', bg: 'bg-stone-100/50 dark:bg-mystic-900/40' },
+                              { label: '第三行 (位置 19–27)', color: 'text-stone-700 dark:text-stone-300', bg: 'bg-stone-100/50 dark:bg-mystic-900/40' },
+                              { label: '第四行 (位置 28–36)', color: 'text-stone-700 dark:text-stone-300', bg: 'bg-stone-100/50 dark:bg-mystic-900/40' },
                             ].map((row, rowIdx) => (
                               <div key={rowIdx} className={`rounded-xl px-2 pt-1 pb-2 ${row.bg}`}>
                                 <div className={`text-[10px] font-bold mb-1.5 flex items-center gap-2 ${row.color}`}>
                                   <span className="uppercase tracking-widest">{row.label}</span>
-                                  <span className="text-[9px] opacity-60 normal-case tracking-normal">
-                                    {rowIdx === 0 ? '牌 1–9' : rowIdx === 1 ? '牌 10–18' : rowIdx === 2 ? '牌 19–27' : '牌 28–36'}
-                                  </span>
                                 </div>
                                 <div className="grid gap-1.5 sm:gap-2" style={{ gridTemplateColumns: 'repeat(9, minmax(0, 1fr))' }}>
                                   {lenormandDrawnCards.slice(rowIdx * 9, rowIdx * 9 + 9).map((card, colIdx) => {
@@ -1661,7 +1673,7 @@ export default function App() {
                               </div>
                             ))}
                             <p className="text-center text-[10px] text-stone-400 dark:text-stone-500 mt-1">
-                              ✦ 金框為脊骨牌（第 5、14、23、32 張），是各行主題的核心
+                              ✦ 金色邊框為中軸脊骨宮位（第 5、14、23、32 宮），是各行主題的核心
                             </p>
                           </div>
                         </div>
