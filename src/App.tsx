@@ -2609,30 +2609,6 @@ function TarotSpreadLayout({ spread, cards, mode }: { spread: Spread; cards: Dra
         </div>
       );
 
-    case 'mirror':
-      return (
-        <div className="grid grid-cols-2 gap-x-8 sm:gap-x-24 gap-y-10 place-items-center max-w-2xl mx-auto w-full">
-          {cards.map((_, i) => renderCard(i))}
-        </div>
-      );
-
-    case 'resource':
-      return (
-        <div className="grid grid-cols-3 gap-6 sm:gap-10 place-items-center max-w-4xl mx-auto w-full">
-          {renderCard(3)} {renderCard(0)} {renderCard(2)}
-          {renderCard(1)} {renderCard(4)} {renderCard(5)}
-        </div>
-      );
-
-    case 'hero':
-      return (
-        <div className="grid grid-cols-3 gap-x-6 sm:gap-x-12 gap-y-10 place-items-center max-w-4xl mx-auto w-full">
-          <div>{renderCard(0)}</div> <div className="invisible"></div> <div>{renderCard(6)}</div>
-          <div>{renderCard(1)}</div> <div className="invisible"></div> <div>{renderCard(5)}</div>
-          <div>{renderCard(2)}</div> <div>{renderCard(3)}</div> <div>{renderCard(4)}</div>
-        </div>
-      );
-
     case 'celtic':
       return (
         <div className="flex flex-col xl:flex-row gap-12 sm:gap-16 items-center justify-center w-full max-w-6xl mx-auto">

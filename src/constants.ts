@@ -271,46 +271,38 @@ export const LENORMAND_TRIVIA: string[] = [
 
 export const THOTH_SPREADS: Spread[] = [
   { id: "single",           name: "單張速覽",    count: 1,  positions: ["當下指引"],                                                                                                                hint: "抽一張牌，快速確認 Yes/No。",                                    exampleQuestion: "針對今天的重要會議，我最該穩住的心態是什麼？" },
-  { id: "johari",           name: "盲點揭露",    count: 4,  positions: ["公開區", "盲目區", "隱藏區", "未知潛能"],                                                                                  hint: "看清自我認知與他人眼中的落差。",                                  exampleQuestion: "在目前團隊中，我對自己角色的認知與實際情況有何落差？" },
-  { id: "cycle",            name: "過渡期指引",  count: 5,  positions: ["正在消亡的", "正在萌芽的", "此刻的張力", "必須放下的", "必須帶走的"],                                                              hint: "看清現狀結束與新階段的開展。",                                    exampleQuestion: "邁入30歲的轉折，我該如何看待目前的職涯過渡期？" },
-  { id: "breakthrough",     name: "破局策略",    count: 4,  positions: ["核心瓶頸", "沉沒成本", "隱藏槓桿", "第一步"],                                                                              hint: "陷入僵局時，找出最佳的突破點。",                                  exampleQuestion: "這個專案推動不下去，我該如何調整策略來破局？" },
-  { id: "choice",           name: "岔路推演",    count: 5,  positions: ["底層邏輯", "A 的隱藏成本", "A 的演化", "B 的隱藏成本", "B 的演化"],                                                       hint: "推演不同選項的代價與未來發展。",                                  exampleQuestion: "我該選擇去大企業求穩，還是加入新創團隊承擔風險？" },
-  { id: "iceberg",          name: "潛意識深索",  count: 6,  positions: ["表層行為", "理性認知", "真實情緒", "核心信念", "防衛機制", "整合策略"],                                                    hint: "挖出內心深處的防衛與真實動機。",                                  exampleQuestion: "我明明想追求事業成功，卻總是提不起勁的深層原因？" },
-  { id: "mirror",           name: "關係鏡像",    count: 6,  positions: ["我的投射", "我的底線", "對方的投射", "對方需求", "系統摩擦", "共振點"],                                                    hint: "客觀看透雙方互動的真實結構。",                                    exampleQuestion: "我與合夥人摩擦頻繁，這段合作關係底層的問題出在哪？" },
-  { id: "resource",         name: "現狀大盤點",  count: 6,  positions: ["北極星目標", "可用資源", "外部變數", "系統阻力", "隱藏推力", "下一里程碑"],                                                hint: "認清手邊籌碼、風險與下一步。",                                    exampleQuestion: "對於明年的創業計畫，我目前的資源與風險盤點為何？" },
-  { id: "hero",             name: "英雄之旅",    count: 7,  positions: ["現狀", "冒險召喚", "內在阻力", "導師與工具", "深淵試煉", "啟示與轉化", "帶著恩賜歸來"],                                    hint: "定位你目前處於人生哪個考驗階段。",                                exampleQuestion: "我決定徹底轉換跑道，這段旅程將面臨什麼挑戰與成長？" },
-  { id: "energy-resonance", name: "交會效應",    count: 5,  positions: ["我的底層渴望", "對方的底層渴望", "碰撞製造的東西", "各自迴避的部分", "去除投射後的核心"],         hint: "兩人相會時，檯面下的真實互動。",                                 exampleQuestion: "我與這個人之間的互動底層透露了什麼？" },
-  { id: "mirror-mirror",    name: "內在投射鏡",  count: 5,  positions: ["你在對方身上受不了的", "這件事在你身上的根", "對方從你身上照見的", "你們共同迴避的", "這段關係真正的課題"],      hint: "從他人身上看見自己隱藏的情緒。",                                 exampleQuestion: "我在這段關係中反覆被觸發，背後真正的課題是什麼？" },
-  { id: "celtic",           name: "凱爾特十字",  count: 10, positions: ["現況", "主要挑戰", "顯意識", "潛意識", "過去", "近未來", "自我認知", "外在環境", "焦慮與渴望", "最終演化"],                hint: "層層剝開複雜局勢的深層因果。",                                    exampleQuestion: "我目前面臨人生的巨大低潮，請幫我全盤檢視各維度的問題與解法。" },
-  { id: "elements",         name: "四元素平衡",  count: 4,  positions: ["火・行動力", "水・情感", "風・思維", "土・物質"],                                                                          hint: "從行動、情感、思維與物質全面剖析現狀。",                           exampleQuestion: "目前的處境從四個面向來看，各自透露了什麼訊息？",         category: "深入探索" },
-  { id: "now-connect",       name: "當下連結",    count: 3,  positions: ["這段關係的現狀", "我此刻展現的模樣", "對方此刻展現的模樣"],                                                              hint: "純粹照見這段關係此刻的樣子。",                                    exampleQuestion: "不問對錯，這段關係此刻各自的狀態是什麼？" },
-  { id: "lovers-pyramid", name: "戀人金字塔", count: 4, positions: ["你的現狀與心意", "對方的真實想法", "彼此關係的阻礙與張力", "未來發展結果"], hint: "經典感情牌陣，看清雙方心意與未來發展。", exampleQuestion: "我跟某某人接下來的感情發展走向會如何？" },
-  { id: "reconciliation", name: "關係復合推演", count: 5, positions: ["關係破裂或疏離的核心主因", "你對這段關係的真實執著", "對方目前的當下心意", "阻礙復合的主要絆腳石", "兩人的最終復合機率與走向"], hint: "適合斷聯、分手或爭執後評估復合可能性。", exampleQuestion: "我們分手兩個月了，還有機會復合嗎？" },
+  { id: "waite-triangle",   name: "聖三角",      count: 3,  positions: ["過去的因果背景", "目前的現狀與面臨轉變", "未來的發展走向與指引"],                                                          hint: "最經典的牌陣，照見時間線的起承轉合。",                          exampleQuestion: "這段感情的過去、現在與未來走向？" },
+  { id: "cycle",            name: "過渡期指引",  count: 5,  positions: ["正在消逝的舊狀態", "正在萌芽的新契機", "目前面臨的核心考驗", "此時此刻必須放下的包袱", "應帶往下一階段的支持力量"],            hint: "看清現狀結束與新階段的開展。",                                    exampleQuestion: "面臨轉折期，我該如何看待目前的過渡狀態？" },
+  { id: "breakthrough",     name: "破局策略",    count: 4,  positions: ["當前卡關的核心瓶頸", "該放下的包袱或舊慣性", "突破現狀的契機與優勢", "下一步的關鍵指引與行動"],                                hint: "陷入僵局時，找出最佳的突破點。",                                  exampleQuestion: "這個專案推動不下去，我該如何調整策略來破局？" },
+  { id: "choice",           name: "岔路推演",    count: 5,  positions: ["目前處境與內心盲點", "選擇 A 的近況與發展", "選擇 A 的最終結果", "選擇 B 的近況與發展", "選擇 B 的最終結果"],                 hint: "推演不同選項的發展趨勢與結果。",                                  exampleQuestion: "我該選擇去大企業求穩，還是加入新創團隊承擔風險？" },
+  { id: "iceberg",          name: "潛意識冰山",  count: 6,  positions: ["外在展現的表層行為", "你以為的理智想法", "內心深處的真實情緒", "深藏底層的核心信念", "阻礙改變的潛意識防衛機制", "身心一致的整合建議"], hint: "掘出內心深處的防衛與真實動機。",                                  exampleQuestion: "我明明想追求事業成功，卻總是提不起勁的深層原因？" },
+  { id: "energy-resonance", name: "交會效應",    count: 5,  positions: ["我潛藏的底層心意", "對方潛藏的底層心意", "兩人互動產生的能量張力", "彼此刻意迴避的盲區", "這段關係的核心學習課題"],         hint: "兩人相會時，檯面下的真實互動。",                                 exampleQuestion: "我與這個人之間的互動底層透露了什麼？" },
+  { id: "celtic",           name: "凱爾特十字",  count: 10, positions: ["目前的核心處境", "面臨的直接挑戰與阻礙", "你的顯意識想法與目標", "潛意識的底層動機與盲點", "過去已形成的影響因果", "即將面臨的近未來局勢", "你對自我與此事的認知", "身邊的外在環境與他人態度", "你內心的希望或恐懼", "此事的最終發展結果"], hint: "層層解析複雜局勢的深層因果與演變。",                              exampleQuestion: "我目前面臨人生的巨大低潮，請幫我全盤檢視各維度的問題與解法。" },
+  { id: "elements",         name: "四元素平衡",  count: 4,  positions: ["火元素 (行動力與熱情現狀)", "水元素 (情緒感受與關係流動)", "風元素 (理性思考與溝通狀態)", "土元素 (現實資源與物質基礎)"],       hint: "從行動、情感、思維與物質全面剖析現狀。",                           exampleQuestion: "目前的處境從四個面向來看，各自透露了什麼訊息？" },
+  { id: "now-connect",      name: "當下連結",    count: 3,  positions: ["這段關係的目前狀態", "我此刻在關係中的心態", "對方此刻在關係中的心態"],                                                    hint: "純粹照見這段關係此刻的樣子。",                                    exampleQuestion: "不問對錯，這段關係此刻各自的狀態是什麼？" },
+  { id: "lovers-pyramid",   name: "戀人金字塔",  count: 4,  positions: ["你的心意與當前狀態", "對方的真實想法與狀態", "彼此互動的張力與阻礙", "關係的未來走向"],                                    hint: "經典感情牌陣，看清雙方心意與未來發展。",                          exampleQuestion: "我跟某某人接下來的感情發展走向會如何？" },
+  { id: "reconciliation",   name: "關係復合推演",count: 5,  positions: ["關係疏離或破裂的主因", "你內心的真實渴望與執著", "對方當下的心意與想法", "阻礙復合的核心絆腳石", "兩人的未來走向與復合契機"],     hint: "適合斷聯、分手或爭執後評估復合可能性。",                          exampleQuestion: "我們分手兩個月了，還有機會復合嗎？" },
 ];
 
 export const WAITE_SPREADS: Spread[] = [
   { id: "single",         name: "單張速覽",  count: 1, positions: ["當下指引"],                                        hint: "抽一張牌，快速確認 Yes/No。",                        exampleQuestion: "這份工作對我目前的靈性發展是否有益？" },
-  { id: "waite-triangle", name: "聖三角", count: 3, positions: ["過去", "現在", "未來"], hint: "三張牌，照見過去、現在與未來。", exampleQuestion: "這段感情的過去、現在與未來走向？" },
-  { id: "attraction",     name: "個人引力",  count: 3, positions: ["我目前散發的頻率", "正在召喚的連結模式", "值得鬆開的舊有慣性"],  hint: "解析你目前的狀態正吸引哪種人事物。",              exampleQuestion: "我目前的狀態在感情關係中吸引著什麼？" },
-  { id: "rel-seasons",    name: "感情四季",  count: 4, positions: ["現在的關係節奏", "推動這個節奏的核心力量", "需要給予的滋養", "即將來臨的自然轉變"],  hint: "找出當下最順其自然的相處模式。",    exampleQuestion: "這段感情現在處於什麼節奏？我將如何與它同行？" },
-  { id: "now-connect",    name: "當下連結",    count: 3, positions: ["這段關係現在的樣子", "我目前傳遞給對方的狀態", "對方目前傳遞給我的狀態"],              hint: "純粹照見這段關係此刻的樣子。",          exampleQuestion: "不問對錯，這段關係此刻各自的狀態是什麼？" },
+  { id: "waite-triangle", name: "聖三角",    count: 3, positions: ["過去的因果背景", "目前的現狀與面臨轉變", "未來的發展走向與指引"], hint: "三張牌，照見過去、現在與未來。", exampleQuestion: "這段感情的過去、現在與未來走向？" },
+  { id: "attraction",     name: "個人引力",  count: 3, positions: ["我目前散發的個人磁場", "我正在吸引的人事物類型", "阻礙我建立健康關係的舊慣性"], hint: "解析你目前的狀態正吸引哪種人事物。", exampleQuestion: "我目前的狀態在感情關係中吸引著什麼？" },
+  { id: "rel-seasons",    name: "感情四季",  count: 4, positions: ["當前感情所處的季節與溫度", "推動此節奏的背後核心力量", "此時最需要給予關係的滋養", "接下來即將迎來的自然轉變"], hint: "找出當下最順其自然的相處模式。", exampleQuestion: "這段感情現在處於什麼節奏？我將如何與它同行？" },
+  { id: "now-connect",    name: "當下連結",  count: 3, positions: ["這段關係的目前狀態", "我此刻在關係中的心態", "對方此刻在關係中的心態"], hint: "純粹照見這段關係此刻的樣子。", exampleQuestion: "不問對錯，這段關係此刻各自的狀態是什麼？" },
 ];
 
 // Which spread IDs are available in each system
-// Waite: narrative/event-oriented + classic structures
 export const WAITE_SPREAD_IDS = [
   'single', 'waite-triangle', 'celtic',
-  'cycle', 'hero',
-  'lovers-pyramid', 'reconciliation', 'attraction', 'rel-seasons', 'mirror', 'now-connect',
-  'breakthrough', 'choice', 'resource',
+  'lovers-pyramid', 'reconciliation', 'attraction', 'rel-seasons', 'now-connect',
+  'breakthrough', 'choice',
 ];
-// Thoth: energy-state / psychological structure
 export const THOTH_SPREAD_IDS = [
   'single', 'waite-triangle',
-  'johari', 'iceberg',
-  'cycle',
-  'lovers-pyramid', 'reconciliation', 'energy-resonance', 'mirror-mirror', 'mirror', 'now-connect',
-  'breakthrough', 'choice', 'resource',
+  'iceberg', 'cycle',
+  'lovers-pyramid', 'reconciliation', 'energy-resonance', 'now-connect',
+  'breakthrough', 'choice',
   'elements',
 ];
 
