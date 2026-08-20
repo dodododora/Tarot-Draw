@@ -964,7 +964,7 @@ ${sigNote}
 
         // Waite Spreads
         case 'waite-triangle':
-          analysisPrompt = `\n\n請依序完成：①分析身體感知、理智邏輯、靈魂渴望三者之間的具體衝突點。②給出三方達到平衡的具體建議。`;
+          analysisPrompt = `\n\n請依序完成：①分析【過去】累積的影響與背景。②對比【現在】所面臨的核心狀態與當下轉變。③推演並分析【未來】最可能的發展趨勢與行動建議。`;
           break;
         case 'attraction':
           analysisPrompt = `\n\n請依序完成：①解析核心渴望與當前散發頻率的落差。②點出阻礙顯化的現實盲點。③給出對齊目標的實際行動建議。`;
