@@ -248,7 +248,7 @@ export const LENORMAND_SPREADS: Spread[] = [
       // Row 4 (28–36): 未來與命運層
       "R4C1·最終的根基", "R4C2·未來的線索", "R4C3·即將到來的事", "R4C4·發展的阻礙", "R4C5·命運的核心", "R4C6·最終的助力", "R4C7·結果的形成", "R4C8·最終的方向", "R4C9·命運的歸宿"
     ],
-    hint: "全部 36 張牌一次鋪開，縱讀每行掌握時間脈絡，橫讀每列把握人生維度，從指示牌（男人/女人）周圍的牌展開故事。",
+    hint: "36 張全部鋪開，縱讀成時間脈絡，橫讀看人生各面向。",
     exampleQuestion: "請用大展開告訴我，接下來這段時間我的整體人生走勢如何？"
   },
 ];
@@ -288,7 +288,7 @@ export const THOTH_SPREADS: Spread[] = [
 
 export const WAITE_SPREADS: Spread[] = [
   { id: "single",         name: "單張速覽",  count: 1, positions: ["當下指引"],                                        hint: "抽一張牌，快速確認 Yes/No。",                        exampleQuestion: "這份工作對我目前的靈性發展是否有益？" },
-  { id: "waite-triangle", name: "聖三角", count: 3, positions: ["頂點·靈魂的真實", "左下·光明面（你展現的）", "右下·陰影面（你迴避的）"], hint: "照見靈魂、光明與陰影的三角平衡。", exampleQuestion: "我目前的內在狀態，靈魂真正的樣貌與光暗兩面各是什麼？" },
+  { id: "waite-triangle", name: "聖三角", count: 3, positions: ["過去", "現在", "未來"], hint: "三張灑照時間脈絡。", exampleQuestion: "這段感情的過去、現在與未來走向？" },
   { id: "attraction",     name: "個人引力",  count: 3, positions: ["我目前散發的頻率", "正在召喚的連結模式", "值得鬆開的舊有慣性"],  hint: "解析你目前的狀態正吸引哪種人事物。",              exampleQuestion: "我目前的狀態在感情關係中吸引著什麼？" },
   { id: "rel-seasons",    name: "感情四季",  count: 4, positions: ["現在的關係節奏", "推動這個節奏的核心力量", "需要給予的滋養", "即將來臨的自然轉變"],  hint: "找出當下最順其自然的相處模式。",    exampleQuestion: "這段感情現在處於什麼節奏？我將如何與它同行？" },
   { id: "now-connect",    name: "當下連結",    count: 3, positions: ["這段關係現在的樣子", "我目前傳遞給對方的狀態", "對方目前傳遞給我的狀態"],              hint: "純粹照見這段關係此刻的樣子。",          exampleQuestion: "不問對錯，這段關係此刻各自的狀態是什麼？" },
