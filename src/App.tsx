@@ -970,81 +970,79 @@ ${sigNote}
       switch (targetSpread.id) {
         // Thoth Spreads
         case 'celtic':
-          analysisPrompt = `\n\n請依序完成：①從【現況】與【主要挑戰】切入核心問題。②對比【潛意識】動力與【顯意識】的落差。③分析時間演進（【過去】→【近未來】）。④整合【內外環境變數】。⑤推演【最終走向】。`;
+          analysisPrompt = `\n\n請依據上述牌陣位置定義與牌面資訊進行解讀，分析顯隱意識落差、時間軸走向與最終走向。`;
           break;
         case 'choice': {
           const numChoices = (mainCards.length - 1) / 2;
           const letters = Array.from({ length: numChoices }, (_, i) => String.fromCharCode(65 + i));
           const pathDesc = letters.map(l => `選擇${l}`).join('、');
-          analysisPrompt = `\n\n請依序完成：①從【底層邏輯】評估做決定的核心前提。②分別推演 ${pathDesc} 的動態發展與各自代價。③給出最終決策指引，明確指出哪條路徑更值得關注。`;
+          analysisPrompt = `\n\n請分析各條路徑的發展趨勢、潛在代價與底層核心，並給出決策指引。`;
           break;
         }
         case 'mirror': {
           const numPeople = Math.round(mainCards.length / 3);
           if (numPeople <= 2) {
-            analysisPrompt = `\n\n請依序完成：①對比雙方的認知落差，點出各自的投射盲點。②分析核心互動模式與系統性摩擦來源。③給出破冰或升溫關係的具體行動策略。`;
+            analysisPrompt = `\n\n請分析雙方角色的認知落差、核心互動模式與隱藏盲點，並給出具體行動建議。`;
           } else {
             const chars = Array.from({ length: numPeople - 1 }, (_, i) => String.fromCharCode(65 + i));
             const peopleList = chars.map(c => `對象${c}`).join('、');
-            analysisPrompt = `\n\n請依序完成：①分析主角的自我認知基準。②逐一解讀 ${peopleList} 各自的認知落差與互動模式。③點出整體關係網絡的核心盲點。④給出在 ${numPeople} 人關係中找到平衡的具體策略。`;
+            analysisPrompt = `\n\n請分析主角的自我認知，以及與各個對象的認知落差與互動模式，指出關係網絡的核心盲點與平衡建議。`;
           }
           break;
         }
         case 'johari':
-          analysisPrompt = `\n\n請依序完成：①揭開【盲目區】中你可能不自知的行為模式。②提取【隱藏區】中你已擁有但未善用的優勢。③指引【未知潛能】的具體開發方向。`;
+          analysisPrompt = `\n\n請解讀盲目區的行為模式、隱藏區的未善用優勢以及未知潛能的開發方向。`;
           break;
         case 'breakthrough':
-          analysisPrompt = `\n\n請依序完成：①殘酷指出目前錯誤的施力點（即【核心瓶頸】與【沉沒成本】）。②找出最具槓桿效益的突破口。③給出突破現狀的第一個關鍵行動。`;
+          analysisPrompt = `\n\n請指出核心瓶頸與沉沒成本，找出具備最大槓桿效益的突破口與關鍵第一步。`;
           break;
         case 'cycle':
-          analysisPrompt = `\n\n請依序完成：①分析【正在消亡的】舊狀態與【正在萌芽的】新契機之間的張力。②指出必須放下的包袱。③點出可帶往下一階段的關鍵資產。`;
+          analysisPrompt = `\n\n請分析舊狀態消亡與新契機萌芽間的張力，並指出應放下與應保留的關鍵資產。`;
           break;
         case 'iceberg':
-          analysisPrompt = `\n\n請依序完成：①穿透【表層行為】，看見被壓抑的【真實情緒】。②挖出驅動一切的【核心信念】。③分析【防衛機制】如何影響你的選擇。④給出【整合策略】。`;
+          analysisPrompt = `\n\n請剖析表層行為底下的真實情緒、核心信念與防衛機制，並提供整合策略。`;
           break;
         case 'resource':
-          analysisPrompt = `\n\n請依序完成：①盤點現有資源（可用的）與阻力（系統性的）之間的現實差距。②評估關鍵外部變數的影響。③鎖定最終目標，指出下一個里程碑。`;
+          analysisPrompt = `\n\n請盤點現有可用資源與系統阻力，評估外部變數並指出下一個里程碑。`;
           break;
         case 'hero':
-          analysisPrompt = `\n\n請依序完成：①定位這段旅程中「改變的召喚」與當前試煉的本質。②指出可用的工具或導師象徵。③點出最終將獲得的成長或帶回的禮物。`;
+          analysisPrompt = `\n\n請解讀旅程召喚的本質、當前試煉與可用的工具，並指引最終的轉化與成長。`;
           break;
         case 'energy-resonance':
-          analysisPrompt = `\n\n請依序完成：①揭示兩人能量場真實的共鳴點（去除投射後）。②分析彼此如何私下影響對方的狀態。③給出調整互動節奏的具體建議。`;
+          analysisPrompt = `\n\n請揭示雙方能量場去投射後的共鳴點，分析無形影響並給出調整建議。`;
           break;
         case 'mirror-mirror':
-          analysisPrompt = `\n\n請依序完成：①點出你在對方身上看到的，其實是你內心哪個部分的投射。②分析這些主觀認定對現實關係造成的影響。③戳破盲點，幫助看清真實狀態。`;
+          analysisPrompt = `\n\n請點出在對方身上看到的內在投射本質，剖析其對關係造成的影響與真實課題。`;
           break;
 
         // Waite Spreads
         case 'waite-triangle':
-          analysisPrompt = `\n\n請依序完成：①分析【過去】累積的影響與背景。②對比【現在】所面臨的核心狀態與當下轉變。③推演並分析【未來】最可能的發展趨勢與行動建議。`;
+          analysisPrompt = `\n\n請分析過去影響、現在狀態與當下轉變，並解讀未來的發展趨勢與行動建議。`;
           break;
         case 'attraction':
-          analysisPrompt = `\n\n請依序完成：①解析核心渴望與當前散發頻率的落差。②點出阻礙顯化的現實盲點。③給出對齊目標的實際行動建議。`;
+          analysisPrompt = `\n\n請解析當前散發頻率與核心渴望的關聯，找出阻礙顯化的盲點並提供對齊建議。`;
           break;
         case 'rel-seasons':
-          analysisPrompt = `\n\n請依序完成：①判斷這段關係目前處於哪個季節狀態。②指出潛在的轉變契機。③給出最適應該階段的互動法則。`;
+          analysisPrompt = `\n\n請判斷關係目前所處的季節狀態與轉變契機，並給出最適宜的相處心態。`;
           break;
         case 'single':
-          analysisPrompt = `\n\n請依序完成：①從這張牌的能量切入當下核心狀態。②給出一個具體且不迴避的結論建議。`;
+          analysisPrompt = `\n\n請解讀此牌的核心能量狀態，並提供直接的結論與指引。`;
           break;
         default:
-          analysisPrompt = `\n\n請依據牌陣中每個位置的定義，結合正逆位牌意，為我進行綜合解讀，並點出值得注意的牌組互動與最終建議。`;
+          analysisPrompt = `\n\n請依據各個位置的定義與正逆位牌意，為我進行綜合解讀並提供核心建議。`;
           break;
       }
     }
 
     const waiteHeader = `【系統】偉特塔羅
 【規則】
-1. 逆位代表能量受阻或內化，切勿解讀為絕對相反。
-2. 留意牌陣中大牌（命運主導）與小牌（個人意志）的比例。
-3. 綜合評估相鄰牌的張力與重複出現的花色主題。`;
+1. 結合牌面正逆位進行解讀。
+2. 留意牌陣中大牌與小牌的分佈比例與關聯性。`;
 
     const thothHeader = `【系統】托特塔羅
 【規則】
-1. 本系統無逆位。
-2. 嚴禁套用偉特圖像敘事。請依小牌專屬命名（如愛、財富、失敗等）直擊能量本質。
-3. 聚焦於個案的內在驅動力、意識層次，並點出元素分佈的失衡狀態。`;
+1. 著重分析牌面元素交互作用（加強、削弱或中和）與占星、卡巴拉路徑的能量共鳴。
+2. 宮廷牌代表特定人格特質或環境中的催化劑。`;
 
     const systemHeader = targetMode === 'thoth' ? thothHeader : waiteHeader;
     const modeName = targetMode === 'thoth' ? '托特' : '偉特';
