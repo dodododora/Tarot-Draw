@@ -847,7 +847,7 @@ ${cardList}
   三張牌合在一起描述的核心主題與答案。`;
       } else if (cards.length === 36) {
         const f = (c: DrawnLenormandCard) => `${c.nameCN}(${c.nameEN})`;
-        const posMap = cards.map((c, i) => `位置${String(i+1).padStart(2,'0')} [第${String(i+1).padStart(2,'0')}宮·${LENORMAND_CARDS[i]?.nameCN ?? ''}宮] → ${f(c)}`);
+        const posMap = cards.map((c, i) => `${String(i+1).padStart(2,'0')}. ${LENORMAND_CARDS[i]?.nameCN}宮 → ${f(c)}`);
 
         // Significator detection
         const manIdx  = cards.findIndex(c => c.id === 28);
@@ -887,48 +887,45 @@ ${cardList}
         const houseCard = sigCardId > 0 ? f(cards[sigCardId - 1]) : '無';
 
         // Spine cards (col 4 / index 4,13,22,31)
-        const spineCards = [4, 13, 22, 31].map(i => `位置${i+1} [第${i+1}宮·${LENORMAND_CARDS[i]?.nameCN ?? ''}宮] → ${f(cards[i])}`).join('、');
+        const spineCards = [4, 13, 22, 31].map(i => `第${i+1}宮(${LENORMAND_CARDS[i]?.nameCN ?? ''}宮) → ${f(cards[i])}`).join('、');
 
         // Corner cards
-        const corners = `左上(位置1):${f(cards[0])}、右上(位置9):${f(cards[8])}、左下(位置28):${f(cards[27])}、右下(位置36):${f(cards[35])}`;
+        const corners = `位置1:${f(cards[0])}、位置9:${f(cards[8])}、位置28:${f(cards[27])}、位置36:${f(cards[35])}`;
 
         const sigRowCards = (sigRow >= 0 && sigRow < 4) ? cards.slice(sigRow * 9, sigRow * 9 + 9) : [];
         const sigRowText = sigRowCards.map(f).join(' → ');
 
-        const farNote = sigCol <= 2 ? '偏向左側（代表過去累積的影響）'
-          : sigCol >= 6 ? '偏向右側（代表未來發展的主動性）'
-          : '居於中央（代表當下核心）';
+        const farNote = sigCol <= 2 ? '偏左側(象徵過去影響)'
+          : sigCol >= 6 ? '偏右側(象徵未來發展)'
+          : '居中(當下核心)';
 
         const sigNote = sigCard
-          ? `- 指示牌：${f(sigCard)} 落在位置 ${sigPos} (第 ${sigRow+1} 行第 ${sigCol+1} 列，${farNote})，其落入的宮位為：【${LENORMAND_CARDS[sigPos-1]?.nameCN ?? ''}宮】。`
-          : '- 指示牌：未在牌陣中找到代表問卜者的指示牌。';
+          ? `- 指示牌位置：${f(sigCard)} 落在第${sigRow+1}行第${sigCol+1}列（${farNote}，第 ${sigPos} 宮·${LENORMAND_CARDS[sigPos-1]?.nameCN ?? ''}宮）`
+          : '- 指示牌位置：未在牌面中定位到指示牌。';
 
         prompt = `${systemHeaderGrand}
 
-我想透過 Lenormand 大展開 (Grand Tableau 4x9) 占卜以下問題：
+我想透過 Lenormand 大展開 (Grand Tableau 4x9) 占卜：
 【問題】${targetQuestion.trim() || '探索當下整體狀態'}
 
-【牌陣配置與宮位對照】
+【牌面與宮位對照】
 ${posMap.join('\n')}
 
-【指示牌及關聯資訊】
+【關鍵關聯資訊】
 ${sigNote}
-- 直接鄰牌（上下左右）：上=${above}、下=${below}、左=${left}、右=${right}
-- 對角鄰牌（周圍對角）：左上=${diagTL}、右上=${diagTR}、左下=${diagBL}、右下=${diagBR}
+- 鄰牌（上下左右）：上=${above}、下=${below}、左=${left}、右=${right}
+- 對角鄰牌（四周）：左上=${diagTL}、右上=${diagTR}、左下=${diagBL}、右下=${diagBR}
 - 橫讀指示牌所在整行：${sigRowText}
 - 鏡像反射牌：${mirrorCard}
-- 騎士跳躍牌（西洋棋 Knight 跳法）：${knightCards.join('、') || '無'}
+- 騎士跳躍牌：${knightCards.join('、') || '無'}
 - 指示牌對應宮位的卡牌：${houseCard}
+- 四角牌：${corners}
+- 中軸脊骨牌：${spineCards}
 
-【四角牌】${corners}
-【中軸脊骨牌 (位置 5、14、23、32)】${spineCards}
-
-請分析解讀：
-1. 結合指示牌所在宮位、周圍鄰牌、以及偏左或偏右的相對位置，分析問卜者當前處境與外在環境。
-2. 解讀騎士跳躍牌、鏡像牌與指示牌落入宮位卡牌，揭示隱藏影響力與潛意識動機。
-3. 分析四角牌（事件基調）與中軸脊骨牌（由上而下的生活主軸與關鍵課題）。
-4. 解讀 2-3 組重要的宮位對應關係（哪張牌落入了哪個宮位）。
-5. 用一句話給出最明確直接的解答。`;
+【請直接進行大展開解讀，遵循以下規範】：
+1. 給予寬廣的解讀空間，由你（AI）綜合以上宮位、指示牌及其聯牌、中軸與跳躍關係進行有機聯想。
+2. 保持解讀架構「簡潔、條理清晰、易於閱讀」，嚴禁長篇大論與套話。
+3. 尾聲以一句話給出最明確直接的答案。`;
       } else {
         // len-1: Lenormand single — direct Yes/No format, no analysis
         const card = cards[0];
