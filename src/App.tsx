@@ -1171,11 +1171,11 @@ ${themeNote}
       ? (isEn 
         ? `\n\n[Additional Guidance] The following are extra cards drawn for sub-questions. Please focus on interpreting them in the context of the original spread, treating them as a magnifying glass rather than a new reading.\n${extraCards.map(card => {
             const orientation = targetMode === 'thoth' ? '' : ` (${card.isReversed ? 'Reversed' : 'Upright'})`;
-            return `  Q: ${card.extraQuestion}\n  👉 ${card.nameEN} (${card.nameCN})${orientation}`;
+            return `  Q: ${card.extraQuestion}\n  › ${card.nameEN} (${card.nameCN})${orientation}`;
           }).join('\n\n')}`
         : `\n\n【補充指引】以下為針對子問題補抽的牌，請在原牌陣基礎上聚焦解讀，視為放大鏡而非新占卜。\n${extraCards.map(card => {
             const orientation = targetMode === 'thoth' ? '' : `（${card.isReversed ? '逆位' : '正位'}）`;
-            return `  Q: ${card.extraQuestion}\n  👉 ${card.nameCN} ${card.nameEN}${orientation}`;
+            return `  Q: ${card.extraQuestion}\n  › ${card.nameCN} ${card.nameEN}${orientation}`;
           }).join('\n\n')}`)
       : '';
 
@@ -1413,7 +1413,7 @@ ${themeNote}
             }}
             className="btn-ghost px-2.5 py-1.5 text-xs"
           >
-            {lang === 'zh' ? '🌐 EN' : '🌐 中文'}
+            {lang === 'zh' ? 'A／中' : 'A／中'}
           </button>
           <button
             onClick={() => { setIsHistoryOpen(true); trackEvent('open_history'); }}
@@ -1665,7 +1665,7 @@ ${themeNote}
                         />
                         {question.trim().length > 0 && question.trim().length < 10 && (
                           <p className="mt-2 text-xs text-[#9B7114] dark:text-[#D4AF37] flex items-center gap-1.5">
-                            <span className="text-base">💡</span>
+                            <span className="text-base">✧</span>
                             {t("問題越具體，AI 解讀越準確——試著加上時間、情境或對象", "The more specific the question, the more accurate the AI interpretation. Try adding time, context, or subjects.")}
                           </p>
                         )}
@@ -1778,7 +1778,7 @@ ${themeNote}
                             : 'text-faint'
                             }`}
                         >
-                          {t("✍️ 手動輸入", "✍️ Manual Input")}
+                          {t("❖ 手動輸入", "❖ Manual Input")}
                         </button>
                       </div>
 
@@ -1791,7 +1791,7 @@ ${themeNote}
                           <Compass size={20} /> {t('開始抽牌', 'Draw Cards')}
                         </button>
                         <p className="text-center text-[11px] text-dim">
-                          {t('✨ 抽牌後可一鍵複製 AI 解讀 Prompt，貼入 ChatGPT・Claude・Gemini 獲得深度解讀', '✨ After drawing, copy the AI prompt with one click and paste into ChatGPT · Claude · Gemini for deep interpretation')}
+                          {t('✦ 抽牌後可一鍵複製 AI 解讀 Prompt，貼入 ChatGPT・Claude・Gemini 獲得深度解讀', '✦ After drawing, copy the AI prompt with one click and paste into ChatGPT · Claude · Gemini for deep interpretation')}
                         </p>
                       </>
                     ) : (() => {
@@ -2112,7 +2112,7 @@ ${themeNote}
 
                       {hasExtraCards && (
                         <div className="relative z-10 mt-16 pt-16 border-t divider-subtle">
-                          <h3 className="text-center text-xl font-bold gold-text mb-8 tracking-widest">{t("✨ 補充指引", "✨ Follow-up Guidance")}</h3>
+                          <h3 className="text-center text-xl font-bold gold-text mb-8 tracking-widest">{t("✦ 補充指引", "✦ Follow-up Guidance")}</h3>
                           <div className="flex flex-wrap justify-center gap-6 sm:gap-10">
                             {extraCards.map((card, index) => (
                               <div key={index} className="flex flex-col items-center gap-4">
@@ -2184,7 +2184,7 @@ ${themeNote}
                           exit={{ opacity: 0, y: -10 }}
                           className="absolute -top-12 text-sm font-medium text-[#3F5933] dark:text-[#7A9C69] bg-[#E3E8DE] dark:bg-[#141C12] px-4 py-2 rounded-full border border-[#B8C7AE] dark:border-[#2D4024] shadow-sm"
                         >
-                          ✅ {t("已複製", "Copied")} {showCopySuccess === 'all' ? t('全部結果', 'all results') : showCopySuccess === 'main' ? t('主牌陣', 'main spread') : t('補抽指引', 'follow-up cards')} {t("到剪貼簿", "to clipboard")}
+                          ✓ {t("已複製", "Copied")} {showCopySuccess === 'all' ? t('全部結果', 'all results') : showCopySuccess === 'main' ? t('主牌陣', 'main spread') : t('補抽指引', 'follow-up cards')} {t("到剪貼簿", "to clipboard")}
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -2234,7 +2234,7 @@ ${themeNote}
                         }}
                         className="btn-secondary px-5 py-2.5 text-sm bg-[#EBE7ED] hover:bg-[#DDD7E3] dark:bg-[#191423] dark:hover:bg-[#221A34] text-[#492673] dark:text-[#B8A8CE] border-[#D2C4DA] dark:border-[#3A2B52]"
                       >
-                        {t("🖼 儲存分享圖", "🖼 Save Share Image")}
+                        {t("儲存分享圖", "Save Share Image")}
                       </button>
                     </div>
 
@@ -2248,7 +2248,7 @@ ${themeNote}
                           rel="noopener noreferrer"
                           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#2F5C54]/10 hover:bg-[#2F5C54]/20 text-[#2F5C54] dark:text-[#4F8A7D] border border-[#2F5C54]/30 text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95"
                         >
-                          <span>🤖</span> ChatGPT
+                          ChatGPT
                         </a>
                         <a
                           href="https://claude.ai"
@@ -2256,7 +2256,7 @@ ${themeNote}
                           rel="noopener noreferrer"
                           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#9E5B3A]/10 hover:bg-[#9E5B3A]/20 text-[#9E5B3A] dark:text-[#C27653] border border-[#9E5B3A]/30 text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95"
                         >
-                          <span>🧠</span> Claude
+                          Claude
                         </a>
                         <a
                           href="https://gemini.google.com"
@@ -2264,7 +2264,7 @@ ${themeNote}
                           rel="noopener noreferrer"
                           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#3B5475]/10 hover:bg-[#3B5475]/20 text-[#3B5475] dark:text-[#5F7A9D] border border-[#3B5475]/30 text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95"
                         >
-                          <span>✨</span> Gemini
+                          <span>✦</span> Gemini
                         </a>
                       </div>
                     )}
@@ -2515,7 +2515,7 @@ ${themeNote}
                               }}
                               className="flex-[3] py-3.5 bg-mystic-600/70 dark:bg-mystic-700/70 text-white hover:bg-mystic-600/90 dark:hover:bg-mystic-700/90 rounded-xl shadow-sm transition-all active:scale-95 text-[15px] font-bold flex items-center justify-center gap-2"
                             >
-                              {t("👁️ 查看", "👁️ View")}
+                              {t("查看", "View")}
                             </button>
                             <button
                               onClick={(e) => { e.stopPropagation(); copyToClipboard('all', record); }}
