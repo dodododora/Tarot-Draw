@@ -1354,16 +1354,16 @@ ${themeNote}
         {isShuffling && <ShuffleOverlay question={question} mode={mode} />}
       </AnimatePresence>
       {/* Navbar */}
-      <nav className="surface-nav px-4 py-4 flex justify-between items-center">
+      <nav className="surface-nav px-3 sm:px-4 py-3 sm:py-4 flex flex-wrap justify-between items-center gap-y-3 relative">
         <div
-          className="flex items-center gap-2 cursor-pointer group"
+          className="flex items-center gap-2 cursor-pointer group w-1/2 lg:w-auto order-1"
           onClick={() => navigate('/')}
         >
           <TarotLogoSVG />
-          <h1 className="hidden sm:block text-xl sm:text-2xl font-extrabold tracking-tight gold-text drop-shadow-sm font-serif-tc">Tarot Draw</h1>
+          <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight gold-text drop-shadow-sm font-serif-tc whitespace-nowrap">Tarot Draw</h1>
         </div>
         {/* System selector — two groups: Tarot systems | Lenormand */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center justify-center gap-1 w-full lg:w-auto lg:absolute lg:left-1/2 lg:-translate-x-1/2 order-3 lg:order-2">
           {/* Tarot group */}
           <div className="flex items-center surface-tab-group">
             <button
@@ -1402,7 +1402,7 @@ ${themeNote}
             </button>
           </div>
         </div>
-        <div className="flex items-center gap-1 sm:gap-2">
+        <div className="flex items-center justify-end gap-1 sm:gap-2 w-1/2 lg:w-auto order-2 lg:order-3">
           {/* Language toggle */}
           <button
             onClick={() => {
