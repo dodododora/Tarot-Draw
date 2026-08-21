@@ -1354,7 +1354,7 @@ ${themeNote}
         {isShuffling && <ShuffleOverlay question={question} mode={mode} />}
       </AnimatePresence>
       {/* Navbar */}
-      <nav className="sticky top-0 z-50 bg-white/60 dark:bg-mystic-950/50 backdrop-blur-xl border-b border-white/20 dark:border-mystic-800/50 px-4 py-4 flex justify-between items-center transition-colors duration-500">
+      <nav className="surface-nav px-4 py-4 flex justify-between items-center">
         <div
           className="flex items-center gap-2 cursor-pointer group"
           onClick={() => navigate('/')}
@@ -1365,7 +1365,7 @@ ${themeNote}
         {/* System selector — two groups: Tarot systems | Lenormand */}
         <div className="flex items-center gap-1">
           {/* Tarot group */}
-          <div className="flex items-center bg-stone-100/80 dark:bg-mystic-900/80 rounded-xl p-1 border border-stone-200 dark:border-mystic-800">
+          <div className="flex items-center surface-tab-group">
             <button
               onClick={() => { setMode('waite'); navigate('/'); setSelectedSpread(null); trackEvent('select_system', { system: 'waite' }); }}
               className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${mode === 'waite'
@@ -1390,7 +1390,7 @@ ${themeNote}
           <span className="text-stone-300 dark:text-mystic-700 text-base select-none px-0.5">|</span>
 
           {/* Lenormand — independent system */}
-          <div className="flex items-center bg-stone-100/80 dark:bg-mystic-900/80 rounded-xl p-1 border border-stone-200 dark:border-mystic-800">
+          <div className="flex items-center surface-tab-group">
             <button
               onClick={() => { setMode('lenormand'); navigate('/'); setSelectedSpread(null); trackEvent('select_system', { system: 'lenormand' }); }}
               className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${mode === 'lenormand'
@@ -1411,7 +1411,7 @@ ${themeNote}
               localStorage.setItem('tarot_lang', nextLang);
               trackEvent('toggle_lang', { lang: nextLang });
             }}
-            className="px-2.5 py-1.5 rounded-xl border border-stone-200 dark:border-mystic-800 hover:bg-stone-300/50 dark:hover:bg-mystic-800/50 transition-colors text-xs font-bold text-stone-600 dark:text-mystic-300 select-none"
+            className="btn-ghost px-2.5 py-1.5 text-xs"
           >
             {lang === 'zh' ? '🌐 EN' : '🌐 中文'}
           </button>
@@ -1786,7 +1786,7 @@ ${themeNote}
                       <>
                         <button
                           onClick={handleDraw}
-                          className="w-full py-4 bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 dark:hover:from-mystic-500 dark:hover:to-mystic-400 text-stone-50 dark:text-white rounded-lg font-bold text-lg shadow-lg shadow-stone-800/20 dark:shadow-mystic-500/20 transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2"
+                          className="btn-primary w-full py-4 text-lg"
                         >
                           <Compass size={20} /> {t('開始抽牌', 'Draw Cards')}
                         </button>
@@ -1876,7 +1876,7 @@ ${themeNote}
                           </div>
                           <button
                             onClick={handleManualSubmit}
-                            className="w-full py-4 bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 dark:hover:from-mystic-500 dark:hover:to-mystic-400 text-stone-50 dark:text-white rounded-lg font-bold text-lg shadow-lg shadow-stone-800/20 dark:shadow-mystic-500/20 transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2"
+                            className="btn-primary w-full py-4 text-lg"
                           >
                             <CheckCircle2 size={20} /> {t("確認輸入", "Confirm Input")}
                           </button>
@@ -2142,7 +2142,7 @@ ${themeNote}
                           />
                           <button
                             onClick={drawExtraCard}
-                            className="w-full py-3 mt-1 bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 dark:hover:from-mystic-500 dark:hover:to-mystic-400 text-stone-50 dark:text-white rounded-xl font-bold shadow-lg shadow-stone-800/10 dark:shadow-mystic-500/20 transition-all active:scale-95 flex items-center justify-center gap-2"
+                            className="btn-primary w-full py-3 mt-1"
                           >
                             <Sparkles size={18} /> {t("補抽一張", "Draw Follow-up Card")}
                           </button>
@@ -2194,19 +2194,19 @@ ${themeNote}
                         <>
                           <button
                             onClick={() => copyToClipboard('all')}
-                            className="px-5 py-2.5 rounded-xl bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 hover:dark:from-mystic-500 hover:dark:to-mystic-400 text-stone-50 dark:text-white shadow-lg shadow-stone-800/10 dark:shadow-mystic-500/20 transition-all hover:-translate-y-1 active:scale-95 font-bold flex items-center gap-2 text-sm"
+                            className="btn-primary px-5 py-2.5 text-sm"
                           >
                             <Copy size={16} /> {t("複製全部", "Copy All")}
                           </button>
                           <button
                             onClick={() => copyToClipboard('main')}
-                            className="px-4 py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-mystic-800 dark:hover:bg-mystic-700 text-amber-700 dark:text-mystic-300 border border-amber-200 dark:border-mystic-700 transition-all hover:-translate-y-1 active:scale-95 font-bold flex items-center gap-2 text-sm"
+                            className="btn-secondary px-4 py-2.5 text-sm"
                           >
                             <Copy size={14} /> {t("僅主牌陣", "Main Only")}
                           </button>
                           <button
                             onClick={() => copyToClipboard('extra')}
-                            className="px-4 py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-mystic-800 dark:hover:bg-mystic-700 text-amber-700 dark:text-mystic-300 border border-amber-200 dark:border-mystic-700 transition-all hover:-translate-y-1 active:scale-95 font-bold flex items-center gap-2 text-sm"
+                            className="btn-secondary px-4 py-2.5 text-sm"
                           >
                             <Copy size={14} /> {t("僅補抽", "Follow-up Only")}
                           </button>
@@ -2214,7 +2214,7 @@ ${themeNote}
                       ) : (
                         <button
                           onClick={() => copyToClipboard('all')}
-                          className="px-8 py-3 rounded-xl bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 dark:hover:from-mystic-500 dark:hover:to-mystic-400 text-stone-50 dark:text-white shadow-lg shadow-stone-800/10 dark:shadow-mystic-500/20 transition-all hover:-translate-y-1 active:scale-95 font-bold flex items-center gap-2"
+                          className="btn-primary px-8 py-3"
                         >
                           <Copy size={18} /> {t("複製 AI 解讀 Prompt", "Copy AI Prompt")}
                         </button>
@@ -2232,7 +2232,7 @@ ${themeNote}
                           downloadShareCard({ spreadName: selectedSpread?.name ?? '', question, cards: cardList, mode });
                           trackEvent('download_share_image', { spread_name: selectedSpread?.name ?? '', system: mode });
                         }}
-                        className="px-5 py-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 text-indigo-600 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 transition-all hover:-translate-y-1 active:scale-95 font-bold flex items-center gap-2 text-sm"
+                        className="btn-secondary px-5 py-2.5 text-sm bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 text-indigo-600 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800"
                       >
                         {t("🖼 儲存分享圖", "🖼 Save Share Image")}
                       </button>
@@ -2563,7 +2563,7 @@ ${themeNote}
                       <button
                         disabled={selectedHistoryIds.size === 0}
                         onClick={() => setShowBatchDeleteConfirm(true)}
-                        className="px-5 py-2 rounded-xl font-bold text-sm bg-red-400/80 hover:bg-red-500/80 text-white shadow-lg shadow-red-500/20 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="btn-danger px-5 py-2 text-sm"
                       >
                         {t("刪除選取", "Delete Selected")}
                       </button>
@@ -2711,7 +2711,7 @@ ${themeNote}
       </AnimatePresence>
 
       {/* Global Footer */}
-      <footer className="text-center py-4 border-t border-stone-100/60 dark:border-mystic-900/60 bg-white/30 dark:bg-mystic-950/30 backdrop-blur-sm flex flex-col items-center gap-1.5">
+      <footer className="surface-footer text-center py-4 backdrop-blur-sm flex flex-col items-center gap-1.5">
         <p className="text-xs text-dim">{t("© 2026 Tarot Draw｜本站內容僅供娛樂與自我探索參考", "© 2026 Tarot Draw | Content is for entertainment & self-exploration only")}</p>
         <a
           href="https://forms.gle/oXj1gXmqR83f3cfP8"
