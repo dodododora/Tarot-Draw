@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect, useCallback, type MouseEvent, type FormEvent } from 'react';
 import { flushSync } from 'react-dom';
 import { useNavigate, useLocation, Routes, Route, Navigate } from 'react-router-dom';
-import { Moon, Sun, Plus, Trash2, Edit2, Copy, ArrowLeft, Sparkles, Wand2, Info, X, History, CheckCircle2, Compass, Lightbulb } from 'lucide-react';
+import { Moon, Sun, Plus, Trash2, Edit2, Copy, ArrowLeft, Sparkles, Wand2, Info, X, History, CheckCircle2, Compass, Lightbulb, Clover, GitCompare, LayoutGrid, User, Heart, Briefcase, Coins, TreePine, Sparkles, BoxSelect, Navigation } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ALL_CARDS, THOTH_SPREADS, WAITE_SPREADS, WAITE_SPREAD_IDS, THOTH_SPREAD_IDS, getCardEmoji, getCardImagePath, TAROT_TRIVIA, LENORMAND_CARDS, LENORMAND_SPREADS, LENORMAND_TRIVIA, THOTH_ALL_CARDS, THOTH_TRIVIA, ORACLE_DATA, type Spread, type TarotCard, type LenormandCard } from './constants';
 import { shuffleAndDraw } from './deckEngine';
@@ -1373,7 +1373,7 @@ ${themeNote}
                 : 'tab-inactive'
                 }`}
             >
-              🔮<span className="text-[10px] sm:text-xs"> {t("偉特", "Waite")}</span>
+              <Sun size={14} className="inline-block mr-1 -mt-0.5" /><span className="text-[10px] sm:text-xs"> {t("偉特", "Waite")}</span>
             </button>
             <button
               onClick={() => { setMode('thoth'); navigate('/'); setSelectedSpread(null); trackEvent('select_system', { system: 'thoth' }); }}
@@ -1382,7 +1382,7 @@ ${themeNote}
                 : 'tab-inactive'
                 }`}
             >
-              🌌<span className="text-[10px] sm:text-xs"> {t("托特", "Thoth")}</span>
+              <Moon size={14} className="inline-block mr-1 -mt-0.5" /><span className="text-[10px] sm:text-xs"> {t("托特", "Thoth")}</span>
             </button>
           </div>
 
@@ -1398,7 +1398,7 @@ ${themeNote}
                 : 'tab-inactive'
                 }`}
             >
-              🃏<span className="text-[10px] sm:text-xs"> {t("雷諾曼", "Lenormand")}</span>
+              <Clover size={14} className="inline-block mr-1 -mt-0.5" /><span className="text-[10px] sm:text-xs"> {t("雷諾曼", "Lenormand")}</span>
             </button>
           </div>
         </div>
@@ -1504,7 +1504,7 @@ ${themeNote}
                       onClick={() => setIsBuiltinOpen(v => !v)}
                     >
                       <div className="flex items-center gap-3">
-                        <span className="text-2xl">{mode === 'waite' ? '🔮' : '🌌'}</span>
+                        <Sparkles size={24} className="mx-auto" />
                         <h2 className="text-2xl font-bold text-heading font-serif-tc">
                           {mode === 'waite' ? t('偉特牌陣', 'Waite Spreads') : t('托特牌陣', 'Thoth Spreads')}
                         </h2>
@@ -1623,7 +1623,7 @@ ${themeNote}
                   rel="noopener noreferrer"
                   className="text-xs text-dim hover:text-[#9B7114] dark:hover:text-[#D4AF37] transition-colors"
                 >
-                  ☕ 請我喝杯咖啡
+                  ✦ 請我喝杯咖啡
                 </a>
                 */}
                 </div>
@@ -1676,7 +1676,7 @@ ${themeNote}
                           <details className="group">
                             <summary className="flex items-center justify-between cursor-pointer select-none text-xs font-bold text-secondary uppercase tracking-widest list-none">
                               <span className="flex items-center gap-1.5 select-none">
-                                {t("🔮 大展開設定 (展開可自訂角色/主題)", "🔮 Grand Tableau Settings (Click to Customize)")}
+                                {t("✦ 大展開設定 (展開可自訂角色/主題)", "✦ Grand Tableau Settings (Click to Customize)")}
                               </span>
                               <span className="text-hint group-open:rotate-180 transition-transform duration-200 select-none">
                                 ▼
@@ -1687,8 +1687,8 @@ ${themeNote}
                                 <span className="font-bold text-xs text-muted">{t("問事者代表牌 (Querent)", "Querent Card")}</span>
                                 <div className="flex gap-1.5">
                                   {[
-                                    { label: t('👩 女人 (#29)', '👩 Lady (#29)'), value: 'woman' },
-                                    { label: t('👨 男人 (#28)', '👨 Gentleman (#28)'), value: 'man' }
+                                    { label: t('女人 (#29)', 'Lady (#29)'), value: 'woman' },
+                                    { label: t('男人 (#28)', 'Gentleman (#28)'), value: 'man' }
                                   ].map(opt => (
                                     <button
                                       key={opt.value}
@@ -1735,10 +1735,10 @@ ${themeNote}
                                 <div className="flex gap-1.5 flex-wrap justify-end">
                                   {[
                                     { label: t('綜合運勢', 'General Fortune'), value: 'general' },
-                                    { label: t('💞 感情 (#24 心)', '💞 Love (Heart #24)'), value: 'love' },
-                                    { label: t('💼 事業 (#35 錨)', '💼 Career (Anchor #35)'), value: 'career' },
-                                    { label: t('💰 財運 (#34 魚)', '💰 Wealth (Fish #34)'), value: 'money' },
-                                    { label: t('🌲 健康 (#5 樹)', '🌲 Health (Tree #5)'), value: 'health' }
+                                    { label: t('感情 (#24 心)', 'Love (Heart #24)'), value: 'love' },
+                                    { label: t('事業 (#35 錨)', 'Career (Anchor #35)'), value: 'career' },
+                                    { label: t('財運 (#34 魚)', 'Wealth (Fish #34)'), value: 'money' },
+                                    { label: t('健康 (#5 樹)', 'Health (Tree #5)'), value: 'health' }
                                   ].map(opt => (
                                     <button
                                       key={opt.value}
@@ -1769,7 +1769,7 @@ ${themeNote}
                             : 'text-faint'
                             }`}
                         >
-                          {t("🎴 隨機抽牌", "🎴 Random Draw")}
+                          {t("✦ 隨機抽牌", "✦ Random Draw")}
                         </button>
                         <button
                           onClick={() => setDrawInputMode('manual')}
