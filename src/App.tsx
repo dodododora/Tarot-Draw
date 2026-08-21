@@ -2921,7 +2921,75 @@ const TRIVIA_TRANSLATIONS: Record<string, string> = {
   "雷諾曼牌在德語系國家（德國、奧地利、瑞士）至今仍非常盛行，甚至比塔羅牌更廣泛地出現在日常占卜場合。":
     "Lenormand remains highly popular in German-speaking countries, often used more widely than Tarot for daily matters.",
   "問題越清晰，答案越清晰。雷諾曼擅長回答具體的事務性問題，問題越明確，牌陣的故事脈絡就越清晰。":
-    "Lenormand excels at concrete, practical questions. The clearer the question, the cleaner the storyline."
+    "Lenormand excels at concrete, practical questions. The clearer the question, the cleaner the storyline.",
+  "偉特塔羅牌由亞瑟·偉特設計、帕梅拉繪製，是第一副將 56 張小阿爾克那全都畫出具體情境圖像的牌卡。":
+    "The Waite-Smith deck, designed by Arthur Waite and illustrated by Pamela Colman Smith, was the first to depict all 56 Minor Arcana with full scenic imagery.",
+  "塔羅牌共有78張：22張大阿爾克那對應重大的靈魂課題，56張小阿爾克那則對應日常生活的細節。":
+    "Tarot has 78 cards: 22 Major Arcana for major soul lessons, and 56 Minor Arcana for the details of daily life.",
+  "「死神」與「高塔」並非字面上的終結，它們通常代表著舊有模式的打破、帶來實質的改變或是浴火重生。":
+    "Death and The Tower aren't literal endings — they typically represent breaking old patterns, bringing real change, or rebirth through fire.",
+  "逆位牌不一定代表純粹的壞事，它們通常暗示能量的阻礙、時間的延遲，或是代表需要反思的內在層面。":
+    "Reversed cards don't necessarily mean bad things. They often suggest blocked energy, delays, or inner aspects that need reflection.",
+  "愚者（The Fool）編號為 0，代表無限的可能性與未知的旅程，是所有塔羅牌的起點。":
+    "The Fool is numbered 0, representing infinite possibilities and the unknown journey — the starting point of all Tarot.",
+  "寶劍對應「風」元素代表理智與溝通；聖杯對應「水」代表情感與關係。":
+    "Swords correspond to Air (intellect and communication); Cups correspond to Water (emotions and relationships).",
+  "權杖對應「火」元素代表行動力與熱情；錢幣對應「土」代表物質與現實基礎。":
+    "Wands correspond to Fire (action and passion); Pentacles correspond to Earth (material and practical foundations).",
+  "15世紀初，塔羅牌最初在義大利是作為貴族間的紙牌遊戲「塔羅奇」(Tarocchini) 流傳的。":
+    "In the early 15th century, Tarot first circulated in Italy as 'Tarocchini', a card game among the aristocracy.",
+  "大阿爾克那 (Major Arcana) 的「Arcana」一詞源自拉丁文，意指「隱藏的秘密」。":
+    "The word 'Arcana' in Major Arcana comes from Latin, meaning 'hidden secrets'.",
+  "著名心理學家榮格認為，塔羅牌反映了人類的「集體潛意識」與各種心理原型。":
+    "Renowned psychologist Carl Jung believed Tarot reflects humanity's 'collective unconscious' and its archetypes.",
+  "塔羅牌中的星星、月亮與太陽，象徵著從靈魂深處的潛意識逐漸走向意識覺醒的過程。":
+    "The Star, Moon, and Sun in Tarot symbolize the journey from deep subconscious to conscious awakening.",
+  "「命運之輪」牌面上的四個生物分別代表了占星學中的四個固定星座：獅子、金牛、水瓶與天蠍。":
+    "The four creatures on the Wheel of Fortune represent the four fixed zodiac signs: Leo, Taurus, Aquarius, and Scorpio.",
+  "塔羅牌四大元素：火、水、風、土，分別對應著現代撲克牌裡的梅花、紅心、黑桃與方塊。":
+    "Tarot's four elements — Fire, Water, Air, Earth — correspond to Clubs, Hearts, Spades, and Diamonds in modern playing cards.",
+  "「魔術師」(The Magician) 桌上的權杖、聖杯、寶劍與錢幣，象徵著他已經掌握顯化事物的四大基礎元素。":
+    "The Magician's table holds a Wand, Cup, Sword, and Pentacle, symbolizing mastery over the four fundamental elements of manifestation.",
+  "侍者、騎士、王后與國王這十六張宮廷牌，最早的靈感往往對應著真實社會中的階級或人物性格特質。":
+    "The 16 Court Cards — Pages, Knights, Queens, and Kings — originally reflected real social hierarchies and personality archetypes.",
+  "小阿爾克那的數字牌從 1(王牌) 到 10，描繪了該元素能量從最初的顯現到最終發展成熟的完整循環。":
+    "Minor Arcana pip cards from Ace to 10 depict the full cycle of each element's energy, from initial spark to mature completion.",
+  "「倒吊人」並不是受到懲罰，他平靜的表情象徵著透過視角的轉換或是自願的犧牲來獲得更高的智慧。":
+    "The Hanged Man isn't being punished — his serene expression symbolizes gaining higher wisdom through a shift in perspective or willing sacrifice.",
+  "塔羅牌並非固定命運的宣判，相反地，它是一面反映個人潛意識狀態與能量共鳴的鏡子。":
+    "Tarot isn't a fixed decree of fate. Rather, it's a mirror reflecting one's subconscious state and energetic resonance.",
+  "透特塔羅牌 (Thoth Tarot) 亦是著名的常見版本，由克勞利與哈里斯女士共同創作，牌面融合了豐富的占星與卡巴拉神祕學符號。":
+    "The Thoth Tarot is another renowned version, co-created by Crowley and Lady Harris, rich in astrological and Kabbalistic symbolism.",
+  "馬賽塔羅牌 (Tarot de Marseille) 是現存最古老的經典標準圖案，畫風多採用木刻版畫風格與紅、藍、黃等強烈基本色。":
+    "The Tarot de Marseille features the oldest surviving standard design, with woodblock-style art in bold primary colors of red, blue, and yellow.",
+  "凱爾特十字牌陣是最古老且經典的塔羅牌陣之一，早期由亞瑟·偉特在他 1910 年出版的《塔羅圖解》中大力推廣。":
+    "The Celtic Cross is one of the oldest and most classic spreads, widely popularized by Arthur Waite in his 1910 'Pictorial Key to the Tarot'.",
+  "「隱者」牌中的提燈內含有一顆發光的六芒星，象徵著他憑藉內在的智慧與真理之光，在黑暗中獨自摸索前進。":
+    "The Hermit's lantern contains a glowing hexagram, symbolizing his inner wisdom and truth guiding his solitary path through darkness.",
+  "在傳統馬賽版本中，第 8 號是「正義」、第 11 號是「力量」，而偉特為了使牌義完全對應占星學順序，將這兩張牌的編號對調。":
+    "In the traditional Marseille order, #8 is Justice and #11 is Strength. Waite swapped them to align with astrological correspondences.",
+  "「惡魔」牌的構圖與「戀人」牌極為相似，但男女是被寬鬆的鐵鍊綁著（且未上鎖），暗示束縛往往來自於個人的自我設限與慾望。":
+    "The Devil mirrors The Lovers in composition, but the figures wear loose, unlocked chains — hinting that bondage comes from self-imposed limitations and desire.",
+  "「世界」牌代表一個階段完美的結束，被生命之環圍繞的女神呼應了首張牌「愚者」的啟程，象徵完整的人生循環。":
+    "The World represents the perfect completion of a cycle. The wreath-encircled figure echoes The Fool's departure, symbolizing life's full circle.",
+  "小阿爾克那中的每一張「王牌 (Ace)」都畫著一隻從雲端伸出並捧著法器的神祕之手，象徵宇宙賦予該元素最初始的純粹禮物。":
+    "Each Minor Arcana Ace depicts a mysterious hand emerging from clouds, offering the suit's symbol — a pure, primal gift from the universe.",
+  "塔羅的英文 Tarot 詞源眾說紛紜，有一說是源自義大利發音 Tarocco，亦有學者指出可能來自阿拉伯文的 turuq（意指「道途」）。":
+    "The etymology of 'Tarot' is debated: it may derive from the Italian 'Tarocco' or possibly from the Arabic 'turuq', meaning 'paths'.",
+  "早期的塔羅牌並無占卜用途，直到 18 世紀的神祕學家考特·德·蓋伯林 (Court de Gébelin) 提出論點後，才開始將其與玄學占卜做出連結。":
+    "Early Tarot had no divinatory use until the 18th-century occultist Court de Gébelin linked it to esoteric divination.",
+  "偉特塔羅牌的畫家帕梅拉女士 (Pamela Colman Smith) 也是位戲劇佈景設計師，她的經歷讓偉特塔羅的小牌充滿了舞台劇場般的戲劇張力。":
+    "Artist Pamela Colman Smith was also a theatrical set designer, infusing the Waite-Smith Minor Arcana with dramatic, stage-like compositions.",
+  "聖杯三經常被稱為「閨蜜牌」或「派對牌」，描繪三名女子和諧共舞舉杯，象徵了真誠的友誼、慶祝與群體共享的連結。":
+    "The Three of Cups is often called the 'friendship card', depicting three women dancing and toasting — symbolizing genuine camaraderie and celebration.",
+  "寶劍三視覺上畫著三把劍無情地刺穿一顆心，雖然象徵心碎，但也客觀提醒著人們：悲傷與看清真相是靈魂療癒必經的痛楚。":
+    "The Three of Swords shows three blades piercing a heart. While symbolizing heartbreak, it also reminds us that grief and facing truth are necessary for healing.",
+  "錢幣十中不僅畫了擁有財富的老人、夫妻與小孩，還有兩隻安康的白狗，代表著不只金錢，還包含家庭血脈與精神安穩的代代延續。":
+    "The Ten of Pentacles depicts an elder, a couple, a child, and two dogs — representing not just wealth, but generational legacy of family and spiritual stability.",
+  "權杖八是少數沒有畫出任何人物輪廓的小阿爾克那牌，八根整齊劃一飛在空中的權杖，精準象徵了毫無阻力、極速發展的能量。":
+    "The Eight of Wands is one of the few Minor Arcana without any human figures — eight wands soaring through the air symbolize swift, unobstructed momentum.",
+  "「月亮」牌底部的甲殼類生物正從深水中爬上陸地，象徵著從最深層潛意識中逐漸浮現出、難以名狀的原始恐懼。":
+    "The crustacean at the bottom of The Moon crawls from deep water onto land, symbolizing primal fears surfacing from the deepest layers of the subconscious."
 };
 
 const ORACLE_TRANSLATIONS: Record<string, string> = {
