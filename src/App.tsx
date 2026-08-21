@@ -1370,7 +1370,7 @@ ${themeNote}
               onClick={() => { setMode('waite'); navigate('/'); setSelectedSpread(null); trackEvent('select_system', { system: 'waite' }); }}
               className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${mode === 'waite'
                 ? 'bg-amber-700/70 dark:bg-mystic-600/80 text-white shadow-sm'
-                : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
+                : 'tab-inactive'
                 }`}
             >
               🔮<span className="text-[10px] sm:text-xs"> {t("偉特", "Waite")}</span>
@@ -1379,7 +1379,7 @@ ${themeNote}
               onClick={() => { setMode('thoth'); navigate('/'); setSelectedSpread(null); trackEvent('select_system', { system: 'thoth' }); }}
               className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${mode === 'thoth'
                 ? 'bg-purple-600 dark:bg-purple-700 text-white shadow-sm'
-                : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
+                : 'tab-inactive'
                 }`}
             >
               🌌<span className="text-[10px] sm:text-xs"> {t("托特", "Thoth")}</span>
@@ -1387,7 +1387,7 @@ ${themeNote}
           </div>
 
           {/* Visual separator */}
-          <span className="text-stone-300 dark:text-mystic-700 text-base select-none px-0.5">|</span>
+          <span className="text-faint text-base select-none px-0.5">|</span>
 
           {/* Lenormand — independent system */}
           <div className="flex items-center surface-tab-group">
@@ -1395,7 +1395,7 @@ ${themeNote}
               onClick={() => { setMode('lenormand'); navigate('/'); setSelectedSpread(null); trackEvent('select_system', { system: 'lenormand' }); }}
               className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${mode === 'lenormand'
                 ? 'bg-teal-700/70 dark:bg-teal-700/70 text-white shadow-sm'
-                : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
+                : 'tab-inactive'
                 }`}
             >
               🃏<span className="text-[10px] sm:text-xs"> {t("雷諾曼", "Lenormand")}</span>
@@ -1455,7 +1455,7 @@ ${themeNote}
                     ].map(({ n, label }, i, arr) => (
                       <React.Fragment key={n}>
                         <span className="flex items-center gap-1 text-hint">
-                          <span className="w-4 h-4 rounded-full bg-stone-100 dark:bg-mystic-800 text-stone-600 dark:text-mystic-400 flex items-center justify-center text-[9px] font-bold shrink-0">{n}</span>
+                          <span className="w-4 h-4 rounded-full badge-dim flex items-center justify-center text-[9px] font-bold shrink-0">{n}</span>
                           {label}
                         </span>
                         {i < arr.length - 1 && <span className="text-slate-300 dark:text-mystic-700">›</span>}
@@ -1473,9 +1473,9 @@ ${themeNote}
                     >
                       <div className="flex items-center gap-3">
                         <span className="text-2xl">🃏</span>
-                        <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 font-serif-tc">{t("雷諾曼牌陣", "Lenormand Spreads")}</h2>
+                        <h2 className="text-2xl font-bold text-heading font-serif-tc">{t("雷諾曼牌陣", "Lenormand Spreads")}</h2>
                       </div>
-                      <span className={`text-stone-400 dark:text-mystic-500 transition-transform duration-300 ${isBuiltinOpen ? 'rotate-180' : ''}`}>
+                      <span className={`text-hint transition-transform duration-300 ${isBuiltinOpen ? 'rotate-180' : ''}`}>
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6" /></svg>
                       </span>
                     </div>
@@ -1505,11 +1505,11 @@ ${themeNote}
                     >
                       <div className="flex items-center gap-3">
                         <span className="text-2xl">{mode === 'waite' ? '🔮' : '🌌'}</span>
-                        <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 font-serif-tc">
+                        <h2 className="text-2xl font-bold text-heading font-serif-tc">
                           {mode === 'waite' ? t('偉特牌陣', 'Waite Spreads') : t('托特牌陣', 'Thoth Spreads')}
                         </h2>
                       </div>
-                      <span className={`text-stone-400 dark:text-mystic-500 transition-transform duration-300 ${isBuiltinOpen ? 'rotate-180' : ''}`}>
+                      <span className={`text-hint transition-transform duration-300 ${isBuiltinOpen ? 'rotate-180' : ''}`}>
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6" /></svg>
                       </span>
                     </div>
@@ -1551,8 +1551,8 @@ ${themeNote}
                       onClick={() => setIsCustomOpen(v => !v)}
                     >
                       <div className="flex items-center gap-3">
-                        <Edit2 className="text-stone-600 dark:text-mystic-500" size={24} />
-                        <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 font-serif-tc">
+                        <Edit2 className="text-hint" size={24} />
+                        <h2 className="text-2xl font-bold text-heading font-serif-tc">
                           {t("我的牌陣", "My Spreads")}
                           {customSpreads.length > 0 && (
                             <span className="ml-2 text-sm font-semibold text-stone-500 dark:text-mystic-500">{customSpreads.length}</span>
@@ -1566,7 +1566,7 @@ ${themeNote}
                         >
                           <Plus size={18} /> {t("新增牌陣", "Add Spread")}
                         </button>
-                        <span className={`text-stone-400 dark:text-mystic-500 transition-transform duration-300 ${isCustomOpen ? 'rotate-180' : ''}`}>
+                        <span className={`text-hint transition-transform duration-300 ${isCustomOpen ? 'rotate-180' : ''}`}>
                           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6" /></svg>
                         </span>
                       </div>
@@ -1674,7 +1674,7 @@ ${themeNote}
                       {selectedSpread.id === 'len-36' && mode === 'lenormand' && (
                         <div className="border border-stone-200 dark:border-mystic-800 rounded-xl p-4 bg-stone-50/50 dark:bg-mystic-950/40">
                           <details className="group">
-                            <summary className="flex items-center justify-between cursor-pointer select-none text-xs font-bold text-stone-600 dark:text-mystic-300 uppercase tracking-widest list-none">
+                            <summary className="flex items-center justify-between cursor-pointer select-none text-xs font-bold text-secondary uppercase tracking-widest list-none">
                               <span className="flex items-center gap-1.5 select-none">
                                 {t("🔮 大展開設定 (展開可自訂角色/主題)", "🔮 Grand Tableau Settings (Click to Customize)")}
                               </span>
@@ -1697,7 +1697,7 @@ ${themeNote}
                                       className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-all select-none ${
                                         gtQuerent === opt.value
                                           ? 'border-teal-500 bg-teal-50/30 text-teal-700 dark:text-teal-400'
-                                          : 'border-stone-200 dark:border-mystic-800 hover:bg-stone-50 dark:hover:bg-mystic-900/50 text-stone-600 dark:text-mystic-300'
+                                          : 'border-stone-200 dark:border-mystic-800 hover:bg-stone-50 dark:hover:bg-mystic-900/50 text-secondary'
                                       }`}
                                     >
                                       {opt.label}
@@ -1721,7 +1721,7 @@ ${themeNote}
                                       className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-all select-none ${
                                         gtPartner === opt.value
                                           ? 'border-teal-500 bg-teal-50/30 text-teal-700 dark:text-teal-400'
-                                          : 'border-stone-200 dark:border-mystic-800 hover:bg-stone-50 dark:hover:bg-mystic-900/50 text-stone-600 dark:text-mystic-300'
+                                          : 'border-stone-200 dark:border-mystic-800 hover:bg-stone-50 dark:hover:bg-mystic-900/50 text-secondary'
                                       }`}
                                     >
                                       {opt.label}
@@ -1747,7 +1747,7 @@ ${themeNote}
                                       className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-all select-none ${
                                         gtTheme === opt.value
                                           ? 'border-teal-500 bg-teal-50/30 text-teal-700 dark:text-teal-400'
-                                          : 'border-stone-200 dark:border-mystic-800 hover:bg-stone-50 dark:hover:bg-mystic-900/50 text-stone-600 dark:text-mystic-300'
+                                          : 'border-stone-200 dark:border-mystic-800 hover:bg-stone-50 dark:hover:bg-mystic-900/50 text-secondary'
                                       }`}
                                     >
                                       {opt.label}
@@ -1840,7 +1840,7 @@ ${themeNote}
                                           })}
                                           className={`absolute right-1 top-1/2 -translate-y-1/2 text-xs px-2 py-1 rounded border transition-all ${manualInputs[i]?.reversed
                                             ? 'border-purple-500/70 dark:border-purple-500/60 text-purple-700 dark:text-purple-300 bg-purple-100/80 dark:bg-purple-900/40 font-semibold'
-                                            : 'border-stone-400/40 dark:border-mystic-600/50 text-stone-400 dark:text-mystic-500 bg-transparent hover:bg-stone-100/50 dark:hover:bg-mystic-700/50'
+                                            : 'border-stone-400/40 dark:border-mystic-600/50 text-hint bg-transparent hover:bg-stone-100/50 dark:hover:bg-mystic-700/50'
                                             }`}
                                         >
                                           逆
@@ -1862,8 +1862,8 @@ ${themeNote}
                                               }}
                                               className="w-full text-left px-3 py-2 text-sm hover:bg-stone-100 dark:hover:bg-mystic-800 transition-colors flex items-center justify-between gap-2"
                                             >
-                                              <span className="font-medium text-stone-800 dark:text-mystic-100">{card.nameCN}</span>
-                                              <span className="text-xs text-stone-400 dark:text-mystic-500 shrink-0">{card.nameEN}</span>
+                                              <span className="font-medium text-heading">{card.nameCN}</span>
+                                              <span className="text-xs text-hint shrink-0">{card.nameEN}</span>
                                             </button>
                                           ))}
                                         </div>
@@ -1935,10 +1935,10 @@ ${themeNote}
                     )}
 
                     <div className="bg-mystic-50/80 dark:bg-mystic-800/50 p-4 sm:px-5 rounded-2xl border border-mystic-200/50 dark:border-mystic-700/30 flex items-start gap-3">
-                      <Info className="text-mystic-500/80 dark:text-mystic-400 mt-0.5 flex-shrink-0" size={18} />
+                      <Info className="text-hint mt-0.5 flex-shrink-0" size={18} />
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-bold text-mystic-900 dark:text-mystic-100 mb-2 tracking-wide">{t("牌陣資訊", "Spread Info")}</p>
-                        <p className="text-xs text-mystic-700/70 dark:text-mystic-500 mb-2">{t(`將抽取 ${translatedSelectedSpread.count} 張牌，位置如下：`, `Will draw ${translatedSelectedSpread.count} cards in these positions:`)}</p>
+                        <p className="text-sm font-bold text-heading mb-2 tracking-wide">{t("牌陣資訊", "Spread Info")}</p>
+                        <p className="text-xs text-hint mb-2">{t(`將抽取 ${translatedSelectedSpread.count} 張牌，位置如下：`, `Will draw ${translatedSelectedSpread.count} cards in these positions:`)}</p>
                         {/* Scrollable pill row with fade mask */}
                         <div className="relative">
                           <div className="flex gap-2 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
@@ -1947,7 +1947,7 @@ ${themeNote}
                                 key={i}
                                 className="shrink-0 text-[11px] font-semibold text-mystic-800 dark:text-mystic-300 bg-mystic-100/80 dark:bg-mystic-700/60 border border-mystic-200/50 dark:border-mystic-600 px-2.5 py-1 rounded-full whitespace-nowrap"
                               >
-                                <span className="text-mystic-500 dark:text-mystic-500 mr-1">{i + 1}.</span>{pos}
+                                <span className="text-hint mr-1">{i + 1}.</span>{pos}
                               </span>
                             ))}
                           </div>
@@ -1981,9 +1981,9 @@ ${themeNote}
                   >
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                       <div>
-                        {mode === 'lenormand' && <span className="text-xs font-bold text-teal-700 dark:text-teal-300 bg-teal-400/25 dark:bg-teal-400/20 px-2 py-0.5 rounded-full border border-teal-500/50 dark:border-teal-400/30 mb-1 inline-block">{t("雷諾曼", "Lenormand")}</span>}
-                        {mode === 'thoth' && <span className="text-xs font-bold text-mystic-700 dark:text-mystic-300 bg-mystic-400/25 dark:bg-mystic-400/20 px-2 py-0.5 rounded-full border border-mystic-500/50 dark:border-mystic-400/30 mb-1 inline-block">{t("托特塔羅", "Thoth Tarot")}</span>}
-                        {mode === 'tarot' && <span className="text-xs font-bold text-amber-700 dark:text-amber-300 bg-amber-400/25 dark:bg-amber-400/20 px-2 py-0.5 rounded-full border border-amber-500/50 dark:border-amber-400/30 mb-1 inline-block">{t("偉特塔羅", "Waite Tarot")}</span>}
+                        {mode === 'lenormand' && <span className="text-xs font-bold badge-system-lenormand px-2 py-0.5 rounded-full mb-1 inline-block">{t("雷諾曼", "Lenormand")}</span>}
+                        {mode === 'thoth' && <span className="text-xs font-bold badge-system-thoth px-2 py-0.5 rounded-full mb-1 inline-block">{t("托特塔羅", "Thoth Tarot")}</span>}
+                        {mode === 'tarot' && <span className="text-xs font-bold badge-system-waite px-2 py-0.5 rounded-full mb-1 inline-block">{t("偉特塔羅", "Waite Tarot")}</span>}
                         <h2 className="text-2xl font-bold bg-gradient-to-r from-mystic-700 to-indigo-500 bg-clip-text text-transparent dark:from-mystic-200 dark:to-indigo-300 drop-shadow-sm font-serif-tc">{translatedSelectedSpread?.name}</h2>
                         <p className="text-muted">{t("問題：", "Question: ")}{question.trim() || t('探索當下整體狀態', 'Exploring Current Situation')}</p>
                       </div>
@@ -2042,7 +2042,7 @@ ${themeNote}
                             <React.Fragment key={index}>
                               <LenormandCardDisplay card={card} index={index} isCenter={false} lang={lang} spreadId={selectedSpread?.id} />
                               {index < lenormandDrawnCards.length - 1 && (
-                                <span className="flex-shrink-0 text-stone-400 dark:text-stone-600 text-xl sm:text-2xl font-bold leading-none select-none">→</span>
+                                <span className="flex-shrink-0 text-dim text-xl sm:text-2xl font-bold leading-none select-none">→</span>
                               )}
                             </React.Fragment>
                           ))}
@@ -2051,10 +2051,10 @@ ${themeNote}
                         <div className="relative z-10 w-full overflow-x-auto pb-2">
                           <div className="flex flex-col gap-2 mx-auto" style={{ minWidth: '580px', maxWidth: '920px' }}>
                             {[
-                              { label: t('第一行 (位置 1–9)', 'Row 1 (Pos 1–9)'), color: 'text-stone-700 dark:text-stone-300', bg: 'bg-stone-100/50 dark:bg-mystic-900/40' },
-                              { label: t('第二行 (位置 10–18)', 'Row 2 (Pos 10–18)'), color: 'text-stone-700 dark:text-stone-300', bg: 'bg-stone-100/50 dark:bg-mystic-900/40' },
-                              { label: t('第三行 (位置 19–27)', 'Row 3 (Pos 19–27)'), color: 'text-stone-700 dark:text-stone-300', bg: 'bg-stone-100/50 dark:bg-mystic-900/40' },
-                              { label: t('第四行 (位置 28–36)', 'Row 4 (Pos 28–36)'), color: 'text-stone-700 dark:text-stone-300', bg: 'bg-stone-100/50 dark:bg-mystic-900/40' },
+                              { label: t('第一行 (位置 1–9)', 'Row 1 (Pos 1–9)'), color: 'text-secondary', bg: 'bg-stone-100/50 dark:bg-mystic-900/40' },
+                              { label: t('第二行 (位置 10–18)', 'Row 2 (Pos 10–18)'), color: 'text-secondary', bg: 'bg-stone-100/50 dark:bg-mystic-900/40' },
+                              { label: t('第三行 (位置 19–27)', 'Row 3 (Pos 19–27)'), color: 'text-secondary', bg: 'bg-stone-100/50 dark:bg-mystic-900/40' },
+                              { label: t('第四行 (位置 28–36)', 'Row 4 (Pos 28–36)'), color: 'text-secondary', bg: 'bg-stone-100/50 dark:bg-mystic-900/40' },
                             ].map((row, rowIdx) => (
                               <div key={rowIdx} className={`rounded-xl px-2 pt-1 pb-2 ${row.bg}`}>
                                 <div className={`text-[10px] font-bold mb-1.5 flex items-center gap-2 ${row.color}`}>
@@ -2079,7 +2079,7 @@ ${themeNote}
                                 </div>
                               </div>
                             ))}
-                            <p className="text-center text-[10px] text-stone-400 dark:text-stone-500 mt-1">
+                            <p className="text-center text-[10px] text-dim mt-1">
                               {t("✦ 金色邊框為中軸脊骨宮位（第 5、14、23、32 宮），是各行主題的核心", "✦ Gold border highlights the spine houses (5, 14, 23, 32), which form the core axis of each row")}
                             </p>
                           </div>
@@ -2328,7 +2328,7 @@ ${themeNote}
                animate={{ opacity: 1 }}
                exit={{ opacity: 0 }}
                transition={{ duration: 0.18, ease: 'easeIn' }}
-               className="fixed inset-0 z-[100] flex justify-end bg-slate-900/20 dark:bg-black/40 backdrop-blur-sm"
+               className="fixed inset-0 z-[100] flex justify-end modal-backdrop backdrop-blur-sm"
                onClick={() => { setIsHistoryOpen(false); setHistorySelectMode(false); setSelectedHistoryIds(new Set()); }}
              >
                <motion.div
@@ -2340,13 +2340,13 @@ ${themeNote}
                  initial="hidden"
                  animate="visible"
                  exit="exit"
-                 className="w-full max-w-sm sm:max-w-md lg:w-[40vw] lg:max-w-2xl h-full bg-[#f7f3e8]/95 dark:bg-mystic-950/95 backdrop-blur-2xl shadow-[-20px_0_40px_rgba(68,64,60,0.05)] dark:shadow-[-20px_0_40px_rgba(0,0,0,0.3)] border-l border-stone-200 dark:border-mystic-800/80 flex flex-col"
+                 className="w-full max-w-sm sm:max-w-md lg:w-[40vw] lg:max-w-2xl h-full surface-drawer backdrop-blur-2xl shadow-[-20px_0_40px_rgba(68,64,60,0.05)] dark:shadow-[-20px_0_40px_rgba(0,0,0,0.3)] border-l border-stone-200 dark:border-mystic-800/80 flex flex-col"
                  onClick={(e) => e.stopPropagation()}
                >
                  {/* Header */}
-                 <div className="px-6 lg:px-8 py-5 border-b border-stone-200 dark:border-mystic-800/50 flex items-center justify-between bg-[#f0ead6]/80 dark:bg-mystic-900/50 shrink-0">
+                 <div className="px-6 lg:px-8 py-5 border-b border-stone-200 dark:border-mystic-800/50 flex items-center justify-between surface-drawer-header shrink-0">
                    <h2 className="text-xl font-bold flex items-center gap-2">
-                     <History size={20} className="text-stone-600 dark:text-mystic-500" /> {t("歷史紀錄", "History")}
+                     <History size={20} className="text-hint" /> {t("歷史紀錄", "History")}
                    </h2>
                    <div className="flex items-center gap-2">
  
@@ -2483,9 +2483,9 @@ ${themeNote}
                               {record.question?.trim() || t('探索當下整體狀態', 'Exploring Current Situation')}
                             </p>
                             <div className="flex items-center justify-between text-xs font-semibold text-stone-600 dark:text-mystic-400">
-                              {record.mode === 'lenormand' && <span className="text-teal-700 dark:text-teal-300 bg-teal-400/25 dark:bg-teal-400/20 px-1.5 py-0.5 rounded-md border border-teal-500/50 dark:border-teal-400/30">{t("雷諾曼", "Lenormand")}</span>}
-                              {record.mode === 'thoth' && <span className="text-mystic-700 dark:text-mystic-300 bg-mystic-400/25 dark:bg-mystic-400/20 px-1.5 py-0.5 rounded-md border border-mystic-500/50 dark:border-mystic-400/30">{t("托特", "Thoth")}</span>}
-                              {record.mode === 'tarot' && <span className="text-amber-700 dark:text-amber-300 bg-amber-400/25 dark:bg-amber-400/20 px-1.5 py-0.5 rounded-md border border-amber-500/50 dark:border-amber-400/30">{t("偉特", "Waite")}</span>}
+                              {record.mode === 'lenormand' && <span className="badge-system-lenormand px-1.5 py-0.5 rounded-md">{t("雷諾曼", "Lenormand")}</span>}
+                              {record.mode === 'thoth' && <span className="badge-system-thoth px-1.5 py-0.5 rounded-md">{t("托特", "Thoth")}</span>}
+                              {record.mode === 'tarot' && <span className="badge-system-waite px-1.5 py-0.5 rounded-md">{t("偉特", "Waite")}</span>}
                               <span>{(record.lenormandCards?.length ?? record.cards.length)} {t("張牌卡", "cards")}</span>
                             </div>
                           </div>
@@ -2607,7 +2607,7 @@ ${themeNote}
       {/* Custom Spread Modal */}
       <AnimatePresence>
         {isModalOpen && editingSpread && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 modal-backdrop backdrop-blur-sm">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -2702,7 +2702,7 @@ ${themeNote}
             initial={{ opacity: 0, y: 50, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[200] px-5 py-3 bg-mystic-800/95 backdrop-blur shadow-2xl text-white rounded-full font-medium tracking-wide flex items-center gap-3 border border-mystic-700/50"
+            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[200] px-5 py-3 toast-notification backdrop-blur shadow-2xl rounded-full font-medium tracking-wide flex items-center gap-3"
           >
             <CheckCircle2 size={18} className="text-gold-400" />
             {toastMessage}
@@ -3192,10 +3192,10 @@ const SpreadCard = React.memo(function SpreadCard({ spread, isCustom, onSelect, 
       className="relative bg-white dark:bg-mystic-900/80 p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-stone-200/80 dark:border-mystic-800 hover:border-stone-300 dark:hover:border-mystic-600 shadow-sm hover:shadow-md transition-all cursor-pointer group flex flex-col min-h-[160px] sm:min-h-[220px] overflow-hidden"
     >
       <div className="flex justify-between items-start mb-2 sm:mb-4 relative z-10 gap-2">
-        <h3 className="text-base sm:text-xl font-bold text-stone-800 dark:text-mystic-100 group-hover:text-stone-600 dark:group-hover:text-mystic-300 transition-colors drop-shadow-sm leading-tight line-clamp-2">
+        <h3 className="text-base sm:text-xl font-bold text-heading group-hover:text-stone-600 dark:group-hover:text-mystic-300 transition-colors drop-shadow-sm leading-tight line-clamp-2">
           {translatedSpread.name}
         </h3>
-        <span className="shrink-0 px-2 sm:px-3 py-1 bg-stone-100 dark:bg-mystic-800 text-stone-600 dark:text-mystic-400 text-[10px] sm:text-xs font-bold rounded-full border border-stone-200 dark:border-mystic-700 shadow-sm whitespace-nowrap">
+        <span className="shrink-0 px-2 sm:px-3 py-1 badge-dim text-[10px] sm:text-xs font-bold rounded-full border border-stone-200 dark:border-mystic-700 shadow-sm whitespace-nowrap">
           {translatedSpread.count} {t("張牌", "Cards")}
         </span>
       </div>
@@ -3215,13 +3215,13 @@ const SpreadCard = React.memo(function SpreadCard({ spread, isCustom, onSelect, 
             {translatedSpread.positions.map((pos, idx) => (
               <div key={idx} className="flex items-center gap-2.5 shrink-0">
                 <div className="flex items-center gap-1.5 px-2 py-1.5 bg-white dark:bg-mystic-900/80 rounded-md text-slate-700 dark:text-mystic-200 text-xs sm:text-sm font-semibold whitespace-nowrap shadow-sm border border-stone-200 dark:border-mystic-700">
-                  <span className="w-5 h-5 rounded-full bg-stone-100 dark:bg-mystic-800 text-stone-600 dark:text-mystic-300 flex items-center justify-center text-[10px] sm:text-xs">
+                  <span className="w-5 h-5 rounded-full bg-stone-100 dark:bg-mystic-800 text-secondary flex items-center justify-center text-[10px] sm:text-xs">
                     {idx + 1}
                   </span>
                   {pos}
                 </div>
                 {idx < translatedSpread.positions.length - 1 && (
-                  <span className="text-stone-300 dark:text-mystic-600 text-sm">➔</span>
+                  <span className="text-faint text-sm">➔</span>
                 )}
               </div>
             ))}
@@ -3507,7 +3507,7 @@ function TarotCardDisplay({ card, index, isExtra, system, lang, spreadId }: { ca
 
         {/* Reversed badge */}
         {card.isReversed && (
-          <div className="absolute top-2 right-2 bg-red-400/80 text-white text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm z-10">
+          <div className="absolute top-2 right-2 badge-reversed text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm z-10">
             {lang === 'en' ? 'Rev' : '逆'}
           </div>
         )}
@@ -3515,7 +3515,7 @@ function TarotCardDisplay({ card, index, isExtra, system, lang, spreadId }: { ca
 
       <div className="text-center w-[110px] sm:w-[130px]">
         <div className="font-bold text-sm text-heading truncate">{lang === 'en' ? card.nameEN : card.nameCN}</div>
-        <div className={`text-xs font-bold ${card.isReversed ? 'text-red-500 dark:text-red-400' : 'text-amber-600 dark:text-mystic-400'
+        <div className={`text-xs font-bold ${card.isReversed ? 'text-reversed' : 'text-amber-600 dark:text-mystic-400'
           }`}>
           {card.isReversed ? (lang === 'en' ? 'Reversed' : '逆位') : (lang === 'en' ? 'Upright' : '正位')}
         </div>

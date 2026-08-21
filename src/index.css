@@ -287,6 +287,189 @@
 }
 
 /* ══════════════════════════════════════════════════════════════
+   FORM INPUTS
+   ══════════════════════════════════════════════════════════════ */
+
+.input-field {
+  @apply rounded-xl transition-colors;
+  background: rgba(255, 253, 249, 0.8);
+  border: 1px solid #DBCFB8;
+}
+.input-field:focus {
+  @apply ring-2 outline-none;
+  --tw-ring-color: rgba(140, 99, 38, 0.4);
+}
+.dark .input-field {
+  background: rgba(9, 6, 14, 0.6);
+  border-color: rgba(45, 36, 81, 0.5);
+}
+.dark .input-field:focus {
+  --tw-ring-color: rgba(124, 102, 220, 0.5);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   TAB STATES
+   ══════════════════════════════════════════════════════════════ */
+
+/* Tab inactive text (system selector, filters) */
+.tab-inactive {
+  color: #988675;
+}
+.tab-inactive:hover {
+  color: #5A4733;
+}
+.dark .tab-inactive {
+  color: #796891;
+}
+.dark .tab-inactive:hover {
+  color: #E4DAF0;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   BADGES & PILLS
+   ══════════════════════════════════════════════════════════════ */
+
+/* Neutral step/count badge */
+.badge-dim {
+  background: rgba(239, 232, 218, 0.8);
+  color: #6B5A4B;
+  border: 1px solid #DBCFB8;
+}
+.dark .badge-dim {
+  background: rgba(45, 36, 81, 0.5);
+  color: #B8A8CE;
+  border-color: rgba(67, 54, 122, 0.6);
+}
+
+/* System tag: Waite */
+.badge-system-waite {
+  color: #6B450A;
+  background: rgba(212, 160, 56, 0.15);
+  border: 1px solid rgba(212, 160, 56, 0.35);
+}
+.dark .badge-system-waite {
+  color: #F5D78E;
+  background: rgba(212, 175, 55, 0.15);
+  border-color: rgba(212, 175, 55, 0.3);
+}
+
+/* System tag: Thoth */
+.badge-system-thoth {
+  color: #4E1D64;
+  background: rgba(124, 102, 220, 0.15);
+  border: 1px solid rgba(124, 102, 220, 0.35);
+}
+.dark .badge-system-thoth {
+  color: #DACBE8;
+  background: rgba(155, 129, 249, 0.15);
+  border-color: rgba(155, 129, 249, 0.3);
+}
+
+/* System tag: Lenormand */
+.badge-system-lenormand {
+  color: #10352E;
+  background: rgba(58, 158, 141, 0.15);
+  border: 1px solid rgba(58, 158, 141, 0.35);
+}
+.dark .badge-system-lenormand {
+  color: #A5E4D7;
+  background: rgba(58, 158, 141, 0.15);
+  border-color: rgba(58, 158, 141, 0.3);
+}
+
+/* Reversed orientation badge */
+.badge-reversed {
+  background: rgba(139, 37, 37, 0.75);
+  color: #FFF8F7;
+}
+.dark .badge-reversed {
+  background: rgba(120, 29, 36, 0.85);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DIVIDERS
+   ══════════════════════════════════════════════════════════════ */
+
+.divider-subtle {
+  border-color: rgba(219, 207, 184, 0.4);
+}
+.dark .divider-subtle {
+  border-color: rgba(45, 36, 81, 0.4);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   MODALS & OVERLAYS
+   ══════════════════════════════════════════════════════════════ */
+
+.modal-backdrop {
+  background: rgba(36, 25, 17, 0.35);
+}
+.dark .modal-backdrop {
+  background: rgba(3, 2, 6, 0.6);
+}
+
+.modal-panel {
+  background: #FAF6EE;
+  border: 1px solid #DBCFB8;
+}
+.dark .modal-panel {
+  background: rgba(18, 14, 30, 0.95);
+  border-color: rgba(45, 36, 81, 0.6);
+}
+
+/* Drawer panel */
+.surface-drawer {
+  background: rgba(244, 239, 230, 0.96);
+  border-left: 1px solid #DBCFB8;
+}
+.dark .surface-drawer {
+  background: rgba(9, 6, 14, 0.96);
+  border-color: rgba(45, 36, 81, 0.5);
+}
+
+.surface-drawer-header {
+  background: rgba(239, 232, 218, 0.8);
+  border-bottom: 1px solid #DBCFB8;
+}
+.dark .surface-drawer-header {
+  background: rgba(18, 14, 30, 0.6);
+  border-color: rgba(45, 36, 81, 0.4);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   TOAST / NOTIFICATION
+   ══════════════════════════════════════════════════════════════ */
+
+.toast-notification {
+  background: rgba(36, 25, 17, 0.92);
+  border: 1px solid rgba(107, 90, 75, 0.3);
+  color: #FAF5EB;
+}
+.dark .toast-notification {
+  background: rgba(18, 14, 30, 0.95);
+  border-color: rgba(212, 175, 55, 0.2);
+  color: #FAF5FF;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ORIENTATION TEXT
+   ══════════════════════════════════════════════════════════════ */
+
+.text-reversed {
+  color: #8B2525;
+}
+.dark .text-reversed {
+  color: #E06A75;
+}
+
+.text-upright {
+  color: #1B4E44;
+}
+.dark .text-upright {
+  color: #50C2AF;
+}
+
+/* ══════════════════════════════════════════════════════════════
    SCROLLBAR
    ══════════════════════════════════════════════════════════════ */
 
