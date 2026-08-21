@@ -1615,7 +1615,7 @@ ${themeNote}
                 )}
 
                 {/* Donation + Legal footer */}
-                <div className="mt-auto pt-8 pb-2 border-t border-stone-200/60 dark:border-mystic-800/40 flex flex-col items-center gap-3">
+                <div className="mt-auto pt-8 pb-2 border-t divider-subtle flex flex-col items-center gap-3">
                   {/* TODO: 打賞功能暫時停用，之後換上 Buy Me a Coffee 連結再取消注釋
                 <a
                   href="https://www.buymeacoffee.com/"
@@ -1646,7 +1646,7 @@ ${themeNote}
                     <ArrowLeft size={18} /> {t("返回首頁", "Back to Home")}
                   </button>
 
-                  <div className="bg-white dark:bg-mystic-900 p-8 rounded-2xl shadow-xl border border-slate-100 dark:border-mystic-800">
+                  <div className="surface-card p-8 rounded-2xl shadow-xl">
                     <div className="text-center mb-8">
                       <h2 className="text-3xl font-bold mb-2 bg-gradient-to-r from-mystic-700 to-indigo-500 bg-clip-text text-transparent dark:from-mystic-200 dark:to-indigo-300 drop-shadow-sm">{translatedSelectedSpread.name}</h2>
                       <p className="text-muted">{translatedSelectedSpread.hint}</p>
@@ -1661,7 +1661,7 @@ ${themeNote}
                           value={question}
                           onChange={(e) => setQuestion(e.target.value)}
                           placeholder={selectedSpread.exampleQuestion ? `${t("例如：", "e.g. ")} ${t(selectedSpread.exampleQuestion, SPREAD_TRANSLATIONS[selectedSpread.id]?.exampleQuestion ?? selectedSpread.exampleQuestion)}` : t("請輸入你的困惑或想了解的事情...", "Please enter your confusion or what you want to know...")}
-                          className="w-full h-32 px-4 py-3 rounded-xl border border-amber-200 dark:border-mystic-800 bg-white/80 dark:bg-mystic-950 focus:ring-2 focus:ring-amber-400 dark:focus:ring-mystic-500 outline-none transition-all resize-none shadow-inner"
+                          className="w-full h-32 px-4 py-3 rounded-xl input-field focus:ring-2 outline-none transition-all resize-none shadow-inner"
                         />
                         {question.trim().length > 0 && question.trim().length < 10 && (
                           <p className="mt-2 text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
@@ -1682,7 +1682,7 @@ ${themeNote}
                                 ▼
                               </span>
                             </summary>
-                            <div className="mt-4 space-y-4 text-sm border-t border-stone-200/50 dark:border-mystic-800/50 pt-4">
+                            <div className="mt-4 space-y-4 text-sm border-t divider-subtle pt-4">
                               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                                 <span className="font-bold text-xs text-stone-500 dark:text-mystic-400">{t("問事者代表牌 (Querent)", "Querent Card")}</span>
                                 <div className="flex gap-1.5">
@@ -1697,7 +1697,7 @@ ${themeNote}
                                       className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-all select-none ${
                                         gtQuerent === opt.value
                                           ? 'border-teal-500 bg-teal-50/30 text-teal-700 dark:text-teal-400'
-                                          : 'border-stone-200 dark:border-mystic-800 hover:bg-stone-50 dark:hover:bg-mystic-900/50 text-secondary'
+                                          : 'divider-subtle hover:bg-stone-50 dark:hover:bg-mystic-900/50 text-secondary'
                                       }`}
                                     >
                                       {opt.label}
@@ -1721,7 +1721,7 @@ ${themeNote}
                                       className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-all select-none ${
                                         gtPartner === opt.value
                                           ? 'border-teal-500 bg-teal-50/30 text-teal-700 dark:text-teal-400'
-                                          : 'border-stone-200 dark:border-mystic-800 hover:bg-stone-50 dark:hover:bg-mystic-900/50 text-secondary'
+                                          : 'divider-subtle hover:bg-stone-50 dark:hover:bg-mystic-900/50 text-secondary'
                                       }`}
                                     >
                                       {opt.label}
@@ -1747,7 +1747,7 @@ ${themeNote}
                                       className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-all select-none ${
                                         gtTheme === opt.value
                                           ? 'border-teal-500 bg-teal-50/30 text-teal-700 dark:text-teal-400'
-                                          : 'border-stone-200 dark:border-mystic-800 hover:bg-stone-50 dark:hover:bg-mystic-900/50 text-secondary'
+                                          : 'divider-subtle hover:bg-stone-50 dark:hover:bg-mystic-900/50 text-secondary'
                                       }`}
                                     >
                                       {opt.label}
@@ -1829,7 +1829,7 @@ ${themeNote}
                                         })}
                                         placeholder="輸入牌名搜尋…"
                                         autoComplete="off"
-                                        className={`w-full px-2.5 py-1.5 rounded-lg border border-amber-200/70 dark:border-mystic-700 bg-white/80 dark:bg-mystic-950 text-sm outline-none focus:ring-1 focus:ring-amber-400 dark:focus:ring-mystic-500 transition-all ${mode === 'waite' ? 'pr-10' : ''}`}
+                                        className={`w-full px-2.5 py-1.5 rounded-lg input-field text-sm outline-none focus:ring-1 focus:ring-amber-400 dark:focus:ring-mystic-500 transition-all ${mode === 'waite' ? 'pr-10' : ''}`}
                                       />
                                       {mode === 'waite' && (
                                         <button
@@ -1847,7 +1847,7 @@ ${themeNote}
                                         </button>
                                       )}
                                       {matches.length > 0 && (
-                                        <div className="absolute z-50 left-0 right-0 top-full mt-1 bg-white dark:bg-mystic-900 border border-stone-200 dark:border-mystic-700 rounded-lg shadow-lg overflow-hidden max-h-48 overflow-y-auto">
+                                        <div className="absolute z-50 left-0 right-0 top-full mt-1 surface-card rounded-lg shadow-lg overflow-hidden max-h-48 overflow-y-auto">
                                           {matches.map(card => (
                                             <button
                                               key={card.id}
@@ -2051,10 +2051,10 @@ ${themeNote}
                         <div className="relative z-10 w-full overflow-x-auto pb-2">
                           <div className="flex flex-col gap-2 mx-auto" style={{ minWidth: '580px', maxWidth: '920px' }}>
                             {[
-                              { label: t('第一行 (位置 1–9)', 'Row 1 (Pos 1–9)'), color: 'text-secondary', bg: 'bg-stone-100/50 dark:bg-mystic-900/40' },
-                              { label: t('第二行 (位置 10–18)', 'Row 2 (Pos 10–18)'), color: 'text-secondary', bg: 'bg-stone-100/50 dark:bg-mystic-900/40' },
-                              { label: t('第三行 (位置 19–27)', 'Row 3 (Pos 19–27)'), color: 'text-secondary', bg: 'bg-stone-100/50 dark:bg-mystic-900/40' },
-                              { label: t('第四行 (位置 28–36)', 'Row 4 (Pos 28–36)'), color: 'text-secondary', bg: 'bg-stone-100/50 dark:bg-mystic-900/40' },
+                              { label: t('第一行 (位置 1–9)', 'Row 1 (Pos 1–9)'), color: 'text-secondary', bg: 'surface-card' },
+                              { label: t('第二行 (位置 10–18)', 'Row 2 (Pos 10–18)'), color: 'text-secondary', bg: 'surface-card' },
+                              { label: t('第三行 (位置 19–27)', 'Row 3 (Pos 19–27)'), color: 'text-secondary', bg: 'surface-card' },
+                              { label: t('第四行 (位置 28–36)', 'Row 4 (Pos 28–36)'), color: 'text-secondary', bg: 'surface-card' },
                             ].map((row, rowIdx) => (
                               <div key={rowIdx} className={`rounded-xl px-2 pt-1 pb-2 ${row.bg}`}>
                                 <div className={`text-[10px] font-bold mb-1.5 flex items-center gap-2 ${row.color}`}>
@@ -2138,7 +2138,7 @@ ${themeNote}
                             onChange={(e) => setExtraQuestion(e.target.value)}
                             onKeyDown={(e) => { if (e.key === 'Enter') drawExtraCard(); }}
                             placeholder={t("請輸入補抽想深入了解的事...", "What would you like to clarify or explore deeper?")}
-                            className="w-full px-5 py-3.5 rounded-xl border border-amber-200 dark:border-mystic-700 bg-white/70 dark:bg-mystic-950/80 focus:ring-2 focus:ring-amber-400 dark:focus:ring-mystic-500 outline-none text-slate-800 dark:text-white text-center text-sm shadow-inner transition-colors"
+                            className="w-full px-5 py-3.5 rounded-xl input-field focus:ring-2 outline-none text-slate-800 dark:text-white text-center text-sm shadow-inner transition-colors"
                           />
                           <button
                             onClick={drawExtraCard}
@@ -2164,7 +2164,7 @@ ${themeNote}
                     </div>
                   )}
 
-                  <div className="bg-white/80 dark:bg-mystic-900 p-6 rounded-2xl border border-amber-100 dark:border-mystic-800 text-center shadow-sm">
+                  <div className="surface-card p-6 rounded-2xl text-center shadow-sm">
                     <p className="text-amber-800 dark:text-mystic-300 italic font-medium">
                       {mode === 'lenormand'
                         ? t('「雷諾曼牌訴說的是日常的故事，而你才是故事的主角。」', '“Lenormand cards tell stories of daily life, but you are the protagonist.”')
@@ -2402,7 +2402,7 @@ ${themeNote}
 
                 {/* Select-all row (only in manage mode) */}
                 {historySelectMode && filteredHistory.length > 0 && (
-                  <div className="px-4 lg:px-8 py-2 shrink-0 flex items-center gap-3 border-b border-stone-200/60 dark:border-mystic-800/40">
+                  <div className="px-4 lg:px-8 py-2 shrink-0 flex items-center gap-3 border-b divider-subtle">
                     <input
                       type="checkbox"
                       checked={allFilteredSelected}
@@ -2431,7 +2431,7 @@ ${themeNote}
                 <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-4">
                   {filteredHistory.length > 0 ? (
                     filteredHistory.map((record) => (
-                      <div key={record.id} className={`relative group bg-stone-50/80 dark:bg-mystic-900 p-1 sm:p-2 rounded-[1.25rem] border transition-all flex flex-col ${historySelectMode && selectedHistoryIds.has(record.id)
+                      <div key={record.id} className={`relative group surface-card p-1 sm:p-2 rounded-[1.25rem] border transition-all flex flex-col ${historySelectMode && selectedHistoryIds.has(record.id)
                           ? 'border-amber-400 dark:border-amber-500 ring-1 ring-amber-300/50 shadow-md'
                           : 'border-stone-200/80 dark:border-mystic-800 shadow-sm hover:shadow-md hover:border-stone-400 dark:hover:border-mystic-600'
                         }`}>
@@ -2612,9 +2612,9 @@ ${themeNote}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="bg-white dark:bg-mystic-900 w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden"
+              className="modal-panel w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden"
             >
-              <div className="px-6 py-4 border-b border-slate-100 dark:border-mystic-800 flex justify-between items-center">
+              <div className="px-6 py-4 border-b divider-subtle flex justify-between items-center">
                 <h3 className="text-xl font-bold">{t("自訂牌陣", "Custom Spread")}</h3>
                 <button onClick={() => setIsModalOpen(false)} className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
                   <X size={24} />
@@ -2627,7 +2627,7 @@ ${themeNote}
                     required
                     value={editingSpread.name}
                     onChange={e => setEditingSpread({ ...editingSpread, name: e.target.value })}
-                    className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-mystic-800 bg-slate-50 dark:bg-mystic-950"
+                    className="w-full px-4 py-2 rounded-lg input-field"
                   />
                 </div>
                 <div>
@@ -2636,7 +2636,7 @@ ${themeNote}
                     value={editingSpread.hint}
                     onChange={e => setEditingSpread({ ...editingSpread, hint: e.target.value })}
                     placeholder={t("例如：深入剖析...", "e.g. Deep analysis...")}
-                    className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-mystic-800 bg-slate-50 dark:bg-mystic-950"
+                    className="w-full px-4 py-2 rounded-lg input-field"
                   />
                 </div>
                 <div>
@@ -2645,7 +2645,7 @@ ${themeNote}
                     value={editingSpread.category ?? ''}
                     onChange={e => setEditingSpread({ ...editingSpread, category: e.target.value })}
                     placeholder={t("例如：關係、日常、工作…", "e.g. Relationship, Daily, Work...")}
-                    className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-mystic-800 bg-slate-50 dark:bg-mystic-950"
+                    className="w-full px-4 py-2 rounded-lg input-field"
                   />
                 </div>
                 <div>
@@ -2679,7 +2679,7 @@ ${themeNote}
                         newPos[i] = e.target.value;
                         setEditingSpread({ ...editingSpread, positions: newPos });
                       }}
-                      className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-mystic-800 bg-slate-50 dark:bg-mystic-950 text-sm"
+                      className="w-full px-4 py-2 rounded-lg input-field text-sm"
                     />
                   ))}
                 </div>
@@ -3189,7 +3189,7 @@ const SpreadCard = React.memo(function SpreadCard({ spread, isCustom, onSelect, 
   return (
     <div
       onClick={() => onSelect(spread)}
-      className="relative bg-white dark:bg-mystic-900/80 p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-stone-200/80 dark:border-mystic-800 hover:border-stone-300 dark:hover:border-mystic-600 shadow-sm hover:shadow-md transition-all cursor-pointer group flex flex-col min-h-[160px] sm:min-h-[220px] overflow-hidden"
+      className="relative surface-card p-4 sm:p-6 rounded-xl sm:rounded-2xl hover:border-stone-300 dark:hover:border-mystic-600 shadow-sm hover:shadow-md transition-all cursor-pointer group flex flex-col min-h-[160px] sm:min-h-[220px] overflow-hidden"
     >
       <div className="flex justify-between items-start mb-2 sm:mb-4 relative z-10 gap-2">
         <h3 className="text-base sm:text-xl font-bold text-heading group-hover:text-stone-600 dark:group-hover:text-mystic-300 transition-colors drop-shadow-sm leading-tight line-clamp-2">
@@ -3214,7 +3214,7 @@ const SpreadCard = React.memo(function SpreadCard({ spread, isCustom, onSelect, 
           <div className="flex items-center gap-2.5 overflow-x-auto pb-1 pr-10 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {translatedSpread.positions.map((pos, idx) => (
               <div key={idx} className="flex items-center gap-2.5 shrink-0">
-                <div className="flex items-center gap-1.5 px-2 py-1.5 bg-white dark:bg-mystic-900/80 rounded-md text-slate-700 dark:text-mystic-200 text-xs sm:text-sm font-semibold whitespace-nowrap shadow-sm border border-stone-200 dark:border-mystic-700">
+                <div className="flex items-center gap-1.5 px-2 py-1.5 surface-card rounded-md text-secondary text-xs sm:text-sm font-semibold whitespace-nowrap shadow-sm border border-stone-200 dark:border-mystic-700">
                   <span className="w-5 h-5 rounded-full bg-stone-100 dark:bg-mystic-800 text-secondary flex items-center justify-center text-[10px] sm:text-xs">
                     {idx + 1}
                   </span>
@@ -3230,7 +3230,7 @@ const SpreadCard = React.memo(function SpreadCard({ spread, isCustom, onSelect, 
       </div>
 
       {isCustom && (
-        <div className="mt-4 pt-4 border-t border-amber-100 dark:border-mystic-800 flex justify-end gap-2 transition-opacity relative z-10">
+        <div className="mt-4 pt-4 border-t divider-subtle flex justify-end gap-2 transition-opacity relative z-10">
           <button
             onClick={(e) => { e.stopPropagation(); e.preventDefault(); onEdit?.(spread, e); }}
             className="p-1.5 text-faint hover:text-amber-600 dark:hover:text-mystic-400 transition-colors"
