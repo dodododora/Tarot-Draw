@@ -3621,9 +3621,9 @@ function LenormandCardDisplay({ card, index, isCenter, isCompact, isSpine, lang,
         isCompact ? 'w-[52px] sm:w-[68px]' : 'w-[90px] sm:w-[110px] rounded-lg sm:rounded-xl shadow-lg'
       } ${
         isSpine
-          ? 'border-2 border-[#B8863A] dark:border-[#D4AF37]/50 shadow-md shadow-[#B8863A]/20 ring-1 ring-[#B8863A]/30 dark:ring-[#D4AF37]/20 scale-105'
+          ? 'border-2 border-[#B8863A] dark:border-[#F3E3A0]/60 shadow-md shadow-[#B8863A]/20 dark:shadow-[0_0_15px_rgba(243,227,160,0.3)] ring-1 ring-[#B8863A]/30 dark:ring-0 scale-105'
           : isCenter
-            ? 'border-2 border-[#2D5A4C] dark:border-[#7C66DC]/40 shadow-[#2D5A4C]/15 scale-110 ring-2 ring-[#2D5A4C]/20 dark:ring-[#7C66DC]/20'
+            ? 'border-2 border-[#2D5A4C] dark:border-[#01F9C6]/60 shadow-[#2D5A4C]/15 dark:shadow-[0_0_20px_rgba(1,249,198,0.35)] scale-110 ring-2 ring-[#2D5A4C]/20 dark:ring-0'
             : isCompact
               ? 'border border-[#DBCFB8]/60 dark:border-[#43327A]/35 shadow-sm'
               : 'border-2 border-[#C5B99E]/50 dark:border-[#43367A]/30 shadow-[#3B7262]/10'
