@@ -234,7 +234,7 @@ function ShuffleOverlay({ question, mode }: { question: string; mode: 'waite' | 
       {/* Question area */}
       <div className="text-center flex flex-col items-center gap-3 px-8">
         <p style={{ color: 'rgba(180,150,255,0.7)', fontSize: '0.7rem', letterSpacing: '0.25em', fontWeight: 500, textTransform: 'uppercase' }}>
-          {t('讓心靜下來，將問題放入心中⋯', 'Quiet your mind, hold the question in your heart…')}
+          讓心靜下來，將問題放入心中⋯
         </p>
         {question.trim() && (
           <p style={{ color: 'rgba(252,211,77,0.9)' }} className="text-base sm:text-lg font-semibold max-w-sm leading-relaxed">
@@ -367,13 +367,13 @@ export default function App() {
     const spreads = masterPool.filter(s => allowedIds.includes(s.id));
     const cats = mode === 'waite'
       ? [
-        { label: t('✦ 快速一問', '✦ Quick Guide'), ids: ['single', 'waite-triangle'] },
+        { label: t('✦ 快速一問', '✦ Quick Guide'), ids: ['single', 'waite-triangle', 'body-mind-spirit'] },
         { label: t('✦ 做決定', '✦ Decisions'), ids: ['breakthrough', 'choice'] },
         { label: t('✦ 關係與他人', '✦ Relationships'), ids: ['now-connect', 'lovers-pyramid', 'reconciliation', 'attraction', 'rel-seasons', 'mirror'] },
         { label: t('✦ 深入探索', '✦ Deep Dive'), ids: ['celtic', 'cycle', 'hero', 'resource'] },
       ]
       : [
-        { label: t('✦ 快速一問', '✦ Quick Guide'), ids: ['single', 'waite-triangle'] },
+        { label: t('✦ 快速一問', '✦ Quick Guide'), ids: ['single', 'waite-triangle', 'body-mind-spirit'] },
         { label: t('✦ 做決定', '✦ Decisions'), ids: ['breakthrough', 'choice'] },
         { label: t('✦ 關係與他人', '✦ Relationships'), ids: ['now-connect', 'lovers-pyramid', 'reconciliation', 'energy-resonance', 'mirror-mirror', 'mirror'] },
         { label: t('✦ 深入探索', '✦ Deep Dive'), ids: ['johari', 'cycle', 'iceberg', 'resource', 'elements'] },
@@ -1243,6 +1243,9 @@ ${themeNote}
         // Waite Spreads
         case 'waite-triangle':
           analysisPrompt = isEn ? `\n\nPlease analyze past influences, present state, and current shifts, and interpret future development trends and action advice.` : `\n\n請分析過去影響、現在狀態與當下轉變，並解讀未來的發展趨勢與行動建議。`;
+          break;
+        case 'body-mind-spirit':
+          analysisPrompt = isEn ? `\n\nPlease interpret each card as the message from Body, Mind, and Spirit respectively. Analyze where these three dimensions are misaligned and provide concrete advice for realignment.` : `\n\n請分別解讀身體、心智與靈性三個維度各自傳遞的訊息，分析三者的失衡之處，並提供具體的重新對齊建議。`;
           break;
         case 'attraction':
           analysisPrompt = isEn ? `\n\nPlease analyze the connection between current emitted frequency and core desires, find blind spots hindering manifestation, and provide alignment advice.` : `\n\n請解析當前散發頻率與核心渴望的關聯，找出阻礙顯化的盲點並提供對齊建議。`;
@@ -2736,6 +2739,11 @@ const SPREAD_TRANSLATIONS: Record<string, { name: string; hint: string; exampleQ
     hint: 'Three cards mapping Past root, Present status, and Future trajectory.', 
     exampleQuestion: 'What is the past, present, and future of this relationship?' 
   },
+  'body-mind-spirit': { 
+    name: 'Body-Mind-Spirit', 
+    hint: 'Realign when feeling scattered — hear what each dimension is telling you.', 
+    exampleQuestion: 'I\'ve been exhausted lately — what are my body, mind, and spirit each trying to tell me?' 
+  },
   'cycle': { 
     name: 'Transition Cycle', 
     hint: 'Gain clarity on what is currently fading and what is beginning.', 
@@ -2826,6 +2834,7 @@ const SPREAD_TRANSLATIONS: Record<string, { name: string; hint: string; exampleQ
 const POSITION_TRANSLATIONS: Record<string, string[]> = {
   'single': ['Direct Guidance'],
   'waite-triangle': ['Past Background', 'Present Situation & Shift', 'Future Outcome & Advice'],
+  'body-mind-spirit': ['Body', 'Mind', 'Spirit'],
   'cycle': ['Fading Old State', 'Sprouting New Opportunity', 'Core Challenge', 'What You Must Release', 'Strength to Carry Forward'],
   'breakthrough': ['Core Deadlock', 'Baggage/Obstacle to Let Go', 'Breakthrough Opportunity', 'Next Action Step'],
   'choice': ['Current Situation', 'Option A: Near Future', 'Option A: Outcome', 'Option B: Near Future', 'Option B: Outcome'],

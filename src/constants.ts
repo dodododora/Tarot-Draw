@@ -287,6 +287,7 @@ export const THOTH_SPREADS: Spread[] = [
 export const WAITE_SPREADS: Spread[] = [
   { id: "single",         name: "單張速覽",  count: 1, positions: ["當下指引"],                                        hint: "抽一張牌，快速確認 Yes/No。",                        exampleQuestion: "這份工作對我目前的靈性發展是否有益？" },
   { id: "waite-triangle", name: "聖三角",    count: 3, positions: ["過去的因果背景", "目前的現狀與面臨轉變", "未來的發展走向與指引"], hint: "三張牌，照見過去、現在與未來。", exampleQuestion: "這段感情的過去、現在與未來走向？" },
+  { id: "body-mind-spirit", name: "身心靈對話", count: 3, positions: ["身體感受", "心智邏輯", "靈性渴望"], hint: "感覺混亂時，重新對齊身心靈。", exampleQuestion: "我最近疲憊不堪，身心靈分別在傳遞什麼訊息？" },
   { id: "attraction",     name: "個人引力",  count: 3, positions: ["我目前散發的個人磁場", "我正在吸引的人事物類型", "阻礙我建立健康關係的舊慣性"], hint: "解析你目前的狀態正吸引哪種人事物。", exampleQuestion: "我目前的狀態在感情關係中吸引著什麼？" },
   { id: "rel-seasons",    name: "感情四季",  count: 4, positions: ["當前感情所處的季節與溫度", "推動此節奏的背後核心力量", "此時最需要給予關係的滋養", "接下來即將迎來的自然轉變"], hint: "找出當下最順其自然的相處模式。", exampleQuestion: "這段感情現在處於什麼節奏？我將如何與它同行？" },
   { id: "now-connect",    name: "當下連結",  count: 3, positions: ["這段關係的目前狀態", "我此刻在關係中的心態", "對方此刻在關係中的心態"], hint: "純粹照見這段關係此刻的樣子。", exampleQuestion: "不問對錯，這段關係此刻各自的狀態是什麼？" },
@@ -294,7 +295,7 @@ export const WAITE_SPREADS: Spread[] = [
 
 // Which spread IDs are available in each system
 export const WAITE_SPREAD_IDS = [
-  'single', 'waite-triangle', 'celtic',
+  'single', 'waite-triangle', 'body-mind-spirit', 'celtic',
   'lovers-pyramid', 'reconciliation', 'attraction', 'rel-seasons', 'now-connect',
   'breakthrough', 'choice',
 ];
