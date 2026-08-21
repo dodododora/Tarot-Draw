@@ -3547,9 +3547,9 @@ function TarotCardDisplay({ card, index, isExtra, system, lang, spreadId }: { ca
         </div>
       )}
 
-      <div className={`relative w-[110px] sm:w-[130px] aspect-[2/3] rounded-xl overflow-hidden border-2 ${card.isReversed ? 'border-[#964747]/70 dark:border-[#6B2E2E]/60 shadow-[#964747]/15 dark:shadow-[#6B2E2E]/20' :
-          isExtra ? 'border-[#B87A4F]/70 dark:border-[#8A5633]/60 shadow-[#B87A4F]/15 dark:shadow-[#8A5633]/20' :
-            'border-[#A88C5A]/70 dark:border-[#6E5936]/60 shadow-[#A88C5A]/15 dark:shadow-[#6E5936]/20'
+      <div className={`relative w-[110px] sm:w-[130px] aspect-[2/3] rounded-xl overflow-hidden border-2 ${card.isReversed ? 'border-[#964747]/70 dark:border-[#C47A8E]/50 shadow-[#964747]/15 dark:shadow-[#C47A8E]/15' :
+          isExtra ? 'border-[#B87A4F]/70 dark:border-[#C9A063]/50 shadow-[#B87A4F]/15 dark:shadow-[#C9A063]/15' :
+            'border-[#A88C5A]/70 dark:border-[#D4AF37]/35 shadow-[#A88C5A]/15 dark:shadow-[#D4AF37]/10'
         } shadow-lg`}>
 
         {imgSrc ? (
@@ -3621,12 +3621,12 @@ function LenormandCardDisplay({ card, index, isCenter, isCompact, isSpine, lang,
         isCompact ? 'w-[52px] sm:w-[68px]' : 'w-[90px] sm:w-[110px] rounded-lg sm:rounded-xl shadow-lg'
       } ${
         isSpine
-          ? 'border-2 border-[#A88C5A]/80 dark:border-[#B58A4D]/60 shadow-md shadow-[#A88C5A]/20 ring-1 ring-[#A88C5A]/30 dark:ring-[#6E5936]/30 scale-105'
+          ? 'border-2 border-[#A88C5A]/80 dark:border-[#D4AF37]/50 shadow-md shadow-[#A88C5A]/20 ring-1 ring-[#A88C5A]/30 dark:ring-[#D4AF37]/20 scale-105'
           : isCenter
-            ? 'border-2 border-[#3B7262]/50 dark:border-[#2D5A4C]/40 shadow-[#3B7262]/15 scale-110 ring-2 ring-[#5C9E82]/25 dark:ring-[#224032]/25'
+            ? 'border-2 border-[#3B7262]/50 dark:border-[#7C66DC]/40 shadow-[#3B7262]/15 scale-110 ring-2 ring-[#5C9E82]/25 dark:ring-[#7C66DC]/20'
             : isCompact
               ? 'border border-[#DBCFB8]/60 dark:border-[#43327A]/35 shadow-sm'
-              : 'border-2 border-[#C5B99E]/50 dark:border-[#224032]/35 shadow-[#3B7262]/10'
+              : 'border-2 border-[#C5B99E]/50 dark:border-[#43367A]/30 shadow-[#3B7262]/10'
       }`}>
         {imgSrc ? (
           <img
