@@ -1839,7 +1839,7 @@ ${themeNote}
                                             return next;
                                           })}
                                           className={`absolute right-1 top-1/2 -translate-y-1/2 text-xs px-2 py-1 rounded border transition-all ${manualInputs[i]?.reversed
-                                            ? 'border-[#6B1D2F] dark:border-[#E06A75]/50 text-[#8B2040] dark:text-[#E06A75] bg-[#EAE0DB]/80 dark:bg-[#1C142B]/60 font-semibold'
+                                            ? 'border-[#6B1D2F] dark:border-[#C83244]/50 text-[#8B2040] dark:text-[#C83244] bg-[#EAE0DB]/80 dark:bg-[#1C142B]/60 font-semibold'
                                             : 'border-[#D2C4AD]/40 dark:border-[#43327A]/40 text-hint bg-transparent hover:bg-[#F4EFE6]/50 dark:hover:bg-[#1C1438]/50'
                                             }`}
                                         >
@@ -2367,7 +2367,7 @@ ${themeNote}
                        <button
                          onClick={toggleSelectMode}
                          className={`px-3 py-1.5 rounded-lg text-sm font-bold transition-all ${historySelectMode
-                             ? 'bg-[#EAE0DB] dark:bg-[#1C142B]/40 text-[#8B2040] dark:text-[#E06A75] hover:bg-[#DCCCCE]'
+                             ? 'bg-[#EAE0DB] dark:bg-[#1C142B]/40 text-[#8B2040] dark:text-[#C83244] hover:bg-[#DCCCCE]'
                              : 'btn-ghost text-secondary'
                            }`}
                        >
@@ -2582,10 +2582,10 @@ ${themeNote}
                     >
                       <div className="absolute inset-0 bg-[#EDE5DF]/50 dark:bg-[#1C142B]/40 pointer-events-none" />
                       <div className="relative z-10 flex flex-col items-center text-center gap-3">
-                        <div className="w-12 h-12 bg-[#EAE0DB] dark:bg-[#2D1B3E]/60 rounded-full flex items-center justify-center text-[#8B2525] dark:text-[#E06A75] mb-1">
+                        <div className="w-12 h-12 bg-[#EAE0DB] dark:bg-[#2D1B3E]/60 rounded-full flex items-center justify-center text-[#8B2525] dark:text-[#C83244] mb-1">
                           <Trash2 size={24} />
                         </div>
-                        <h3 className="text-lg font-bold text-[#8B2040] dark:text-[#E06A75]">{t("確定刪除", "Are you sure you want to delete")} {selectedHistoryIds.size} {t("筆紀錄？", " records?")}</h3>
+                        <h3 className="text-lg font-bold text-[#8B2040] dark:text-[#C83244]">{t("確定刪除", "Are you sure you want to delete")} {selectedHistoryIds.size} {t("筆紀錄？", " records?")}</h3>
                         <p className="text-sm text-muted mb-2">{t("此動作無法復原，請確認是否要繼續。", "This action cannot be undone. Are you sure you want to proceed?")}</p>
                         <div className="flex w-full gap-3 mt-1">
                           <button onClick={() => setShowBatchDeleteConfirm(false)} className="flex-1 py-2.5 btn-secondary justify-center">{t("取消", "Cancel")}</button>
@@ -3307,7 +3307,7 @@ const SpreadCard = React.memo(function SpreadCard({ spread, isCustom, onSelect, 
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); e.preventDefault(); onDelete?.(spread, e); }}
-            className="p-1.5 text-faint hover:text-[#964747] dark:hover:text-[#E06A75] transition-colors"
+            className="p-1.5 text-faint hover:text-[#964747] dark:hover:text-[#C83244] transition-colors"
           >
             <Trash2 size={16} />
           </button>
@@ -3342,8 +3342,8 @@ function oracleUI(effectiveScore: number, lang: 'zh' | 'en'): OracleUI {
     case 2: return { label: lang === 'en' ? 'Yes' : '是 (Yes)', theme: 'text-[#1D6B4A] dark:text-[#5CC090]', bg: 'bg-[#E8E6DE] dark:bg-[#111C17] border-[#C5B99E] dark:border-[#2D3A52]' };
     case 1: return { label: lang === 'en' ? 'Maybe Yes' : '偏向是 (Maybe Yes)', theme: 'text-[#2D7A55] dark:text-[#6BAF8F]', bg: 'bg-[#ECEADE] dark:bg-[#0F1A14] border-[#D2C4AD] dark:border-[#2D3550]' };
     case 0: return { label: lang === 'en' ? 'Maybe' : '不確定 (Maybe)', theme: 'text-[#6B5A4B] dark:text-[#C8B8E8]', bg: 'bg-[#EFE8DA] dark:bg-[#1C142B] border-[#D2C4AD] dark:border-[#43327A]' };
-    case -1: return { label: lang === 'en' ? 'Maybe No' : '偏向否 (Maybe No)', theme: 'text-[#8C4646] dark:text-[#D4868B]', bg: 'bg-[#EDE5DF] dark:bg-[#1C142B] border-[#D4BDB0] dark:border-[#3E2B5C]' };
-    case -2: return { label: lang === 'en' ? 'No' : '否 (No)', theme: 'text-[#8B2040] dark:text-[#E8A3AE]', bg: 'bg-[#EAE0DB] dark:bg-[#1C142B] border-[#C9A99E] dark:border-[#3E2B5C]' };
+    case -1: return { label: lang === 'en' ? 'Maybe No' : '偏向否 (Maybe No)', theme: 'text-[#8C4646] dark:text-[#B85C66]', bg: 'bg-[#EDE5DF] dark:bg-[#1C142B] border-[#D4BDB0] dark:border-[#3E2B5C]' };
+    case -2: return { label: lang === 'en' ? 'No' : '否 (No)', theme: 'text-[#8B2040] dark:text-[#D15E69]', bg: 'bg-[#EAE0DB] dark:bg-[#1C142B] border-[#C9A99E] dark:border-[#3E2B5C]' };
     default: return { label: lang === 'en' ? 'Maybe' : '不確定 (Maybe)', theme: 'text-[#6B5A4B] dark:text-[#C8B8E8]', bg: 'bg-[#EFE8DA] dark:bg-[#1C142B] border-[#D2C4AD] dark:border-[#43327A]' };
   }
 }
@@ -3547,7 +3547,7 @@ function TarotCardDisplay({ card, index, isExtra, system, lang, spreadId }: { ca
         </div>
       )}
 
-      <div className={`relative w-[110px] sm:w-[130px] aspect-[2/3] rounded-xl overflow-hidden border-2 ${card.isReversed ? 'border-[#8B1D33] dark:border-[#C47A8E]/50 shadow-[#8B1D33]/15 dark:shadow-[#C47A8E]/15' :
+      <div className={`relative w-[110px] sm:w-[130px] aspect-[2/3] rounded-xl overflow-hidden border-2 ${card.isReversed ? 'border-[#8B1D33] dark:border-[#A3B1C6]/45 shadow-[#8B1D33]/15 dark:shadow-[#A3B1C6]/10' :
           isExtra ? 'border-[#A3592E] dark:border-[#C9A063]/50 shadow-[#A3592E]/15 dark:shadow-[#C9A063]/15' :
             'border-[#B8863A] dark:border-[#D4AF37]/35 shadow-[#B8863A]/15 dark:shadow-[#D4AF37]/10'
         } shadow-lg`}>
