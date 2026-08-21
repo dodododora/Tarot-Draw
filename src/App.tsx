@@ -486,6 +486,10 @@ export default function App() {
       }
     }
   }, [peopleCount, selectedSpread]);
+  // Clear manual inputs when changing systems
+  useEffect(() => {
+    setManualInputs([]);
+  }, [mode]);
 
   // Reset manual inputs when spread card count changes
   useEffect(() => {
@@ -1840,6 +1844,7 @@ ${themeNote}
                                     <p className="text-[10px] text-dim mb-0.5 truncate">{pos}</p>
                                     <div className="relative">
                                       <input
+                                        id={`manual-input-${i}`}
                                         type="text"
                                         value={query}
                                         onChange={e => setManualInputs(prev => {
@@ -1877,6 +1882,15 @@ ${themeNote}
                                                   next[i] = { ...(next[i] || { name: '', reversed: false }), name: card.nameCN };
                                                   return next;
                                                 });
+                                                
+                                                // End IME composition
+                                                const currentInput = document.getElementById(`manual-input-${i}`);
+                                                currentInput?.blur();
+                                                
+                                                // Auto-focus next input for convenience
+                                                setTimeout(() => {
+                                                  document.getElementById(`manual-input-${i + 1}`)?.focus();
+                                                }, 50);
                                               }}
                                               className="w-full text-left px-3 py-2 text-sm hover:bg-[#F4EFE6] dark:hover:bg-[#1C1438] transition-colors flex items-center justify-between gap-2"
                                             >
