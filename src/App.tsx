@@ -171,7 +171,7 @@ function getCardAnimation(offset: number, animType: ShuffleAnim, gatherX: number
 
 
 /** Full-screen shuffle animation overlay — random card count (5-7) and random style */
-function ShuffleOverlay({ question, mode }: { question: string; mode: 'waite' | 'thoth' | 'lenormand' }) {
+function ShuffleOverlay({ question, mode, lang }: { question: string; mode: 'waite' | 'thoth' | 'lenormand'; lang: 'en' | 'zh' }) {
   const [animType] = useState<ShuffleAnim>(
     () => SHUFFLE_ANIMATIONS[Math.floor(Math.random() * SHUFFLE_ANIMATIONS.length)]
   );
@@ -234,7 +234,7 @@ function ShuffleOverlay({ question, mode }: { question: string; mode: 'waite' | 
       {/* Question area */}
       <div className="text-center flex flex-col items-center gap-3 px-8">
         <p style={{ color: 'rgba(180,150,255,0.7)', fontSize: '0.7rem', letterSpacing: '0.25em', fontWeight: 500, textTransform: 'uppercase' }}>
-          讓心靜下來，將問題放入心中⋯
+          {lang === 'en' ? 'Calm your mind, hold your question within...' : '讓心靜下來，將問題放入心中⋯'}
         </p>
         {question.trim() && (
           <p style={{ color: 'rgba(252,211,77,0.9)' }} className="text-base sm:text-lg font-semibold max-w-sm leading-relaxed">
@@ -1351,7 +1351,7 @@ ${themeNote}
 
       {/* Shuffle animation overlay — appears on top of everything */}
       <AnimatePresence>
-        {isShuffling && <ShuffleOverlay question={question} mode={mode} />}
+        {isShuffling && <ShuffleOverlay question={question} mode={mode} lang={lang} />}
       </AnimatePresence>
       {/* Navbar */}
       <nav className="surface-nav px-3 sm:px-4 py-3 sm:py-4 flex flex-wrap justify-between items-center gap-y-3 relative">
@@ -3582,7 +3582,7 @@ function TarotCardDisplay({ card, index, isExtra, system, lang, spreadId }: { ca
       </div>
 
       <div className="text-center w-[110px] sm:w-[130px]">
-        <div className="font-bold text-sm text-heading truncate">{lang === 'en' ? card.nameEN : card.nameCN}</div>
+        <div className="font-bold text-sm text-heading leading-tight line-clamp-2">{lang === 'en' ? card.nameEN : card.nameCN}</div>
         <div className={`text-xs font-bold ${card.isReversed ? 'text-reversed' : 'text-upright'
           }`}>
           {card.isReversed ? (lang === 'en' ? 'Reversed' : '逆位') : (lang === 'en' ? 'Upright' : '正位')}
@@ -3652,8 +3652,7 @@ function LenormandCardDisplay({ card, index, isCenter, isCompact, isSpine, lang,
           isCompact ? 'text-[9px] sm:text-[10px]' : 'text-sm sm:text-base'
         }`}>{lang === 'en' ? card.nameEN : card.nameCN}</div>
         {!isCompact && (
-          <>
-            <div className="text-[10px] sm:text-xs text-muted leading-snug">{lang === 'en' ? card.nameCN : card.nameEN}</div>
+          <>
             <div className="flex flex-wrap justify-center gap-1 mt-1">
               {(lang === 'en' ? (LENORMAND_KEYWORD_TRANSLATIONS[card.id] ?? card.keywords) : card.keywords).map((kw, i) => (
                 <span key={i} className="text-[9px] sm:text-[10px] px-1.5 py-0.5 badge-system-lenormand rounded-full font-medium">
