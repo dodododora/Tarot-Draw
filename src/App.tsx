@@ -1522,7 +1522,7 @@ ${themeNote}
                       <div className="space-y-8">
                         {categorizedSpreads.map(({ label, catSpreads }) => (
                           <div key={label}>
-                            <p className="text-xs font-bold text-stone-500 dark:text-mystic-400 uppercase tracking-widest mb-3">{label}</p>
+                            <p className="text-xs font-bold text-muted uppercase tracking-widest mb-3">{label}</p>
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
                               {catSpreads.map(spread => (
                                 <SpreadCard
@@ -1586,7 +1586,7 @@ ${themeNote}
                             .sort(([a], [b]) => a === t('其他', 'Other') ? 1 : b === t('其他', 'Other') ? -1 : a.localeCompare(b, 'zh'))
                             .map(([cat, spreads]) => (
                               <div key={cat}>
-                                <p className="text-xs font-bold text-stone-500 dark:text-mystic-400 uppercase tracking-widest mb-3">{cat}</p>
+                                <p className="text-xs font-bold text-muted uppercase tracking-widest mb-3">{cat}</p>
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
                                   {spreads.map((spread) => (
                                     <SpreadCard
@@ -1621,7 +1621,7 @@ ${themeNote}
                   href="https://www.buymeacoffee.com/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs text-dim hover:text-amber-600 dark:hover:text-mystic-400 transition-colors"
+                  className="text-xs text-dim hover:text-[#9B7114] dark:hover:text-[#D4AF37] transition-colors"
                 >
                   ☕ 請我喝杯咖啡
                 </a>
@@ -1664,7 +1664,7 @@ ${themeNote}
                           className="w-full h-32 px-4 py-3 rounded-xl input-field focus:ring-2 outline-none transition-all resize-none shadow-inner"
                         />
                         {question.trim().length > 0 && question.trim().length < 10 && (
-                          <p className="mt-2 text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
+                          <p className="mt-2 text-xs text-[#9B7114] dark:text-[#D4AF37] flex items-center gap-1.5">
                             <span className="text-base">💡</span>
                             {t("問題越具體，AI 解讀越準確——試著加上時間、情境或對象", "The more specific the question, the more accurate the AI interpretation. Try adding time, context, or subjects.")}
                           </p>
@@ -1684,7 +1684,7 @@ ${themeNote}
                             </summary>
                             <div className="mt-4 space-y-4 text-sm border-t divider-subtle pt-4">
                               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                                <span className="font-bold text-xs text-stone-500 dark:text-mystic-400">{t("問事者代表牌 (Querent)", "Querent Card")}</span>
+                                <span className="font-bold text-xs text-muted">{t("問事者代表牌 (Querent)", "Querent Card")}</span>
                                 <div className="flex gap-1.5">
                                   {[
                                     { label: t('👩 女人 (#29)', '👩 Lady (#29)'), value: 'woman' },
@@ -1707,7 +1707,7 @@ ${themeNote}
                               </div>
 
                               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                                <span className="font-bold text-xs text-stone-500 dark:text-mystic-400">{t("對象/伴侶代表 (Partner)", "Partner Card")}</span>
+                                <span className="font-bold text-xs text-muted">{t("對象/伴侶代表 (Partner)", "Partner Card")}</span>
                                 <div className="flex gap-1.5">
                                   {[
                                     { label: t('異性/對立能量', 'Opposite/Dual Energy'), value: 'opposite' },
@@ -1731,7 +1731,7 @@ ${themeNote}
                               </div>
 
                               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                                <span className="font-bold text-xs text-stone-500 dark:text-mystic-400">{t("占卜主題與指示牌 (Theme)", "Reading Theme / Significator")}</span>
+                                <span className="font-bold text-xs text-muted">{t("占卜主題與指示牌 (Theme)", "Reading Theme / Significator")}</span>
                                 <div className="flex gap-1.5 flex-wrap justify-end">
                                   {[
                                     { label: t('綜合運勢', 'General Fortune'), value: 'general' },
@@ -1839,7 +1839,7 @@ ${themeNote}
                                             return next;
                                           })}
                                           className={`absolute right-1 top-1/2 -translate-y-1/2 text-xs px-2 py-1 rounded border transition-all ${manualInputs[i]?.reversed
-                                            ? 'border-purple-500/70 dark:border-purple-500/60 text-purple-700 dark:text-purple-300 bg-purple-100/80 dark:bg-purple-900/40 font-semibold'
+                                            ? 'border-[#6B1D2F]/70 dark:border-[#E06A75]/50 text-[#6B1D2F] dark:text-[#E06A75] bg-[#E8D9DC]/80 dark:bg-[#1F0E14]/60 font-semibold'
                                             : 'border-stone-400/40 dark:border-mystic-600/50 text-hint bg-transparent hover:bg-stone-100/50 dark:hover:bg-mystic-700/50'
                                             }`}
                                         >
@@ -1885,8 +1885,8 @@ ${themeNote}
                     })()}
 
                     {selectedSpread.id === 'choice' && (
-                      <div className="bg-indigo-50/50 dark:bg-mystic-800/30 p-4 rounded-xl border border-indigo-100 dark:border-mystic-700/50">
-                        <label className="text-sm font-bold text-indigo-900 dark:text-mystic-200 block mb-3">
+                      <div className="bg-[#EBE7ED]/50 dark:bg-[#191423]/40 p-4 rounded-xl border border-[#D2C4DA] dark:border-[#3A2B52]/50">
+                        <label className="text-sm font-bold text-heading block mb-3">
                           {t("這題有幾個選項需要比較？（目前：", "How many options to compare? (Current: ")}{choiceCount}{t(" 個）", " options)")}
                         </label>
                         <div className="flex flex-wrap gap-2">
@@ -1895,23 +1895,23 @@ ${themeNote}
                               key={num}
                               onClick={() => setChoiceCount(num)}
                               className={`w-[42px] h-[42px] sm:w-11 sm:h-11 rounded-full font-bold text-sm sm:text-base flex items-center justify-center transition-all duration-300 ${choiceCount === num
-                                ? 'bg-indigo-600 dark:bg-indigo-500 text-white shadow-md shadow-indigo-500/30 scale-105 ring-2 ring-indigo-300 dark:ring-indigo-700 ring-offset-1 dark:ring-offset-mystic-900'
-                                : 'bg-white/80 dark:bg-mystic-900 shadow-sm text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-mystic-600 hover:bg-indigo-100 dark:hover:bg-mystic-800'
+                                ? 'bg-[#492673] dark:bg-[#633991] text-white shadow-md shadow-[#492673]/30 scale-105 ring-2 ring-[#7C66DC]/40 dark:ring-[#492673] ring-offset-1 dark:ring-offset-mystic-900'
+                                : 'surface-card shadow-sm text-[#492673] dark:text-[#B8A8CE] border border-[#D2C4DA] dark:border-[#3A2B52] hover:bg-[#EBE7ED] dark:hover:bg-[#191423]'
                                 }`}
                             >
                               {num}
                             </button>
                           ))}
                         </div>
-                        <p className="text-xs text-indigo-700/80 dark:text-mystic-400 mt-4 leading-relaxed">
+                        <p className="text-xs text-hint mt-4 leading-relaxed">
                           {t("直接點擊數字切換。每多一個選擇，系統就會對應多抽出「發展」與「結果」2 張牌喔。", "Click numbers to change. Each option adds 2 cards (Development & Outcome) to the draw.")}
                         </p>
                       </div>
                     )}
 
                     {(selectedSpread.id === 'mirror' || selectedSpread.id === 'energy-resonance' || selectedSpread.id === 'mirror-mirror') && (
-                      <div className="bg-teal-50/50 dark:bg-teal-950/20 p-4 rounded-xl border border-teal-200/50 dark:border-teal-800/30">
-                        <label className="text-sm font-bold text-teal-900 dark:text-teal-300 block mb-3">
+                      <div className="bg-[#E1E8E6]/50 dark:bg-[#101917]/30 p-4 rounded-xl border border-[#A8BDB1]/50 dark:border-[#224032]/40">
+                        <label className="text-sm font-bold text-heading block mb-3">
                           {t("這段關係牽涉多少人？（包含你，目前：", "How many people in this relationship? (Including you, current: ")}{peopleCount}{t(" 人）", " people)")}
                         </label>
                         <div className="flex flex-wrap gap-2">
@@ -1920,21 +1920,21 @@ ${themeNote}
                               key={num}
                               onClick={() => setPeopleCount(num)}
                               className={`w-[42px] h-[42px] sm:w-11 sm:h-11 rounded-full font-bold text-sm sm:text-base flex items-center justify-center transition-all duration-300 ${peopleCount === num
-                                ? 'bg-teal-600/80 dark:bg-teal-600/80 text-white shadow-md shadow-teal-500/20 scale-105 ring-2 ring-teal-300/50 dark:ring-teal-700 ring-offset-1 dark:ring-offset-mystic-900'
-                                : 'bg-white/80 dark:bg-mystic-900 shadow-sm text-teal-700 dark:text-teal-400 border border-teal-200/50 dark:border-mystic-600 hover:bg-teal-50 dark:hover:bg-mystic-800'
+                                ? 'bg-[#2D5A4C] dark:bg-[#3B7262] text-white shadow-md shadow-[#2D5A4C]/20 scale-105 ring-2 ring-[#5C9E82]/40 dark:ring-[#224032] ring-offset-1 dark:ring-offset-mystic-900'
+                                : 'surface-card shadow-sm text-[#2D5A4C] dark:text-[#5C9E82] border border-[#A8BDB1]/50 dark:border-[#3A2B52] hover:bg-[#E1E8E6] dark:hover:bg-[#101917]'
                                 }`}
                             >
                               {num}
                             </button>
                           ))}
                         </div>
-                        <p className="text-xs text-teal-700/80 dark:text-teal-400 mt-4 leading-relaxed">
+                        <p className="text-xs text-hint mt-4 leading-relaxed">
                           {t("最高支援 6 人局。系統將為每一位「對象」配置專屬的心態牌，協助你跳脫框架看清全局。", "Supports up to 6 people. The system assigns a mindset card for each person to help clarify the situation.")}
                         </p>
                       </div>
                     )}
 
-                    <div className="bg-mystic-50/80 dark:bg-mystic-800/50 p-4 sm:px-5 rounded-2xl border border-mystic-200/50 dark:border-mystic-700/30 flex items-start gap-3">
+                    <div className="bg-[#EBE7ED]/80 dark:bg-[#191423]/50 p-4 sm:px-5 rounded-2xl border border-[#D2C4DA]/50 dark:border-[#3A2B52]/30 flex items-start gap-3">
                       <Info className="text-hint mt-0.5 flex-shrink-0" size={18} />
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-bold text-heading mb-2 tracking-wide">{t("牌陣資訊", "Spread Info")}</p>
@@ -1957,11 +1957,11 @@ ${themeNote}
                       </div>
                     </div>
 
-                    <div className="bg-indigo-50/60 dark:bg-indigo-950/30 p-4 sm:px-5 rounded-2xl border border-indigo-100/60 dark:border-indigo-900/30 flex items-start gap-3">
-                      <Lightbulb className="text-indigo-400 dark:text-indigo-400 mt-0.5 flex-shrink-0" size={18} />
+                    <div className="bg-[#EBE7ED]/60 dark:bg-[#191423]/30 p-4 sm:px-5 rounded-2xl border border-[#D2C4DA]/60 dark:border-[#3A2B52]/30 flex items-start gap-3">
+                      <Lightbulb className="text-hint mt-0.5 flex-shrink-0" size={18} />
                       <div>
-                        <p className="text-sm font-bold text-indigo-900 dark:text-indigo-300 mb-1.5 tracking-wide">{mode === 'lenormand' ? t('雷諾曼小知識', 'Lenormand Trivia') : mode === 'thoth' ? t('托特小知識', 'Thoth Trivia') : t('塔羅小知識', 'Tarot Trivia')}</p>
-                        <p className="text-sm text-indigo-800/80 dark:text-indigo-200/70 leading-relaxed italic">
+                        <p className="text-sm font-bold text-heading mb-1.5 tracking-wide">{mode === 'lenormand' ? t('雷諾曼小知識', 'Lenormand Trivia') : mode === 'thoth' ? t('托特小知識', 'Thoth Trivia') : t('塔羅小知識', 'Tarot Trivia')}</p>
+                        <p className="text-sm text-secondary leading-relaxed italic">
                           {currentTrivia}
                         </p>
                       </div>
@@ -2116,8 +2116,8 @@ ${themeNote}
                           <div className="flex flex-wrap justify-center gap-6 sm:gap-10">
                             {extraCards.map((card, index) => (
                               <div key={index} className="flex flex-col items-center gap-4">
-                                <div className="text-amber-800 dark:text-mystic-300 text-[13px] sm:text-sm font-medium text-center bg-white/80 dark:bg-mystic-900/80 px-4 py-2.5 rounded-xl border border-amber-200 dark:border-mystic-800 shadow-lg max-w-[160px] sm:max-w-[200px]">
-                                  <span className="text-amber-500 dark:text-mystic-500 mr-1">Q:</span>{card.extraQuestion}
+                                <div className="text-secondary text-[13px] sm:text-sm font-medium text-center bg-white/80 dark:bg-mystic-900/80 px-4 py-2.5 rounded-xl border border-amber-200 dark:border-mystic-800 shadow-lg max-w-[160px] sm:max-w-[200px]">
+                                  <span className="text-hint mr-1">Q:</span>{card.extraQuestion}
                                 </div>
                                 <TarotCardDisplay card={card} index={index} isExtra={true} system={mode === 'thoth' ? 'thoth' : 'waite'} lang={lang} />
                               </div>
@@ -2129,7 +2129,7 @@ ${themeNote}
                       <div className="relative z-10 mt-16 flex flex-col items-center justify-center w-full">
                         <div className="flex flex-col items-center gap-4 bg-white/60 dark:bg-mystic-900/60 p-6 sm:p-8 rounded-[2rem] border border-amber-200/50 dark:border-mystic-800 w-full max-w-md backdrop-blur shadow-xl dark:shadow-2xl">
                           <div className="text-center mb-1">
-                            <h4 className="font-bold text-lg text-amber-800 dark:text-mystic-300">{t("追加牌卡指引", "Ask Follow-up Questions")}</h4>
+                            <h4 className="font-bold text-lg text-secondary">{t("追加牌卡指引", "Ask Follow-up Questions")}</h4>
                             <p className="text-xs text-amber-600 dark:text-mystic-500 mt-1">{t("若對上述結果有不懂之處，請在此發問", "If you have questions about the reading, ask here")}</p>
                           </div>
                           <input
@@ -2156,7 +2156,7 @@ ${themeNote}
                     <div className="relative bg-white/40 dark:bg-mystic-950 rounded-[2rem] p-6 sm:p-8 shadow-xl border-2 border-dashed border-amber-200/60 dark:border-mystic-700/40 backdrop-blur-sm">
                       <div className="flex flex-col items-center gap-3">
                         <div className="text-center">
-                          <p className="text-xs font-bold text-amber-700 dark:text-mystic-400 uppercase tracking-widest">{t("底牌", "Bottom Card")}</p>
+                          <p className="text-xs font-bold text-hint uppercase tracking-widest">{t("底牌", "Bottom Card")}</p>
                           <p className="text-[11px] text-hint mt-0.5">{t("牌堆最底的一張，反映潛藏的動機或心理狀態", "The card at the bottom of the deck, reflecting underlying motivations or states")}</p>
                         </div>
                         <TarotCardDisplay card={bottomCard} index={0} isExtra={true} system={mode === 'thoth' ? 'thoth' : 'waite'} lang={lang} />
@@ -2165,7 +2165,7 @@ ${themeNote}
                   )}
 
                   <div className="surface-card p-6 rounded-2xl text-center shadow-sm">
-                    <p className="text-amber-800 dark:text-mystic-300 italic font-medium">
+                    <p className="text-secondary italic font-medium">
                       {mode === 'lenormand'
                         ? t('「雷諾曼牌訴說的是日常的故事，而你才是故事的主角。」', '“Lenormand cards tell stories of daily life, but you are the protagonist.”')
                         : mode === 'thoth'
@@ -2367,7 +2367,7 @@ ${themeNote}
                        <button
                          onClick={toggleSelectMode}
                          className={`px-3 py-1.5 rounded-lg text-sm font-bold transition-all ${historySelectMode
-                             ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200'
+                             ? 'bg-[#E8D9DC] dark:bg-[#1F0E14]/40 text-[#6B1D2F] dark:text-[#E06A75] hover:bg-[#DCCCCE]'
                              : 'bg-slate-100/50 dark:bg-mystic-800/50 text-secondary hover:bg-slate-200 dark:hover:bg-mystic-700'
                            }`}
                        >
@@ -2532,7 +2532,7 @@ ${themeNote}
                                 trackEvent('delete_history', { type: 'single', count: 1 });
                                 showToast(t('已刪除紀錄', 'Record deleted'));
                               }}
-                              className="flex-1 py-3.5 bg-transparent text-red-400/90 hover:text-red-400 hover:scale-110 transition-all rounded-xl active:scale-95 flex items-center justify-center"
+                              className="flex-1 py-3.5 bg-transparent text-[#964747]/80 hover:text-[#6B1D2F] hover:scale-110 transition-all rounded-xl active:scale-95 flex items-center justify-center"
                               aria-label="刪除紀錄"
                             >
                               <Trash2 size={20} />
@@ -2558,7 +2558,7 @@ ${themeNote}
                       className="shrink-0 px-4 lg:px-8 py-3 border-t border-stone-200 dark:border-mystic-800/60 surface-drawer-header flex items-center justify-between gap-3"
                     >
                       <span className="text-sm font-semibold text-secondary">
-                        {t("已選", "Selected")} <span className="text-amber-600 dark:text-amber-400 font-black">{selectedHistoryIds.size}</span> {t("筆", "items")}
+                        {t("已選", "Selected")} <span className="text-[#9B7114] dark:text-[#D4AF37] font-black">{selectedHistoryIds.size}</span> {t("筆", "items")}
                       </span>
                       <button
                         disabled={selectedHistoryIds.size === 0}
@@ -2704,7 +2704,7 @@ ${themeNote}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[200] px-5 py-3 toast-notification backdrop-blur shadow-2xl rounded-full font-medium tracking-wide flex items-center gap-3"
           >
-            <CheckCircle2 size={18} className="text-gold-400" />
+            <CheckCircle2 size={18} className="text-[#D4AF37]" />
             {toastMessage}
           </motion.div>
         )}
@@ -2718,7 +2718,7 @@ ${themeNote}
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => trackEvent('click_feedback')}
-          className="text-xs text-dim hover:text-amber-600 dark:hover:text-mystic-400 transition-colors"
+          className="text-xs text-dim hover:text-[#9B7114] dark:hover:text-[#D4AF37] transition-colors"
         >
           {t("有想反饋的嗎？點這裡 →", "Feedback? Click here →")}
         </a>
@@ -3233,7 +3233,7 @@ const SpreadCard = React.memo(function SpreadCard({ spread, isCustom, onSelect, 
         <div className="mt-4 pt-4 border-t divider-subtle flex justify-end gap-2 transition-opacity relative z-10">
           <button
             onClick={(e) => { e.stopPropagation(); e.preventDefault(); onEdit?.(spread, e); }}
-            className="p-1.5 text-faint hover:text-amber-600 dark:hover:text-mystic-400 transition-colors"
+            className="p-1.5 text-faint hover:text-[#9B7114] dark:hover:text-[#D4AF37] transition-colors"
           >
             <Edit2 size={16} />
           </button>
@@ -3472,7 +3472,7 @@ function TarotCardDisplay({ card, index, isExtra, system, lang, spreadId }: { ca
     >
       {!isExtra && (
         <div className="relative w-[110px] sm:w-[130px]">
-          <div className="overflow-x-auto whitespace-nowrap [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] text-[10px] sm:text-xs font-bold text-amber-700 dark:text-mystic-400 uppercase tracking-wide text-center drop-shadow-sm pr-4">
+          <div className="overflow-x-auto whitespace-nowrap [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] text-[10px] sm:text-xs font-bold text-hint uppercase tracking-wide text-center drop-shadow-sm pr-4">
             {index + 1}. {displayPositionName}
           </div>
           <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-white dark:from-mystic-950 to-transparent" />
@@ -3588,7 +3588,7 @@ function LenormandCardDisplay({ card, index, isCenter, isCompact, isSpine, lang,
             <div className="text-[10px] sm:text-xs text-muted leading-snug">{lang === 'en' ? card.nameCN : card.nameEN}</div>
             <div className="flex flex-wrap justify-center gap-1 mt-1">
               {(lang === 'en' ? (LENORMAND_KEYWORD_TRANSLATIONS[card.id] ?? card.keywords) : card.keywords).map((kw, i) => (
-                <span key={i} className="text-[9px] sm:text-[10px] px-1.5 py-0.5 bg-teal-50/80 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 border border-teal-200/50 dark:border-teal-700/30 rounded-full font-medium">
+                <span key={i} className="text-[9px] sm:text-[10px] px-1.5 py-0.5 badge-system-lenormand rounded-full font-medium">
                   {kw}
                 </span>
               ))}
