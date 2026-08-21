@@ -1839,7 +1839,7 @@ ${themeNote}
                                             return next;
                                           })}
                                           className={`absolute right-1 top-1/2 -translate-y-1/2 text-xs px-2 py-1 rounded border transition-all ${manualInputs[i]?.reversed
-                                            ? 'border-[#6B1D2F]/70 dark:border-[#E06A75]/50 text-[#8B2040] dark:text-[#E06A75] bg-[#EAE0DB]/80 dark:bg-[#1F0E14]/60 font-semibold'
+                                            ? 'border-[#6B1D2F]/70 dark:border-[#E06A75]/50 text-[#8B2040] dark:text-[#E06A75] bg-[#EAE0DB]/80 dark:bg-[#1C142B]/60 font-semibold'
                                             : 'border-[#D2C4AD]/40 dark:border-[#43327A]/40 text-hint bg-transparent hover:bg-[#F4EFE6]/50 dark:hover:bg-[#1C1438]/50'
                                             }`}
                                         >
@@ -1910,7 +1910,7 @@ ${themeNote}
                     )}
 
                     {(selectedSpread.id === 'mirror' || selectedSpread.id === 'energy-resonance' || selectedSpread.id === 'mirror-mirror') && (
-                      <div className="bg-[#E6E3DA]/50 dark:bg-[#141210]/30 p-4 rounded-xl border border-[#C5B99E]/50 dark:border-[#224032]/40">
+                      <div className="bg-[#E6E3DA]/50 dark:bg-[#141210]/30 p-4 rounded-xl border border-[#C5B99E]/50 dark:border-[#2D3A52]/40">
                         <label className="text-sm font-bold text-heading block mb-3">
                           {t("這段關係牽涉多少人？（包含你，目前：", "How many people in this relationship? (Including you, current: ")}{peopleCount}{t(" 人）", " people)")}
                         </label>
@@ -2007,7 +2007,7 @@ ${themeNote}
 
                   {/* Lenormand Result Layout */}
                   {mode === 'lenormand' && lenormandDrawnCards.length > 0 && (
-                    <div className="relative bg-[#FAF6EE]/40 dark:bg-[#09060E] rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-10 shadow-2xl shadow-[#2D5A4C]/5 dark:shadow-[#09060E]/50 border-4 border-[#C5B99E]/30 dark:border-[#224032]/20 overflow-hidden backdrop-blur-sm">
+                    <div className="relative bg-[#FAF6EE]/40 dark:bg-[#09060E] rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-10 shadow-2xl shadow-[#2D5A4C]/5 dark:shadow-[#09060E]/50 border-4 border-[#C5B99E]/30 dark:border-[#2D3A52]/20 overflow-hidden backdrop-blur-sm">
                       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#E6E3DA]/30 via-[#FAF6EE]/20 to-[#E6E3DA]/20 dark:from-[#141210]/30 dark:via-mystic-900/80 dark:to-mystic-950 pointer-events-none" />
                       {lenormandDrawnCards.length === 1 && (
                         <div className="relative z-10 flex flex-col items-center gap-6 mb-8 w-full max-w-lg mx-auto">
@@ -2367,7 +2367,7 @@ ${themeNote}
                        <button
                          onClick={toggleSelectMode}
                          className={`px-3 py-1.5 rounded-lg text-sm font-bold transition-all ${historySelectMode
-                             ? 'bg-[#EAE0DB] dark:bg-[#1F0E14]/40 text-[#8B2040] dark:text-[#E06A75] hover:bg-[#DCCCCE]'
+                             ? 'bg-[#EAE0DB] dark:bg-[#1C142B]/40 text-[#8B2040] dark:text-[#E06A75] hover:bg-[#DCCCCE]'
                              : 'btn-ghost text-secondary'
                            }`}
                        >
@@ -2578,11 +2578,11 @@ ${themeNote}
                       initial={{ opacity: 0, y: 50 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 50 }}
-                      className="absolute bottom-6 left-4 right-4 bg-white dark:bg-mystic-900 rounded-2xl shadow-2xl border-2 border-[#C9A99E] dark:border-[#4A2028] p-5 z-50 overflow-hidden"
+                      className="absolute bottom-6 left-4 right-4 bg-white dark:bg-mystic-900 rounded-2xl shadow-2xl border-2 border-[#C9A99E] dark:border-[#3E2B5C] p-5 z-50 overflow-hidden"
                     >
-                      <div className="absolute inset-0 bg-[#EDE5DF]/50 dark:bg-[#1A0C10]/40 pointer-events-none" />
+                      <div className="absolute inset-0 bg-[#EDE5DF]/50 dark:bg-[#1C142B]/40 pointer-events-none" />
                       <div className="relative z-10 flex flex-col items-center text-center gap-3">
-                        <div className="w-12 h-12 bg-[#EAE0DB] dark:bg-[#3A1520]/60 rounded-full flex items-center justify-center text-[#8B2525] dark:text-[#E06A75] mb-1">
+                        <div className="w-12 h-12 bg-[#EAE0DB] dark:bg-[#2D1B3E]/60 rounded-full flex items-center justify-center text-[#8B2525] dark:text-[#E06A75] mb-1">
                           <Trash2 size={24} />
                         </div>
                         <h3 className="text-lg font-bold text-[#8B2040] dark:text-[#E06A75]">{t("確定刪除", "Are you sure you want to delete")} {selectedHistoryIds.size} {t("筆紀錄？", " records?")}</h3>
@@ -3339,11 +3339,11 @@ interface OracleUI {
 
 function oracleUI(effectiveScore: number, lang: 'zh' | 'en'): OracleUI {
   switch (effectiveScore) {
-    case 2: return { label: lang === 'en' ? 'Yes' : '是 (Yes)', theme: 'text-[#1D6B4A] dark:text-[#5CC090]', bg: 'bg-[#E8E6DE] dark:bg-[#111C17] border-[#C5B99E] dark:border-[#224032]' };
-    case 1: return { label: lang === 'en' ? 'Maybe Yes' : '偏向是 (Maybe Yes)', theme: 'text-[#2D7A55] dark:text-[#6BAF8F]', bg: 'bg-[#ECEADE] dark:bg-[#0F1A14] border-[#D2C4AD] dark:border-[#1D3328]' };
+    case 2: return { label: lang === 'en' ? 'Yes' : '是 (Yes)', theme: 'text-[#1D6B4A] dark:text-[#5CC090]', bg: 'bg-[#E8E6DE] dark:bg-[#111C17] border-[#C5B99E] dark:border-[#2D3A52]' };
+    case 1: return { label: lang === 'en' ? 'Maybe Yes' : '偏向是 (Maybe Yes)', theme: 'text-[#2D7A55] dark:text-[#6BAF8F]', bg: 'bg-[#ECEADE] dark:bg-[#0F1A14] border-[#D2C4AD] dark:border-[#2D3550]' };
     case 0: return { label: lang === 'en' ? 'Maybe' : '不確定 (Maybe)', theme: 'text-[#6B5A4B] dark:text-[#C8B8E8]', bg: 'bg-[#EFE8DA] dark:bg-[#1C142B] border-[#D2C4AD] dark:border-[#43327A]' };
-    case -1: return { label: lang === 'en' ? 'Maybe No' : '偏向否 (Maybe No)', theme: 'text-[#8C4646] dark:text-[#D4868B]', bg: 'bg-[#EDE5DF] dark:bg-[#1A0C10] border-[#D4BDB0] dark:border-[#4A2028]' };
-    case -2: return { label: lang === 'en' ? 'No' : '否 (No)', theme: 'text-[#8B2040] dark:text-[#E8A3AE]', bg: 'bg-[#EAE0DB] dark:bg-[#1F0E14] border-[#C9A99E] dark:border-[#5A2430]' };
+    case -1: return { label: lang === 'en' ? 'Maybe No' : '偏向否 (Maybe No)', theme: 'text-[#8C4646] dark:text-[#D4868B]', bg: 'bg-[#EDE5DF] dark:bg-[#1C142B] border-[#D4BDB0] dark:border-[#3E2B5C]' };
+    case -2: return { label: lang === 'en' ? 'No' : '否 (No)', theme: 'text-[#8B2040] dark:text-[#E8A3AE]', bg: 'bg-[#EAE0DB] dark:bg-[#1C142B] border-[#C9A99E] dark:border-[#3E2B5C]' };
     default: return { label: lang === 'en' ? 'Maybe' : '不確定 (Maybe)', theme: 'text-[#6B5A4B] dark:text-[#C8B8E8]', bg: 'bg-[#EFE8DA] dark:bg-[#1C142B] border-[#D2C4AD] dark:border-[#43327A]' };
   }
 }
