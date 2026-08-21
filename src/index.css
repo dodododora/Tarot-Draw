@@ -90,6 +90,16 @@
   @apply bg-white/80 dark:bg-mystic-900/60 border border-stone-200/60 dark:border-mystic-800/50;
 }
 
+/* Text: extra dim / timestamp / fine-print  (5 occurrences) */
+.text-dim {
+  @apply text-slate-400 dark:text-mystic-600;
+}
+
+/* Text: mid-tone hint / icon label  (5 occurrences) */
+.text-hint {
+  @apply text-slate-500 dark:text-mystic-500;
+}
+
 /* Hide scrollbar globally — scroll still works, no layout shift on route change */
 * {
   scrollbar-width: none;       /* Firefox */

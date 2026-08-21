@@ -1445,7 +1445,7 @@ ${themeNote}
               >
                 {/* How-to flow */}
                 <div className="overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                  <div className="flex items-center justify-start sm:justify-center gap-1.5 text-[11px] font-medium text-slate-500 dark:text-mystic-500 min-w-max mx-auto px-1">
+                  <div className="flex items-center justify-start sm:justify-center gap-1.5 text-[11px] font-medium text-hint min-w-max mx-auto px-1">
                     {[
                       { n: '1', label: t('選系統', 'System') },
                       { n: '2', label: t('選牌陣', 'Spread') },
@@ -1454,7 +1454,7 @@ ${themeNote}
                       { n: '5', label: t('複製解讀', 'Reading') },
                     ].map(({ n, label }, i, arr) => (
                       <React.Fragment key={n}>
-                        <span className="flex items-center gap-1 text-slate-500 dark:text-mystic-500">
+                        <span className="flex items-center gap-1 text-hint">
                           <span className="w-4 h-4 rounded-full bg-stone-100 dark:bg-mystic-800 text-stone-600 dark:text-mystic-400 flex items-center justify-center text-[9px] font-bold shrink-0">{n}</span>
                           {label}
                         </span>
@@ -1480,7 +1480,7 @@ ${themeNote}
                       </span>
                     </div>
                     <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isBuiltinOpen ? 'max-h-[2000px] opacity-100 mt-4' : 'max-h-0 opacity-0 mt-0'}`}>
-                      <p className="text-sm text-slate-500 dark:text-mystic-400 mb-6">{t("共 36 張牌・無正逆位・著重具體事件與組合連讀", "36 cards · No reversals · Event and combination oriented")}</p>
+                      <p className="text-sm text-muted mb-6">{t("共 36 張牌・無正逆位・著重具體事件與組合連讀", "36 cards · No reversals · Event and combination oriented")}</p>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mx-auto">
                         {LENORMAND_SPREADS.map((spread) => (
                           <SpreadCard
@@ -1514,7 +1514,7 @@ ${themeNote}
                       </span>
                     </div>
                     <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isBuiltinOpen ? 'max-h-[2000px] opacity-100 mt-4' : 'max-h-0 opacity-0 mt-0'}`}>
-                      <p className="text-sm text-slate-500 dark:text-mystic-400 mb-6">
+                      <p className="text-sm text-muted mb-6">
                         {mode === 'waite'
                           ? t('共 78 張牌・含正逆位・適合敘事與心理探索', '78 cards · Reversals included · Narrative & psychological focus')
                           : t('共 78 張牌・無逆位・著重能量狀態與深層解析', '78 cards · No reversals · Energy state & deep analytical focus')}
@@ -1606,7 +1606,7 @@ ${themeNote}
                           }
                         </div>
                       ) : (
-                        <div className="text-center py-12 border-2 border-dashed border-slate-200 dark:border-mystic-800 rounded-xl text-slate-500 dark:text-mystic-400">
+                        <div className="text-center py-12 border-2 border-dashed border-slate-200 dark:border-mystic-800 rounded-xl text-muted">
                           <p>{t("尚未建立自訂牌陣", "No custom spreads created yet")}</p>
                         </div>
                       )}
@@ -1621,7 +1621,7 @@ ${themeNote}
                   href="https://www.buymeacoffee.com/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs text-slate-400 dark:text-mystic-600 hover:text-amber-600 dark:hover:text-mystic-400 transition-colors"
+                  className="text-xs text-dim hover:text-amber-600 dark:hover:text-mystic-400 transition-colors"
                 >
                   ☕ 請我喝杯咖啡
                 </a>
@@ -1649,12 +1649,12 @@ ${themeNote}
                   <div className="bg-white dark:bg-mystic-900 p-8 rounded-2xl shadow-xl border border-slate-100 dark:border-mystic-800">
                     <div className="text-center mb-8">
                       <h2 className="text-3xl font-bold mb-2 bg-gradient-to-r from-mystic-700 to-indigo-500 bg-clip-text text-transparent dark:from-mystic-200 dark:to-indigo-300 drop-shadow-sm">{translatedSelectedSpread.name}</h2>
-                      <p className="text-slate-500 dark:text-mystic-400">{translatedSelectedSpread.hint}</p>
+                      <p className="text-muted">{translatedSelectedSpread.hint}</p>
                     </div>
 
                     <div className="space-y-6">
                       <div>
-                        <label className="block text-sm font-medium mb-2 text-slate-600 dark:text-mystic-300">
+                        <label className="block text-sm font-medium mb-2 text-secondary">
                           {t("你想問的問題？", "What is your question?")}
                         </label>
                         <textarea
@@ -1766,7 +1766,7 @@ ${themeNote}
                           onClick={() => setDrawInputMode('random')}
                           className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${drawInputMode === 'random'
                             ? 'bg-white dark:bg-mystic-700 text-stone-800 dark:text-white shadow'
-                            : 'text-slate-400 dark:text-mystic-500'
+                            : 'text-faint'
                             }`}
                         >
                           {t("🎴 隨機抽牌", "🎴 Random Draw")}
@@ -1775,7 +1775,7 @@ ${themeNote}
                           onClick={() => setDrawInputMode('manual')}
                           className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${drawInputMode === 'manual'
                             ? 'bg-white dark:bg-mystic-700 text-stone-800 dark:text-white shadow'
-                            : 'text-slate-400 dark:text-mystic-500'
+                            : 'text-faint'
                             }`}
                         >
                           {t("✍️ 手動輸入", "✍️ Manual Input")}
@@ -1790,7 +1790,7 @@ ${themeNote}
                         >
                           <Compass size={20} /> {t('開始抽牌', 'Draw Cards')}
                         </button>
-                        <p className="text-center text-[11px] text-slate-400 dark:text-mystic-600">
+                        <p className="text-center text-[11px] text-dim">
                           {t('✨ 抽牌後可一鍵複製 AI 解讀 Prompt，貼入 ChatGPT・Claude・Gemini 獲得深度解讀', '✨ After drawing, copy the AI prompt with one click and paste into ChatGPT · Claude · Gemini for deep interpretation')}
                         </p>
                       </>
@@ -1800,7 +1800,7 @@ ${themeNote}
                         : mode === 'thoth' ? THOTH_ALL_CARDS : ALL_CARDS;
                       return (
                         <div className="space-y-2">
-                          <p className="text-xs text-slate-400 dark:text-mystic-500 text-center">
+                          <p className="text-xs text-faint text-center">
                             搜尋你實體抽到的牌名{mode === 'waite' ? '，按「逆」切換逆位' : ''}
                           </p>
                           <div className="space-y-2 w-fit mx-auto">
@@ -1817,7 +1817,7 @@ ${themeNote}
                                 <div key={i} className="flex items-start gap-2 max-w-sm">
                                   <span className="mt-2.5 text-xs font-bold text-amber-600 dark:text-mystic-400 w-5 flex-shrink-0 text-right">{i + 1}</span>
                                   <div className="flex-1 min-w-0">
-                                    <p className="text-[10px] text-slate-400 dark:text-mystic-600 mb-0.5 truncate">{pos}</p>
+                                    <p className="text-[10px] text-dim mb-0.5 truncate">{pos}</p>
                                     <div className="relative">
                                       <input
                                         type="text"
@@ -1985,7 +1985,7 @@ ${themeNote}
                         {mode === 'thoth' && <span className="text-xs font-bold text-mystic-700 dark:text-mystic-300 bg-mystic-400/25 dark:bg-mystic-400/20 px-2 py-0.5 rounded-full border border-mystic-500/50 dark:border-mystic-400/30 mb-1 inline-block">{t("托特塔羅", "Thoth Tarot")}</span>}
                         {mode === 'tarot' && <span className="text-xs font-bold text-amber-700 dark:text-amber-300 bg-amber-400/25 dark:bg-amber-400/20 px-2 py-0.5 rounded-full border border-amber-500/50 dark:border-amber-400/30 mb-1 inline-block">{t("偉特塔羅", "Waite Tarot")}</span>}
                         <h2 className="text-2xl font-bold bg-gradient-to-r from-mystic-700 to-indigo-500 bg-clip-text text-transparent dark:from-mystic-200 dark:to-indigo-300 drop-shadow-sm font-serif-tc">{translatedSelectedSpread?.name}</h2>
-                        <p className="text-slate-500 dark:text-mystic-400">{t("問題：", "Question: ")}{question.trim() || t('探索當下整體狀態', 'Exploring Current Situation')}</p>
+                        <p className="text-muted">{t("問題：", "Question: ")}{question.trim() || t('探索當下整體狀態', 'Exploring Current Situation')}</p>
                       </div>
                       <div className="flex gap-3">
                         <button
@@ -2157,7 +2157,7 @@ ${themeNote}
                       <div className="flex flex-col items-center gap-3">
                         <div className="text-center">
                           <p className="text-xs font-bold text-amber-700 dark:text-mystic-400 uppercase tracking-widest">{t("底牌", "Bottom Card")}</p>
-                          <p className="text-[11px] text-slate-500 dark:text-mystic-500 mt-0.5">{t("牌堆最底的一張，反映潛藏的動機或心理狀態", "The card at the bottom of the deck, reflecting underlying motivations or states")}</p>
+                          <p className="text-[11px] text-hint mt-0.5">{t("牌堆最底的一張，反映潛藏的動機或心理狀態", "The card at the bottom of the deck, reflecting underlying motivations or states")}</p>
                         </div>
                         <TarotCardDisplay card={bottomCard} index={0} isExtra={true} system={mode === 'thoth' ? 'thoth' : 'waite'} lang={lang} />
                       </div>
@@ -2241,7 +2241,7 @@ ${themeNote}
                     {/* AI Quick-open shortcuts */}
                     {showCopySuccess && (
                       <div className="flex items-center gap-2 flex-wrap justify-center">
-                        <span className="text-xs text-slate-500 dark:text-mystic-500 font-medium">{t('貼入 AI 開始解讀 →', 'Paste into AI to interpret →')}</span>
+                        <span className="text-xs text-hint font-medium">{t('貼入 AI 開始解讀 →', 'Paste into AI to interpret →')}</span>
                         <a
                           href="https://chat.openai.com"
                           target="_blank"
@@ -2368,7 +2368,7 @@ ${themeNote}
                          onClick={toggleSelectMode}
                          className={`px-3 py-1.5 rounded-lg text-sm font-bold transition-all ${historySelectMode
                              ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200'
-                             : 'bg-slate-100/50 dark:bg-mystic-800/50 text-slate-600 dark:text-mystic-300 hover:bg-slate-200 dark:hover:bg-mystic-700'
+                             : 'bg-slate-100/50 dark:bg-mystic-800/50 text-secondary hover:bg-slate-200 dark:hover:bg-mystic-700'
                            }`}
                        >
                          {historySelectMode ? t('取消', 'Cancel') : t('管理', 'Manage')}
@@ -2390,7 +2390,7 @@ ${themeNote}
                         onClick={() => { setHistoryFilter(key); setSelectedHistoryIds(new Set()); }}
                         className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 ${historyFilter === key
                             ? 'bg-amber-100 dark:bg-mystic-700 text-amber-700 dark:text-mystic-200 shadow-sm'
-                            : 'text-slate-500 dark:text-mystic-500 hover:bg-stone-100 dark:hover:bg-mystic-800/60'
+                            : 'text-hint hover:bg-stone-100 dark:hover:bg-mystic-800/60'
                           }`}
                       >
                         {label}
@@ -2410,7 +2410,7 @@ ${themeNote}
                       className="w-4 h-4 accent-amber-500 cursor-pointer"
                       id="select-all-history"
                     />
-                    <label htmlFor="select-all-history" className="text-sm font-semibold text-slate-600 dark:text-mystic-300 cursor-pointer select-none">
+                    <label htmlFor="select-all-history" className="text-sm font-semibold text-secondary cursor-pointer select-none">
                       {t("全選（", "Select All (")}{filteredHistory.length}{t(" 筆）", " items)")}
                     </label>
                     <button
@@ -2420,7 +2420,7 @@ ${themeNote}
                           .map(r => r.id);
                         setSelectedHistoryIds(prev => new Set([...prev, ...noQuestionIds]));
                       }}
-                      className="ml-auto text-xs font-semibold px-2.5 py-1 rounded-lg border border-stone-300/60 dark:border-mystic-700 text-slate-500 dark:text-mystic-400 hover:bg-stone-100 dark:hover:bg-mystic-800 transition-colors select-none"
+                      className="ml-auto text-xs font-semibold px-2.5 py-1 rounded-lg border border-stone-300/60 dark:border-mystic-700 text-muted hover:bg-stone-100 dark:hover:bg-mystic-800 transition-colors select-none"
                     >
                       {t("選取未提問的紀錄", "Select empty questions")}
                     </button>
@@ -2479,7 +2479,7 @@ ${themeNote}
                                 {new Date(record.date).toLocaleString('zh-TW', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })}
                               </span>
                             </div>
-                            <p className="text-sm text-slate-600 dark:text-mystic-300 line-clamp-2 min-h-[2.5rem] mb-3">
+                            <p className="text-sm text-secondary line-clamp-2 min-h-[2.5rem] mb-3">
                               {record.question?.trim() || t('探索當下整體狀態', 'Exploring Current Situation')}
                             </p>
                             <div className="flex items-center justify-between text-xs font-semibold text-stone-600 dark:text-mystic-400">
@@ -2542,7 +2542,7 @@ ${themeNote}
                       </div>
                     ))
                   ) : (
-                    <div className="text-center py-16 text-slate-500 dark:text-mystic-400">
+                    <div className="text-center py-16 text-muted">
                       <p>{history.length === 0 ? t('尚未有任何抽牌紀錄', 'No reading records yet') : t('此時間區間無紀錄', 'No records in this period')}</p>
                     </div>
                   )}
@@ -2557,7 +2557,7 @@ ${themeNote}
                       exit={{ y: 80, opacity: 0 }}
                       className="shrink-0 px-4 lg:px-8 py-3 border-t border-stone-200 dark:border-mystic-800/60 bg-[#f0ead6]/90 dark:bg-mystic-900/80 flex items-center justify-between gap-3"
                     >
-                      <span className="text-sm font-semibold text-slate-600 dark:text-mystic-300">
+                      <span className="text-sm font-semibold text-secondary">
                         {t("已選", "Selected")} <span className="text-amber-600 dark:text-amber-400 font-black">{selectedHistoryIds.size}</span> {t("筆", "items")}
                       </span>
                       <button
@@ -2712,13 +2712,13 @@ ${themeNote}
 
       {/* Global Footer */}
       <footer className="text-center py-4 border-t border-stone-100/60 dark:border-mystic-900/60 bg-white/30 dark:bg-mystic-950/30 backdrop-blur-sm flex flex-col items-center gap-1.5">
-        <p className="text-xs text-slate-400 dark:text-mystic-600">{t("© 2026 Tarot Draw｜本站內容僅供娛樂與自我探索參考", "© 2026 Tarot Draw | Content is for entertainment & self-exploration only")}</p>
+        <p className="text-xs text-dim">{t("© 2026 Tarot Draw｜本站內容僅供娛樂與自我探索參考", "© 2026 Tarot Draw | Content is for entertainment & self-exploration only")}</p>
         <a
           href="https://forms.gle/oXj1gXmqR83f3cfP8"
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => trackEvent('click_feedback')}
-          className="text-xs text-slate-400 dark:text-mystic-600 hover:text-amber-600 dark:hover:text-mystic-400 transition-colors"
+          className="text-xs text-dim hover:text-amber-600 dark:hover:text-mystic-400 transition-colors"
         >
           {t("有想反饋的嗎？點這裡 →", "Feedback? Click here →")}
         </a>
@@ -3201,7 +3201,7 @@ const SpreadCard = React.memo(function SpreadCard({ spread, isCustom, onSelect, 
       </div>
 
       {/* Hint (Theory/Description) */}
-      <p className="text-xs sm:text-sm text-slate-600 dark:text-mystic-300 line-clamp-2 mb-4 sm:mb-6 relative z-10 font-medium leading-relaxed">
+      <p className="text-xs sm:text-sm text-secondary line-clamp-2 mb-4 sm:mb-6 relative z-10 font-medium leading-relaxed">
         {translatedSpread.hint || t(`自訂牌陣 · ${translatedSpread.count} 張`, `Custom · ${translatedSpread.count} Cards`)}
       </p>
 
@@ -3233,13 +3233,13 @@ const SpreadCard = React.memo(function SpreadCard({ spread, isCustom, onSelect, 
         <div className="mt-4 pt-4 border-t border-amber-100 dark:border-mystic-800 flex justify-end gap-2 transition-opacity relative z-10">
           <button
             onClick={(e) => { e.stopPropagation(); e.preventDefault(); onEdit?.(spread, e); }}
-            className="p-1.5 text-slate-400 dark:text-mystic-500 hover:text-amber-600 dark:hover:text-mystic-400 transition-colors"
+            className="p-1.5 text-faint hover:text-amber-600 dark:hover:text-mystic-400 transition-colors"
           >
             <Edit2 size={16} />
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); e.preventDefault(); onDelete?.(spread, e); }}
-            className="p-1.5 text-slate-400 dark:text-mystic-500 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+            className="p-1.5 text-faint hover:text-red-500 dark:hover:text-red-400 transition-colors"
           >
             <Trash2 size={16} />
           </button>
@@ -3499,7 +3499,7 @@ function TarotCardDisplay({ card, index, isExtra, system, lang, spreadId }: { ca
             <div className={`flex flex-col items-center justify-center text-center h-full w-full p-2 ${card.isReversed ? 'rotate-180' : ''
               }`}>
               <div className="text-4xl sm:text-5xl mb-2">{getCardEmoji(card.id, system)}</div>
-              <div className={`font-extrabold text-sm sm:text-base mb-0.5 leading-tight ${isMajor ? 'text-amber-900 dark:text-amber-50' : 'text-slate-800 dark:text-mystic-100'
+              <div className={`font-extrabold text-sm sm:text-base mb-0.5 leading-tight ${isMajor ? 'text-amber-900 dark:text-amber-50' : 'text-heading'
                 }`}>{lang === 'en' ? card.nameEN : card.nameCN}</div>
             </div>
           </div>
@@ -3514,7 +3514,7 @@ function TarotCardDisplay({ card, index, isExtra, system, lang, spreadId }: { ca
       </div>
 
       <div className="text-center w-[110px] sm:w-[130px]">
-        <div className="font-bold text-sm text-slate-800 dark:text-mystic-100 truncate">{lang === 'en' ? card.nameEN : card.nameCN}</div>
+        <div className="font-bold text-sm text-heading truncate">{lang === 'en' ? card.nameEN : card.nameCN}</div>
         <div className={`text-xs font-bold ${card.isReversed ? 'text-red-500 dark:text-red-400' : 'text-amber-600 dark:text-mystic-400'
           }`}>
           {card.isReversed ? (lang === 'en' ? 'Reversed' : '逆位') : (lang === 'en' ? 'Upright' : '正位')}
@@ -3543,7 +3543,7 @@ function LenormandCardDisplay({ card, index, isCenter, isCompact, isSpine, lang,
     >
       {!isCompact && (
         <div className={`text-[10px] sm:text-xs font-bold uppercase tracking-widest text-center leading-tight ${
-          isCenter ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-mystic-400'
+          isCenter ? 'text-emerald-600 dark:text-emerald-400' : 'text-muted'
         }`}>
           {displayPositionName}
         </div>
@@ -3580,12 +3580,12 @@ function LenormandCardDisplay({ card, index, isCenter, isCompact, isSpine, lang,
       </div>
 
       <div className="text-center">
-        <div className={`font-bold leading-tight text-slate-800 dark:text-mystic-100 ${
+        <div className={`font-bold leading-tight text-heading ${
           isCompact ? 'text-[9px] sm:text-[10px]' : 'text-sm sm:text-base'
         }`}>{lang === 'en' ? card.nameEN : card.nameCN}</div>
         {!isCompact && (
           <>
-            <div className="text-[10px] sm:text-xs text-slate-500 dark:text-mystic-400 leading-snug">{lang === 'en' ? card.nameCN : card.nameEN}</div>
+            <div className="text-[10px] sm:text-xs text-muted leading-snug">{lang === 'en' ? card.nameCN : card.nameEN}</div>
             <div className="flex flex-wrap justify-center gap-1 mt-1">
               {(lang === 'en' ? (LENORMAND_KEYWORD_TRANSLATIONS[card.id] ?? card.keywords) : card.keywords).map((kw, i) => (
                 <span key={i} className="text-[9px] sm:text-[10px] px-1.5 py-0.5 bg-teal-50/80 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 border border-teal-200/50 dark:border-teal-700/30 rounded-full font-medium">
