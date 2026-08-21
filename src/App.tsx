@@ -298,6 +298,15 @@ export default function App() {
   const [selectedHistoryIds, setSelectedHistoryIds] = useState<Set<string>>(new Set());
   const [showBatchDeleteConfirm, setShowBatchDeleteConfirm] = useState(false);
   const [manualInputs, setManualInputs] = useState<{ name: string; reversed: boolean }[]>([]);
+  const translatedSelectedSpread = React.useMemo(() => {
+    if (!selectedSpread) return null;
+    return {
+      ...selectedSpread,
+      name: SPREAD_TRANSLATIONS[selectedSpread.id]?.name ?? selectedSpread.name,
+      hint: SPREAD_TRANSLATIONS[selectedSpread.id]?.hint ?? selectedSpread.hint,
+      positions: POSITION_TRANSLATIONS[selectedSpread.id] ?? selectedSpread.positions
+    };
+  }, [selectedSpread, lang]);
   const [isShuffling, setIsShuffling] = useState(false);
   const [bottomCard, setBottomCard] = useState<DrawnCard | null>(null);
   const [isCustomOpen, setIsCustomOpen] = useState(true);
@@ -1464,156 +1473,156 @@ ${themeNote}
             } />
 
             <Route path="/draw" element={selectedSpread ? (
-              <motion.div
-                key="draw"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.15, ease: 'easeOut' }}
-                className="max-w-2xl mx-auto space-y-8"
-              >
-                <button
-                  onClick={() => navigate('/')}
-                  className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-mystic-600 dark:hover:text-mystic-400 transition-colors"
+                <motion.div
+                  key="draw"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.15, ease: 'easeOut' }}
+                  className="max-w-2xl mx-auto space-y-8"
                 >
-                  <ArrowLeft size={18} /> 返回首頁
-                </button>
+                  <button
+                    onClick={() => navigate('/')}
+                    className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-mystic-600 dark:hover:text-mystic-400 transition-colors"
+                  >
+                    <ArrowLeft size={18} /> {t("返回首頁", "Back to Home")}
+                  </button>
 
-                <div className="bg-white dark:bg-mystic-900 p-8 rounded-2xl shadow-xl border border-slate-100 dark:border-mystic-800">
-                  <div className="text-center mb-8">
-                    <h2 className="text-3xl font-bold mb-2 bg-gradient-to-r from-mystic-700 to-indigo-500 bg-clip-text text-transparent dark:from-mystic-200 dark:to-indigo-300 drop-shadow-sm">{selectedSpread.name}</h2>
-                    <p className="text-slate-500 dark:text-mystic-400">{selectedSpread.hint}</p>
-                  </div>
-
-                  <div className="space-y-6">
-                    <div>
-                      <label className="block text-sm font-medium mb-2 text-slate-600 dark:text-mystic-300">
-                        你想問的問題？
-                      </label>
-                      <textarea
-                        value={question}
-                        onChange={(e) => setQuestion(e.target.value)}
-                        placeholder={selectedSpread.exampleQuestion ? `例如：${selectedSpread.exampleQuestion}` : "請輸入你的困惑或想了解的事情..."}
-                        className="w-full h-32 px-4 py-3 rounded-xl border border-amber-200 dark:border-mystic-800 bg-white/80 dark:bg-mystic-950 focus:ring-2 focus:ring-amber-400 dark:focus:ring-mystic-500 outline-none transition-all resize-none shadow-inner"
-                      />
-                      {question.trim().length > 0 && question.trim().length < 10 && (
-                        <p className="mt-2 text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
-                          <span className="text-base">💡</span>
-                          問題越具體，AI 解讀越準確——試著加上時間、情境或對象
-                        </p>
-                      )}
+                  <div className="bg-white dark:bg-mystic-900 p-8 rounded-2xl shadow-xl border border-slate-100 dark:border-mystic-800">
+                    <div className="text-center mb-8">
+                      <h2 className="text-3xl font-bold mb-2 bg-gradient-to-r from-mystic-700 to-indigo-500 bg-clip-text text-transparent dark:from-mystic-200 dark:to-indigo-300 drop-shadow-sm">{translatedSelectedSpread.name}</h2>
+                      <p className="text-slate-500 dark:text-mystic-400">{translatedSelectedSpread.hint}</p>
                     </div>
 
-                    {selectedSpread.id === 'len-36' && mode === 'lenormand' && (
-                      <div className="border border-stone-200 dark:border-mystic-800 rounded-xl p-4 bg-stone-50/50 dark:bg-mystic-950/40">
-                        <details className="group">
-                          <summary className="flex items-center justify-between cursor-pointer select-none text-xs font-bold text-stone-600 dark:text-mystic-300 uppercase tracking-widest list-none">
-                            <span className="flex items-center gap-1.5 select-none">
-                              🔮 大展開設定 (展開可自訂角色/主題)
-                            </span>
-                            <span className="text-stone-400 group-open:rotate-180 transition-transform duration-200 select-none">
-                              ▼
-                            </span>
-                          </summary>
-                          <div className="mt-4 space-y-4 text-sm border-t border-stone-200/50 dark:border-mystic-800/50 pt-4">
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                              <span className="font-bold text-xs text-stone-500 dark:text-mystic-400">問事者代表牌 (Querent)</span>
-                              <div className="flex gap-1.5">
-                                {[
-                                  { label: '👩 女人 (#29)', value: 'woman' },
-                                  { label: '👨 男人 (#28)', value: 'man' }
-                                ].map(opt => (
-                                  <button
-                                    key={opt.value}
-                                    type="button"
-                                    onClick={() => setGtQuerent(opt.value as any)}
-                                    className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-all select-none ${
-                                      gtQuerent === opt.value
-                                        ? 'border-teal-500 bg-teal-50/30 text-teal-700 dark:text-teal-400'
-                                        : 'border-stone-200 dark:border-mystic-800 hover:bg-stone-50 dark:hover:bg-mystic-900/50 text-stone-600 dark:text-mystic-300'
-                                    }`}
-                                  >
-                                    {opt.label}
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                              <span className="font-bold text-xs text-stone-500 dark:text-mystic-400">對象/伴侶代表 (Partner)</span>
-                              <div className="flex gap-1.5">
-                                {[
-                                  { label: '異性/對立能量', value: 'opposite' },
-                                  { label: '同性 (以 #18 狗代表)', value: 'same' },
-                                  { label: '無對象', value: 'none' }
-                                ].map(opt => (
-                                  <button
-                                    key={opt.value}
-                                    type="button"
-                                    onClick={() => setGtPartner(opt.value as any)}
-                                    className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-all select-none ${
-                                      gtPartner === opt.value
-                                        ? 'border-teal-500 bg-teal-50/30 text-teal-700 dark:text-teal-400'
-                                        : 'border-stone-200 dark:border-mystic-800 hover:bg-stone-50 dark:hover:bg-mystic-900/50 text-stone-600 dark:text-mystic-300'
-                                    }`}
-                                  >
-                                    {opt.label}
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                              <span className="font-bold text-xs text-stone-500 dark:text-mystic-400">占卜主題與指示牌 (Theme)</span>
-                              <div className="flex gap-1.5 flex-wrap justify-end">
-                                {[
-                                  { label: '綜合運勢', value: 'general' },
-                                  { label: '💞 感情 (#24 心)', value: 'love' },
-                                  { label: '💼 事業 (#35 錨)', value: 'career' },
-                                  { label: '💰 財運 (#34 魚)', value: 'money' },
-                                  { label: '🌲 健康 (#5 樹)', value: 'health' }
-                                ].map(opt => (
-                                  <button
-                                    key={opt.value}
-                                    type="button"
-                                    onClick={() => setGtTheme(opt.value as any)}
-                                    className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-all select-none ${
-                                      gtTheme === opt.value
-                                        ? 'border-teal-500 bg-teal-50/30 text-teal-700 dark:text-teal-400'
-                                        : 'border-stone-200 dark:border-mystic-800 hover:bg-stone-50 dark:hover:bg-mystic-900/50 text-stone-600 dark:text-mystic-300'
-                                    }`}
-                                  >
-                                    {opt.label}
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        </details>
+                    <div className="space-y-6">
+                      <div>
+                        <label className="block text-sm font-medium mb-2 text-slate-600 dark:text-mystic-300">
+                          {t("你想問的問題？", "What is your question?")}
+                        </label>
+                        <textarea
+                          value={question}
+                          onChange={(e) => setQuestion(e.target.value)}
+                          placeholder={selectedSpread.exampleQuestion ? `${t("例如：", "e.g. ")} ${t(selectedSpread.exampleQuestion, SPREAD_TRANSLATIONS[selectedSpread.id]?.exampleQuestion ?? selectedSpread.exampleQuestion)}` : t("請輸入你的困惑或想了解的事情...", "Please enter your confusion or what you want to know...")}
+                          className="w-full h-32 px-4 py-3 rounded-xl border border-amber-200 dark:border-mystic-800 bg-white/80 dark:bg-mystic-950 focus:ring-2 focus:ring-amber-400 dark:focus:ring-mystic-500 outline-none transition-all resize-none shadow-inner"
+                        />
+                        {question.trim().length > 0 && question.trim().length < 10 && (
+                          <p className="mt-2 text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
+                            <span className="text-base">💡</span>
+                            {t("問題越具體，AI 解讀越準確——試著加上時間、情境或對象", "The more specific the question, the more accurate the AI interpretation. Try adding time, context, or subjects.")}
+                          </p>
+                        )}
                       </div>
-                    )}
 
-                    {/* Draw Mode Toggle */}
-                    <div className="flex rounded-xl overflow-hidden border border-slate-200 dark:border-mystic-700 p-0.5 gap-0.5 bg-slate-100/70 dark:bg-mystic-800/50">
-                      <button
-                        onClick={() => setDrawInputMode('random')}
-                        className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${drawInputMode === 'random'
-                          ? 'bg-white dark:bg-mystic-700 text-stone-800 dark:text-white shadow'
-                          : 'text-slate-400 dark:text-mystic-500'
-                          }`}
-                      >
-                        🎴 隨機抽牌
-                      </button>
-                      <button
-                        onClick={() => setDrawInputMode('manual')}
-                        className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${drawInputMode === 'manual'
-                          ? 'bg-white dark:bg-mystic-700 text-stone-800 dark:text-white shadow'
-                          : 'text-slate-400 dark:text-mystic-500'
-                          }`}
-                      >
-                        ✍️ 手動輸入
-                      </button>
-                    </div>
+                      {selectedSpread.id === 'len-36' && mode === 'lenormand' && (
+                        <div className="border border-stone-200 dark:border-mystic-800 rounded-xl p-4 bg-stone-50/50 dark:bg-mystic-950/40">
+                          <details className="group">
+                            <summary className="flex items-center justify-between cursor-pointer select-none text-xs font-bold text-stone-600 dark:text-mystic-300 uppercase tracking-widest list-none">
+                              <span className="flex items-center gap-1.5 select-none">
+                                {t("🔮 大展開設定 (展開可自訂角色/主題)", "🔮 Grand Tableau Settings (Click to Customize)")}
+                              </span>
+                              <span className="text-stone-400 group-open:rotate-180 transition-transform duration-200 select-none">
+                                ▼
+                              </span>
+                            </summary>
+                            <div className="mt-4 space-y-4 text-sm border-t border-stone-200/50 dark:border-mystic-800/50 pt-4">
+                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                <span className="font-bold text-xs text-stone-500 dark:text-mystic-400">{t("問事者代表牌 (Querent)", "Querent Card")}</span>
+                                <div className="flex gap-1.5">
+                                  {[
+                                    { label: t('👩 女人 (#29)', '👩 Lady (#29)'), value: 'woman' },
+                                    { label: t('👨 男人 (#28)', '👨 Gentleman (#28)'), value: 'man' }
+                                  ].map(opt => (
+                                    <button
+                                      key={opt.value}
+                                      type="button"
+                                      onClick={() => setGtQuerent(opt.value as any)}
+                                      className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-all select-none ${
+                                        gtQuerent === opt.value
+                                          ? 'border-teal-500 bg-teal-50/30 text-teal-700 dark:text-teal-400'
+                                          : 'border-stone-200 dark:border-mystic-800 hover:bg-stone-50 dark:hover:bg-mystic-900/50 text-stone-600 dark:text-mystic-300'
+                                      }`}
+                                    >
+                                      {opt.label}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+
+                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                <span className="font-bold text-xs text-stone-500 dark:text-mystic-400">{t("對象/伴侶代表 (Partner)", "Partner Card")}</span>
+                                <div className="flex gap-1.5">
+                                  {[
+                                    { label: t('異性/對立能量', 'Opposite/Dual Energy'), value: 'opposite' },
+                                    { label: t('同性 (以 #18 狗代表)', 'Same-sex (Dog #18)'), value: 'same' },
+                                    { label: t('無對象', 'No Partner'), value: 'none' }
+                                  ].map(opt => (
+                                    <button
+                                      key={opt.value}
+                                      type="button"
+                                      onClick={() => setGtPartner(opt.value as any)}
+                                      className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-all select-none ${
+                                        gtPartner === opt.value
+                                          ? 'border-teal-500 bg-teal-50/30 text-teal-700 dark:text-teal-400'
+                                          : 'border-stone-200 dark:border-mystic-800 hover:bg-stone-50 dark:hover:bg-mystic-900/50 text-stone-600 dark:text-mystic-300'
+                                      }`}
+                                    >
+                                      {opt.label}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+
+                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                <span className="font-bold text-xs text-stone-500 dark:text-mystic-400">{t("占卜主題與指示牌 (Theme)", "Reading Theme / Significator")}</span>
+                                <div className="flex gap-1.5 flex-wrap justify-end">
+                                  {[
+                                    { label: t('綜合運勢', 'General Fortune'), value: 'general' },
+                                    { label: t('💞 感情 (#24 心)', '💞 Love (Heart #24)'), value: 'love' },
+                                    { label: t('💼 事業 (#35 錨)', '💼 Career (Anchor #35)'), value: 'career' },
+                                    { label: t('💰 財運 (#34 魚)', '💰 Wealth (Fish #34)'), value: 'money' },
+                                    { label: t('🌲 健康 (#5 樹)', '🌲 Health (Tree #5)'), value: 'health' }
+                                  ].map(opt => (
+                                    <button
+                                      key={opt.value}
+                                      type="button"
+                                      onClick={() => setGtTheme(opt.value as any)}
+                                      className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-all select-none ${
+                                        gtTheme === opt.value
+                                          ? 'border-teal-500 bg-teal-50/30 text-teal-700 dark:text-teal-400'
+                                          : 'border-stone-200 dark:border-mystic-800 hover:bg-stone-50 dark:hover:bg-mystic-900/50 text-stone-600 dark:text-mystic-300'
+                                      }`}
+                                    >
+                                      {opt.label}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          </details>
+                        </div>
+                      )}
+
+                      {/* Draw Mode Toggle */}
+                      <div className="flex rounded-xl overflow-hidden border border-slate-200 dark:border-mystic-700 p-0.5 gap-0.5 bg-slate-100/70 dark:bg-mystic-800/50">
+                        <button
+                          onClick={() => setDrawInputMode('random')}
+                          className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${drawInputMode === 'random'
+                            ? 'bg-white dark:bg-mystic-700 text-stone-800 dark:text-white shadow'
+                            : 'text-slate-400 dark:text-mystic-500'
+                            }`}
+                        >
+                          {t("🎴 隨機抽牌", "🎴 Random Draw")}
+                        </button>
+                        <button
+                          onClick={() => setDrawInputMode('manual')}
+                          className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${drawInputMode === 'manual'
+                            ? 'bg-white dark:bg-mystic-700 text-stone-800 dark:text-white shadow'
+                            : 'text-slate-400 dark:text-mystic-500'
+                            }`}
+                        >
+                          {t("✍️ 手動輸入", "✍️ Manual Input")}
+                        </button>
+                      </div>
 
                     {drawInputMode === 'random' ? (
                       <>
@@ -1711,7 +1720,7 @@ ${themeNote}
                             onClick={handleManualSubmit}
                             className="w-full py-4 bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 dark:hover:from-mystic-500 dark:hover:to-mystic-400 text-stone-50 dark:text-white rounded-lg font-bold text-lg shadow-lg shadow-stone-800/20 dark:shadow-mystic-500/20 transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2"
                           >
-                            <CheckCircle2 size={20} /> 確認輸入
+                            <CheckCircle2 size={20} /> {t("確認輸入", "Confirm Input")}
                           </button>
                         </div>
                       );
@@ -1720,7 +1729,7 @@ ${themeNote}
                     {selectedSpread.id === 'choice' && (
                       <div className="bg-indigo-50/50 dark:bg-mystic-800/30 p-4 rounded-xl border border-indigo-100 dark:border-mystic-700/50">
                         <label className="text-sm font-bold text-indigo-900 dark:text-mystic-200 block mb-3">
-                          這題有幾個選項需要比較？（目前：{choiceCount} 個）
+                          {t("這題有幾個選項需要比較？（目前：", "How many options to compare? (Current: ")}{choiceCount}{t(" 個）", " options)")}
                         </label>
                         <div className="flex flex-wrap gap-2">
                           {[2, 3, 4, 5, 6, 7, 8, 9, 10].map(num => (
@@ -1737,7 +1746,7 @@ ${themeNote}
                           ))}
                         </div>
                         <p className="text-xs text-indigo-700/80 dark:text-mystic-400 mt-4 leading-relaxed">
-                          直接點擊數字切換。每多一個選擇，系統就會對應多抽出「發展」與「結果」2 張牌喔。
+                          {t("直接點擊數字切換。每多一個選擇，系統就會對應多抽出「發展」與「結果」2 張牌喔。", "Click numbers to change. Each option adds 2 cards (Development & Outcome) to the draw.")}
                         </p>
                       </div>
                     )}
@@ -1745,7 +1754,7 @@ ${themeNote}
                     {(selectedSpread.id === 'mirror' || selectedSpread.id === 'energy-resonance' || selectedSpread.id === 'mirror-mirror') && (
                       <div className="bg-teal-50/50 dark:bg-teal-950/20 p-4 rounded-xl border border-teal-200/50 dark:border-teal-800/30">
                         <label className="text-sm font-bold text-teal-900 dark:text-teal-300 block mb-3">
-                          這段關係牽涉多少人？（包含你，目前：{peopleCount} 人）
+                          {t("這段關係牽涉多少人？（包含你，目前：", "How many people in this relationship? (Including you, current: ")}{peopleCount}{t(" 人）", " people)")}
                         </label>
                         <div className="flex flex-wrap gap-2">
                           {[2, 3, 4, 5, 6].map(num => (
@@ -1762,7 +1771,7 @@ ${themeNote}
                           ))}
                         </div>
                         <p className="text-xs text-teal-700/80 dark:text-teal-400 mt-4 leading-relaxed">
-                          最高支援 6 人局。系統將為每一位「對象」配置專屬的心態牌，協助你跳脫框架看清全局。
+                          {t("最高支援 6 人局。系統將為每一位「對象」配置專屬的心態牌，協助你跳脫框架看清全局。", "Supports up to 6 people. The system assigns a mindset card for each person to help clarify the situation.")}
                         </p>
                       </div>
                     )}
@@ -1770,12 +1779,12 @@ ${themeNote}
                     <div className="bg-mystic-50/80 dark:bg-mystic-800/50 p-4 sm:px-5 rounded-2xl border border-mystic-200/50 dark:border-mystic-700/30 flex items-start gap-3">
                       <Info className="text-mystic-500/80 dark:text-mystic-400 mt-0.5 flex-shrink-0" size={18} />
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-bold text-mystic-900 dark:text-mystic-100 mb-2 tracking-wide">牌陣資訊</p>
-                        <p className="text-xs text-mystic-700/70 dark:text-mystic-500 mb-2">將抽取 {selectedSpread.count} 張牌，位置如下：</p>
+                        <p className="text-sm font-bold text-mystic-900 dark:text-mystic-100 mb-2 tracking-wide">{t("牌陣資訊", "Spread Info")}</p>
+                        <p className="text-xs text-mystic-700/70 dark:text-mystic-500 mb-2">{t(`將抽取 ${translatedSelectedSpread.count} 張牌，位置如下：`, `Will draw ${translatedSelectedSpread.count} cards in these positions:`)}</p>
                         {/* Scrollable pill row with fade mask */}
                         <div className="relative">
                           <div className="flex gap-2 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                            {selectedSpread.positions.map((pos, i) => (
+                            {translatedSelectedSpread.positions.map((pos, i) => (
                               <span
                                 key={i}
                                 className="shrink-0 text-[11px] font-semibold text-mystic-800 dark:text-mystic-300 bg-mystic-100/80 dark:bg-mystic-700/60 border border-mystic-200/50 dark:border-mystic-600 px-2.5 py-1 rounded-full whitespace-nowrap"
@@ -1793,7 +1802,7 @@ ${themeNote}
                     <div className="bg-indigo-50/60 dark:bg-indigo-950/30 p-4 sm:px-5 rounded-2xl border border-indigo-100/60 dark:border-indigo-900/30 flex items-start gap-3">
                       <Lightbulb className="text-indigo-400 dark:text-indigo-400 mt-0.5 flex-shrink-0" size={18} />
                       <div>
-                        <p className="text-sm font-bold text-indigo-900 dark:text-indigo-300 mb-1.5 tracking-wide">{mode === 'lenormand' ? '雷諾曼小知識' : mode === 'thoth' ? '托特小知識' : '塔羅小知識'}</p>
+                        <p className="text-sm font-bold text-indigo-900 dark:text-indigo-300 mb-1.5 tracking-wide">{mode === 'lenormand' ? t('雷諾曼小知識', 'Lenormand Trivia') : mode === 'thoth' ? t('托特小知識', 'Thoth Trivia') : t('塔羅小知識', 'Tarot Trivia')}</p>
                         <p className="text-sm text-indigo-800/80 dark:text-indigo-200/70 leading-relaxed italic">
                           {currentTrivia}
                         </p>
@@ -1806,37 +1815,37 @@ ${themeNote}
 
             <Route path="/result" element={
               <ResultGuard hasData={!!(selectedSpread && (drawnCards.length > 0 || lenormandDrawnCards.length > 0))}>
-                <motion.div
-                  key="result"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="space-y-8 pb-24"
-                >
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                      {mode === 'lenormand' && <span className="text-xs font-bold text-teal-700 dark:text-teal-300 bg-teal-400/25 dark:bg-teal-400/20 px-2 py-0.5 rounded-full border border-teal-500/50 dark:border-teal-400/30 mb-1 inline-block">雷諾曼</span>}
-                      {mode === 'thoth' && <span className="text-xs font-bold text-mystic-700 dark:text-mystic-300 bg-mystic-400/25 dark:bg-mystic-400/20 px-2 py-0.5 rounded-full border border-mystic-500/50 dark:border-mystic-400/30 mb-1 inline-block">托特塔羅</span>}
-                      {mode === 'tarot' && <span className="text-xs font-bold text-amber-700 dark:text-amber-300 bg-amber-400/25 dark:bg-amber-400/20 px-2 py-0.5 rounded-full border border-amber-500/50 dark:border-amber-400/30 mb-1 inline-block">偉特塔羅</span>}
-                      <h2 className="text-2xl font-bold bg-gradient-to-r from-mystic-700 to-indigo-500 bg-clip-text text-transparent dark:from-mystic-200 dark:to-indigo-300 drop-shadow-sm font-serif-tc">{selectedSpread?.name}</h2>
-                      <p className="text-slate-500 dark:text-mystic-400">問題：{question.trim() || '探索當下整體狀態'}</p>
+                  <motion.div
+                    key="result"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="space-y-8 pb-24"
+                  >
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                      <div>
+                        {mode === 'lenormand' && <span className="text-xs font-bold text-teal-700 dark:text-teal-300 bg-teal-400/25 dark:bg-teal-400/20 px-2 py-0.5 rounded-full border border-teal-500/50 dark:border-teal-400/30 mb-1 inline-block">{t("雷諾曼", "Lenormand")}</span>}
+                        {mode === 'thoth' && <span className="text-xs font-bold text-mystic-700 dark:text-mystic-300 bg-mystic-400/25 dark:bg-mystic-400/20 px-2 py-0.5 rounded-full border border-mystic-500/50 dark:border-mystic-400/30 mb-1 inline-block">{t("托特塔羅", "Thoth Tarot")}</span>}
+                        {mode === 'tarot' && <span className="text-xs font-bold text-amber-700 dark:text-amber-300 bg-amber-400/25 dark:bg-amber-400/20 px-2 py-0.5 rounded-full border border-amber-500/50 dark:border-amber-400/30 mb-1 inline-block">{t("偉特塔羅", "Waite Tarot")}</span>}
+                        <h2 className="text-2xl font-bold bg-gradient-to-r from-mystic-700 to-indigo-500 bg-clip-text text-transparent dark:from-mystic-200 dark:to-indigo-300 drop-shadow-sm font-serif-tc">{translatedSelectedSpread?.name}</h2>
+                        <p className="text-slate-500 dark:text-mystic-400">{t("問題：", "Question: ")}{question.trim() || t('探索當下整體狀態', 'Exploring Current Situation')}</p>
+                      </div>
+                      <div className="flex gap-3">
+                        <button
+                          onClick={() => {
+                            flushSync(() => {
+                              setCurrentHistoryId(null);
+                              setDrawnCards([]);
+                              setLenormandDrawnCards([]);
+                            });
+                            trackEvent('redraw', { spread_name: selectedSpread?.name ?? '', system: mode });
+                            navigate('/draw');
+                          }}
+                          className="px-4 py-2 rounded-lg border border-slate-200 dark:border-mystic-800 hover:bg-slate-50 dark:hover:bg-mystic-900 transition-colors text-sm font-medium"
+                        >
+                          {t("重新抽牌", "Draw Again")}
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex gap-3">
-                      <button
-                        onClick={() => {
-                          flushSync(() => {
-                            setCurrentHistoryId(null);
-                            setDrawnCards([]);
-                            setLenormandDrawnCards([]);
-                          });
-                          trackEvent('redraw', { spread_name: selectedSpread?.name ?? '', system: mode });
-                          navigate('/draw');
-                        }}
-                        className="px-4 py-2 rounded-lg border border-slate-200 dark:border-mystic-800 hover:bg-slate-50 dark:hover:bg-mystic-900 transition-colors text-sm font-medium"
-                      >
-                        重新抽牌
-                      </button>
-                    </div>
-                  </div>
 
                   {/* Lenormand Result Layout */}
                   {mode === 'lenormand' && lenormandDrawnCards.length > 0 && (
@@ -1860,10 +1869,10 @@ ${themeNote}
                                 className={`w-full px-6 py-4 rounded-2xl border-2 ${bg} shadow-lg flex flex-col items-center gap-2 transition-all backdrop-blur-sm`}
                               >
                                 <div className="flex items-center gap-3">
-                                  <span className={`text-[10px] sm:text-xs font-black ${theme} opacity-70 uppercase tracking-[0.2em]`}>神諭指引</span>
-                                  <span className={`text-xl sm:text-2xl font-black ${theme} tracking-tight`}>{label}</span>
+                                  <span className={`text-[10px] sm:text-xs font-black ${theme} opacity-70 uppercase tracking-[0.2em]`}>{t("神諭指引", "Oracle Guide")}</span>
+                                  <span className={`text-xl sm:text-2xl font-black ${theme} tracking-tight`}>{t(label, label === "積極" ? "Positive" : label === "消極" ? "Negative" : "Neutral")}</span>
                                 </div>
-                                <p className={`text-xs sm:text-sm font-bold ${theme} opacity-90`}>{oracle.message}</p>
+                                <p className={`text-xs sm:text-sm font-bold ${theme} opacity-90`}>{t(oracle.message, oracle.messageEN ?? oracle.message)}</p>
                               </motion.div>
                             );
                           })()}
@@ -1884,10 +1893,10 @@ ${themeNote}
                         <div className="relative z-10 w-full overflow-x-auto pb-2">
                           <div className="flex flex-col gap-2 mx-auto" style={{ minWidth: '580px', maxWidth: '920px' }}>
                             {[
-                              { label: '第一行 (位置 1–9)', color: 'text-stone-700 dark:text-stone-300', bg: 'bg-stone-100/50 dark:bg-mystic-900/40' },
-                              { label: '第二行 (位置 10–18)', color: 'text-stone-700 dark:text-stone-300', bg: 'bg-stone-100/50 dark:bg-mystic-900/40' },
-                              { label: '第三行 (位置 19–27)', color: 'text-stone-700 dark:text-stone-300', bg: 'bg-stone-100/50 dark:bg-mystic-900/40' },
-                              { label: '第四行 (位置 28–36)', color: 'text-stone-700 dark:text-stone-300', bg: 'bg-stone-100/50 dark:bg-mystic-900/40' },
+                              { label: t('第一行 (位置 1–9)', 'Row 1 (Pos 1–9)'), color: 'text-stone-700 dark:text-stone-300', bg: 'bg-stone-100/50 dark:bg-mystic-900/40' },
+                              { label: t('第二行 (位置 10–18)', 'Row 2 (Pos 10–18)'), color: 'text-stone-700 dark:text-stone-300', bg: 'bg-stone-100/50 dark:bg-mystic-900/40' },
+                              { label: t('第三行 (位置 19–27)', 'Row 3 (Pos 19–27)'), color: 'text-stone-700 dark:text-stone-300', bg: 'bg-stone-100/50 dark:bg-mystic-900/40' },
+                              { label: t('第四行 (位置 28–36)', 'Row 4 (Pos 28–36)'), color: 'text-stone-700 dark:text-stone-300', bg: 'bg-stone-100/50 dark:bg-mystic-900/40' },
                             ].map((row, rowIdx) => (
                               <div key={rowIdx} className={`rounded-xl px-2 pt-1 pb-2 ${row.bg}`}>
                                 <div className={`text-[10px] font-bold mb-1.5 flex items-center gap-2 ${row.color}`}>
@@ -1911,7 +1920,7 @@ ${themeNote}
                               </div>
                             ))}
                             <p className="text-center text-[10px] text-stone-400 dark:text-stone-500 mt-1">
-                              ✦ 金色邊框為中軸脊骨宮位（第 5、14、23、32 宮），是各行主題的核心
+                              {t("✦ 金色邊框為中軸脊骨宮位（第 5、14、23、32 宮），是各行主題的核心", "✦ Gold border highlights the spine houses (5, 14, 23, 32), which form the core axis of each row")}
                             </p>
                           </div>
                         </div>
@@ -1943,7 +1952,7 @@ ${themeNote}
 
                       {hasExtraCards && (
                         <div className="relative z-10 mt-16 pt-16 border-t border-amber-200/50 dark:border-mystic-800/50">
-                          <h3 className="text-center text-xl font-bold gold-text mb-8 tracking-widest">✨ 補充指引</h3>
+                          <h3 className="text-center text-xl font-bold gold-text mb-8 tracking-widest">{t("✨ 補充指引", "✨ Follow-up Guidance")}</h3>
                           <div className="flex flex-wrap justify-center gap-6 sm:gap-10">
                             {extraCards.map((card, index) => (
                               <div key={index} className="flex flex-col items-center gap-4">
@@ -1960,22 +1969,22 @@ ${themeNote}
                       <div className="relative z-10 mt-16 flex flex-col items-center justify-center w-full">
                         <div className="flex flex-col items-center gap-4 bg-white/60 dark:bg-mystic-900/60 p-6 sm:p-8 rounded-[2rem] border border-amber-200/50 dark:border-mystic-800 w-full max-w-md backdrop-blur shadow-xl dark:shadow-2xl">
                           <div className="text-center mb-1">
-                            <h4 className="font-bold text-lg text-amber-800 dark:text-mystic-300">追加牌卡指引</h4>
-                            <p className="text-xs text-amber-600 dark:text-mystic-500 mt-1">若對上述結果有不懂之處，請在此發問</p>
+                            <h4 className="font-bold text-lg text-amber-800 dark:text-mystic-300">{t("追加牌卡指引", "Ask Follow-up Questions")}</h4>
+                            <p className="text-xs text-amber-600 dark:text-mystic-500 mt-1">{t("若對上述結果有不懂之處，請在此發問", "If you have questions about the reading, ask here")}</p>
                           </div>
                           <input
                             type="text"
                             value={extraQuestion}
                             onChange={(e) => setExtraQuestion(e.target.value)}
                             onKeyDown={(e) => { if (e.key === 'Enter') drawExtraCard(); }}
-                            placeholder="請輸入補抽想深入了解的事..."
+                            placeholder={t("請輸入補抽想深入了解的事...", "What would you like to clarify or explore deeper?")}
                             className="w-full px-5 py-3.5 rounded-xl border border-amber-200 dark:border-mystic-700 bg-white/70 dark:bg-mystic-950/80 focus:ring-2 focus:ring-amber-400 dark:focus:ring-mystic-500 outline-none text-slate-800 dark:text-white text-center text-sm shadow-inner transition-colors"
                           />
                           <button
                             onClick={drawExtraCard}
                             className="w-full py-3 mt-1 bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 dark:hover:from-mystic-500 dark:hover:to-mystic-400 text-stone-50 dark:text-white rounded-xl font-bold shadow-lg shadow-stone-800/10 dark:shadow-mystic-500/20 transition-all active:scale-95 flex items-center justify-center gap-2"
                           >
-                            <Sparkles size={18} /> 補抽一張
+                            <Sparkles size={18} /> {t("補抽一張", "Draw Follow-up Card")}
                           </button>
                         </div>
                       </div>
@@ -1987,8 +1996,8 @@ ${themeNote}
                     <div className="relative bg-white/40 dark:bg-mystic-950 rounded-[2rem] p-6 sm:p-8 shadow-xl border-2 border-dashed border-amber-200/60 dark:border-mystic-700/40 backdrop-blur-sm">
                       <div className="flex flex-col items-center gap-3">
                         <div className="text-center">
-                          <p className="text-xs font-bold text-amber-700 dark:text-mystic-400 uppercase tracking-widest">底牌</p>
-                          <p className="text-[11px] text-slate-500 dark:text-mystic-500 mt-0.5">牌堆最底的一張，反映潛藏的動機或心理狀態</p>
+                          <p className="text-xs font-bold text-amber-700 dark:text-mystic-400 uppercase tracking-widest">{t("底牌", "Bottom Card")}</p>
+                          <p className="text-[11px] text-slate-500 dark:text-mystic-500 mt-0.5">{t("牌堆最底的一張，反映潛藏的動機或心理狀態", "The card at the bottom of the deck, reflecting underlying motivations or states")}</p>
                         </div>
                         <TarotCardDisplay card={bottomCard} index={0} isExtra={true} system={mode === 'thoth' ? 'thoth' : 'waite'} />
                       </div>
@@ -1998,10 +2007,10 @@ ${themeNote}
                   <div className="bg-white/80 dark:bg-mystic-900 p-6 rounded-2xl border border-amber-100 dark:border-mystic-800 text-center shadow-sm">
                     <p className="text-amber-800 dark:text-mystic-300 italic font-medium">
                       {mode === 'lenormand'
-                        ? '「雷諾曼牌訴說的是日常的故事，而你才是故事的主角。」'
+                        ? t('「雷諾曼牌訴說的是日常的故事，而你才是故事的主角。」', '“Lenormand cards tell stories of daily life, but you are the protagonist.”')
                         : mode === 'thoth'
-                          ? '「能量沒有好壞，只有是否被意識到。」'
-                          : '「牌卡只是指引，真正的答案在你的內心。」'}
+                          ? t('「能量沒有好壞，只有是否被意識到。」', '“Energy is neither good nor bad, it only awaits awareness.”')
+                          : t('「牌卡只是指引，真正的答案在你的內心。」', '“The cards are only guides, the true answer lies in your heart.”')}
                     </p>
                   </div>
 
@@ -2015,7 +2024,7 @@ ${themeNote}
                           exit={{ opacity: 0, y: -10 }}
                           className="absolute -top-12 text-sm font-medium text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-900/30 px-4 py-2 rounded-full border border-green-200 dark:border-green-800 shadow-sm"
                         >
-                          ✅ 已複製 {showCopySuccess === 'all' ? '全部結果' : showCopySuccess === 'main' ? '主牌陣' : '補抽指引'} 到剪貼簿
+                          ✅ {t("已複製", "Copied")} {showCopySuccess === 'all' ? t('全部結果', 'all results') : showCopySuccess === 'main' ? t('主牌陣', 'main spread') : t('補抽指引', 'follow-up cards')} {t("到剪貼簿", "to clipboard")}
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -2027,19 +2036,19 @@ ${themeNote}
                             onClick={() => copyToClipboard('all')}
                             className="px-5 py-2.5 rounded-xl bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 hover:dark:from-mystic-500 hover:dark:to-mystic-400 text-stone-50 dark:text-white shadow-lg shadow-stone-800/10 dark:shadow-mystic-500/20 transition-all hover:-translate-y-1 active:scale-95 font-bold flex items-center gap-2 text-sm"
                           >
-                            <Copy size={16} /> 複製全部
+                            <Copy size={16} /> {t("複製全部", "Copy All")}
                           </button>
                           <button
                             onClick={() => copyToClipboard('main')}
                             className="px-4 py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-mystic-800 dark:hover:bg-mystic-700 text-amber-700 dark:text-mystic-300 border border-amber-200 dark:border-mystic-700 transition-all hover:-translate-y-1 active:scale-95 font-bold flex items-center gap-2 text-sm"
                           >
-                            <Copy size={14} /> 僅主牌陣
+                            <Copy size={14} /> {t("僅主牌陣", "Main Only")}
                           </button>
                           <button
                             onClick={() => copyToClipboard('extra')}
                             className="px-4 py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-mystic-800 dark:hover:bg-mystic-700 text-amber-700 dark:text-mystic-300 border border-amber-200 dark:border-mystic-700 transition-all hover:-translate-y-1 active:scale-95 font-bold flex items-center gap-2 text-sm"
                           >
-                            <Copy size={14} /> 僅補抽
+                            <Copy size={14} /> {t("僅補抽", "Follow-up Only")}
                           </button>
                         </>
                       ) : (
@@ -2047,7 +2056,7 @@ ${themeNote}
                           onClick={() => copyToClipboard('all')}
                           className="px-8 py-3 rounded-xl bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 dark:hover:from-mystic-500 dark:hover:to-mystic-400 text-stone-50 dark:text-white shadow-lg shadow-stone-800/10 dark:shadow-mystic-500/20 transition-all hover:-translate-y-1 active:scale-95 font-bold flex items-center gap-2"
                         >
-                          <Copy size={18} /> 複製 AI 解讀 Prompt
+                          <Copy size={18} /> {t("複製 AI 解讀 Prompt", "Copy AI Prompt")}
                         </button>
                       )}
                     </div>
@@ -2065,7 +2074,7 @@ ${themeNote}
                         }}
                         className="px-5 py-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 text-indigo-600 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 transition-all hover:-translate-y-1 active:scale-95 font-bold flex items-center gap-2 text-sm"
                       >
-                        🖼 儲存分享圖
+                        {t("🖼 儲存分享圖", "🖼 Save Share Image")}
                       </button>
                     </div>
 
@@ -2143,68 +2152,68 @@ ${themeNote}
             setSelectedHistoryIds(new Set());
             setHistorySelectMode(false);
             setShowBatchDeleteConfirm(false);
-            showToast(`已刪除 ${toDelete.size} 筆紀錄`);
-          };
-
-          const FILTER_TABS: { key: typeof historyFilter; label: string }[] = [
-            { key: 'all', label: '全部' },
-            { key: 'week', label: '本週' },
-            { key: 'month', label: '本月' },
-            { key: 'older', label: '更早' },
-          ];
-
-          return (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.18, ease: 'easeIn' }}
-              className="fixed inset-0 z-[100] flex justify-end bg-slate-900/20 dark:bg-black/40 backdrop-blur-sm"
-              onClick={() => { setIsHistoryOpen(false); setHistorySelectMode(false); setSelectedHistoryIds(new Set()); }}
-            >
-              <motion.div
-                variants={{
-                  hidden: { x: '100%' },
-                  visible: { x: 0, transition: { duration: 0.28, ease: [0.16, 1, 0.3, 1] } },
-                  exit: { x: '100%', transition: { duration: 0.18, ease: [0.36, 0.66, 0.04, 1] } },
-                }}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                className="w-full max-w-sm sm:max-w-md lg:w-[40vw] lg:max-w-2xl h-full bg-[#f7f3e8]/95 dark:bg-mystic-950/95 backdrop-blur-2xl shadow-[-20px_0_40px_rgba(68,64,60,0.05)] dark:shadow-[-20px_0_40px_rgba(0,0,0,0.3)] border-l border-stone-200 dark:border-mystic-800/80 flex flex-col"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {/* Header */}
-                <div className="px-6 lg:px-8 py-5 border-b border-stone-200 dark:border-mystic-800/50 flex items-center justify-between bg-[#f0ead6]/80 dark:bg-mystic-900/50 shrink-0">
-                  <h2 className="text-xl font-bold flex items-center gap-2">
-                    <History size={20} className="text-stone-600 dark:text-mystic-500" /> 歷史紀錄
-                  </h2>
-                  <div className="flex items-center gap-2">
-
-                    {history.some(r => !r.question.trim()) && !historySelectMode && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setHistory(prev => prev.filter(r => r.question.trim() !== ''));
-                        }}
-                        className="p-2 text-slate-400 hover:text-amber-600 transition-colors flex items-center gap-1 text-sm font-medium bg-slate-100/50 hover:bg-amber-50 dark:bg-mystic-800/50 dark:hover:bg-amber-900/20 rounded-lg px-3"
-                        title="清除未輸入問題的紀錄"
-                      >
-                        <Trash2 size={16} />
-                        <span className="hidden sm:inline">清空未填</span>
-                      </button>
-                    )}
-                    {history.length > 0 && (
-                      <button
-                        onClick={toggleSelectMode}
-                        className={`px-3 py-1.5 rounded-lg text-sm font-bold transition-all ${historySelectMode
-                            ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200'
-                            : 'bg-slate-100/50 dark:bg-mystic-800/50 text-slate-600 dark:text-mystic-300 hover:bg-slate-200 dark:hover:bg-mystic-700'
-                          }`}
-                      >
-                        {historySelectMode ? '取消' : '管理'}
-                      </button>
-                    )}
+             showToast(t(`已刪除 ${toDelete.size} 筆紀錄`, `Deleted ${toDelete.size} records`));
+           };
+ 
+           const FILTER_TABS: { key: typeof historyFilter; label: string }[] = [
+             { key: 'all', label: t('全部', 'All') },
+             { key: 'week', label: t('本週', 'This Week') },
+             { key: 'month', label: t('本月', 'This Month') },
+             { key: 'older', label: t('更早', 'Older') },
+           ];
+ 
+           return (
+             <motion.div
+               initial={{ opacity: 0 }}
+               animate={{ opacity: 1 }}
+               exit={{ opacity: 0 }}
+               transition={{ duration: 0.18, ease: 'easeIn' }}
+               className="fixed inset-0 z-[100] flex justify-end bg-slate-900/20 dark:bg-black/40 backdrop-blur-sm"
+               onClick={() => { setIsHistoryOpen(false); setHistorySelectMode(false); setSelectedHistoryIds(new Set()); }}
+             >
+               <motion.div
+                 variants={{
+                   hidden: { x: '100%' },
+                   visible: { x: 0, transition: { duration: 0.28, ease: [0.16, 1, 0.3, 1] } },
+                   exit: { x: '100%', transition: { duration: 0.18, ease: [0.36, 0.66, 0.04, 1] } },
+                 }}
+                 initial="hidden"
+                 animate="visible"
+                 exit="exit"
+                 className="w-full max-w-sm sm:max-w-md lg:w-[40vw] lg:max-w-2xl h-full bg-[#f7f3e8]/95 dark:bg-mystic-950/95 backdrop-blur-2xl shadow-[-20px_0_40px_rgba(68,64,60,0.05)] dark:shadow-[-20px_0_40px_rgba(0,0,0,0.3)] border-l border-stone-200 dark:border-mystic-800/80 flex flex-col"
+                 onClick={(e) => e.stopPropagation()}
+               >
+                 {/* Header */}
+                 <div className="px-6 lg:px-8 py-5 border-b border-stone-200 dark:border-mystic-800/50 flex items-center justify-between bg-[#f0ead6]/80 dark:bg-mystic-900/50 shrink-0">
+                   <h2 className="text-xl font-bold flex items-center gap-2">
+                     <History size={20} className="text-stone-600 dark:text-mystic-500" /> {t("歷史紀錄", "History")}
+                   </h2>
+                   <div className="flex items-center gap-2">
+ 
+                     {history.some(r => !r.question.trim()) && !historySelectMode && (
+                       <button
+                         onClick={(e) => {
+                           e.stopPropagation();
+                           setHistory(prev => prev.filter(r => r.question.trim() !== ''));
+                         }}
+                         className="p-2 text-slate-400 hover:text-amber-600 transition-colors flex items-center gap-1 text-sm font-medium bg-slate-100/50 hover:bg-amber-50 dark:bg-mystic-800/50 dark:hover:bg-amber-900/20 rounded-lg px-3"
+                         title={t("清除未輸入問題的紀錄", "Clear records with no question input")}
+                       >
+                         <Trash2 size={16} />
+                         <span className="hidden sm:inline">{t("清空未填", "Clear Blank")}</span>
+                       </button>
+                     )}
+                     {history.length > 0 && (
+                       <button
+                         onClick={toggleSelectMode}
+                         className={`px-3 py-1.5 rounded-lg text-sm font-bold transition-all ${historySelectMode
+                             ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200'
+                             : 'bg-slate-100/50 dark:bg-mystic-800/50 text-slate-600 dark:text-mystic-300 hover:bg-slate-200 dark:hover:bg-mystic-700'
+                           }`}
+                       >
+                         {historySelectMode ? t('取消', 'Cancel') : t('管理', 'Manage')}
+                       </button>
+                     )}
                     <button onClick={() => { setIsHistoryOpen(false); setHistorySelectMode(false); setSelectedHistoryIds(new Set()); }} className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors ml-1">
                       <X size={20} />
                     </button>
@@ -2242,18 +2251,18 @@ ${themeNote}
                       id="select-all-history"
                     />
                     <label htmlFor="select-all-history" className="text-sm font-semibold text-slate-600 dark:text-mystic-300 cursor-pointer select-none">
-                      全選（{filteredHistory.length} 筆）
+                      {t("全選（", "Select All (")}{filteredHistory.length}{t(" 筆）", " items)")}
                     </label>
                     <button
                       onClick={() => {
                         const noQuestionIds = filteredHistory
-                          .filter(r => !r.question?.trim() || r.question.trim() === '探索當下整體狀態')
+                          .filter(r => !r.question?.trim() || r.question.trim() === t('探索當下整體狀態', 'Exploring Current Situation'))
                           .map(r => r.id);
                         setSelectedHistoryIds(prev => new Set([...prev, ...noQuestionIds]));
                       }}
                       className="ml-auto text-xs font-semibold px-2.5 py-1 rounded-lg border border-stone-300/60 dark:border-mystic-700 text-slate-500 dark:text-mystic-400 hover:bg-stone-100 dark:hover:bg-mystic-800 transition-colors select-none"
                     >
-                      選取未提問的紀錄
+                      {t("選取未提問的紀錄", "Select empty questions")}
                     </button>
                   </div>
                 )}
@@ -2311,13 +2320,13 @@ ${themeNote}
                               </span>
                             </div>
                             <p className="text-sm text-slate-600 dark:text-mystic-300 line-clamp-2 min-h-[2.5rem] mb-3">
-                              {record.question?.trim() || '探索當下整體狀態'}
+                              {record.question?.trim() || t('探索當下整體狀態', 'Exploring Current Situation')}
                             </p>
                             <div className="flex items-center justify-between text-xs font-semibold text-stone-600 dark:text-mystic-400">
-                              {record.mode === 'lenormand' && <span className="text-teal-700 dark:text-teal-300 bg-teal-400/25 dark:bg-teal-400/20 px-1.5 py-0.5 rounded-md border border-teal-500/50 dark:border-teal-400/30">雷諾曼</span>}
-                              {record.mode === 'thoth' && <span className="text-mystic-700 dark:text-mystic-300 bg-mystic-400/25 dark:bg-mystic-400/20 px-1.5 py-0.5 rounded-md border border-mystic-500/50 dark:border-mystic-400/30">托特</span>}
-                              {record.mode === 'tarot' && <span className="text-amber-700 dark:text-amber-300 bg-amber-400/25 dark:bg-amber-400/20 px-1.5 py-0.5 rounded-md border border-amber-500/50 dark:border-amber-400/30">偉特</span>}
-                              <span>{(record.lenormandCards?.length ?? record.cards.length)} 張牌卡</span>
+                              {record.mode === 'lenormand' && <span className="text-teal-700 dark:text-teal-300 bg-teal-400/25 dark:bg-teal-400/20 px-1.5 py-0.5 rounded-md border border-teal-500/50 dark:border-teal-400/30">{t("雷諾曼", "Lenormand")}</span>}
+                              {record.mode === 'thoth' && <span className="text-mystic-700 dark:text-mystic-300 bg-mystic-400/25 dark:bg-mystic-400/20 px-1.5 py-0.5 rounded-md border border-mystic-500/50 dark:border-mystic-400/30">{t("托特", "Thoth")}</span>}
+                              {record.mode === 'tarot' && <span className="text-amber-700 dark:text-amber-300 bg-amber-400/25 dark:bg-amber-400/20 px-1.5 py-0.5 rounded-md border border-amber-500/50 dark:border-amber-400/30">{t("偉特", "Waite")}</span>}
+                              <span>{(record.lenormandCards?.length ?? record.cards.length)} {t("張牌卡", "cards")}</span>
                             </div>
                           </div>
                         </div>
@@ -2346,22 +2355,22 @@ ${themeNote}
                               }}
                               className="flex-[3] py-3.5 bg-mystic-600/70 dark:bg-mystic-700/70 text-white hover:bg-mystic-600/90 dark:hover:bg-mystic-700/90 rounded-xl shadow-sm transition-all active:scale-95 text-[15px] font-bold flex items-center justify-center gap-2"
                             >
-                              👁️ 查看
+                              {t("👁️ 查看", "👁️ View")}
                             </button>
                             <button
                               onClick={(e) => { e.stopPropagation(); copyToClipboard('all', record); }}
                               className="flex-[3] py-3.5 bg-transparent border border-mystic-400/40 text-mystic-300 hover:bg-mystic-400/10 transition-all rounded-xl active:scale-95 text-[15px] font-bold flex items-center justify-center gap-2"
-                              title="直接複製完整 AI 解讀 Prompt"
+                              title={t("直接複製完整 AI 解讀 Prompt", "Copy full AI prompt directly")}
                             >
                               <Copy size={18} />
-                              <span>複製解讀</span>
+                              <span>{t("複製解讀", "Copy Prompt")}</span>
                             </button>
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setHistory(prev => prev.filter(h => h.id !== record.id));
                                 trackEvent('delete_history', { type: 'single', count: 1 });
-                                showToast('已刪除紀錄');
+                                showToast(t('已刪除紀錄', 'Record deleted'));
                               }}
                               className="flex-1 py-3.5 bg-transparent text-red-400/90 hover:text-red-400 hover:scale-110 transition-all rounded-xl active:scale-95 flex items-center justify-center"
                               aria-label="刪除紀錄"
@@ -2374,7 +2383,7 @@ ${themeNote}
                     ))
                   ) : (
                     <div className="text-center py-16 text-slate-500 dark:text-mystic-400">
-                      <p>{history.length === 0 ? '尚未有任何抽牌紀錄' : '此時間區間無紀錄'}</p>
+                      <p>{history.length === 0 ? t('尚未有任何抽牌紀錄', 'No reading records yet') : t('此時間區間無紀錄', 'No records in this period')}</p>
                     </div>
                   )}
                 </div>
@@ -2389,14 +2398,14 @@ ${themeNote}
                       className="shrink-0 px-4 lg:px-8 py-3 border-t border-stone-200 dark:border-mystic-800/60 bg-[#f0ead6]/90 dark:bg-mystic-900/80 flex items-center justify-between gap-3"
                     >
                       <span className="text-sm font-semibold text-slate-600 dark:text-mystic-300">
-                        已選 <span className="text-amber-600 dark:text-amber-400 font-black">{selectedHistoryIds.size}</span> 筆
+                        {t("已選", "Selected")} <span className="text-amber-600 dark:text-amber-400 font-black">{selectedHistoryIds.size}</span> {t("筆", "items")}
                       </span>
                       <button
                         disabled={selectedHistoryIds.size === 0}
                         onClick={() => setShowBatchDeleteConfirm(true)}
                         className="px-5 py-2 rounded-xl font-bold text-sm bg-red-400/80 hover:bg-red-500/80 text-white shadow-lg shadow-red-500/20 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
                       >
-                        刪除選取
+                        {t("刪除選取", "Delete Selected")}
                       </button>
                     </motion.div>
                   )}
@@ -2416,12 +2425,12 @@ ${themeNote}
                         <div className="w-12 h-12 bg-red-100 dark:bg-red-900/40 rounded-full flex items-center justify-center text-red-500 mb-1">
                           <Trash2 size={24} />
                         </div>
-                        <h3 className="text-lg font-bold text-red-600 dark:text-red-400">確定刪除 {selectedHistoryIds.size} 筆紀錄？</h3>
-                        <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">此動作無法復原，請確認是否要繼續。</p>
+                        <h3 className="text-lg font-bold text-red-600 dark:text-red-400">{t("確定刪除", "Are you sure you want to delete")} {selectedHistoryIds.size} {t("筆紀錄？", " records?")}</h3>
+                        <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">{t("此動作無法復原，請確認是否要繼續。", "This action cannot be undone. Are you sure you want to proceed?")}</p>
                         <div className="flex w-full gap-3 mt-1">
-                          <button onClick={() => setShowBatchDeleteConfirm(false)} className="flex-1 py-2.5 rounded-xl font-bold bg-slate-100 dark:bg-mystic-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-mystic-700 transition-colors">取消</button>
+                          <button onClick={() => setShowBatchDeleteConfirm(false)} className="flex-1 py-2.5 rounded-xl font-bold bg-slate-100 dark:bg-mystic-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-mystic-700 transition-colors">{t("取消", "Cancel")}</button>
                           <button onClick={() => { executeBatchDelete(); trackEvent('delete_history', { type: 'batch', count: selectedHistoryIds.size }); }} className="flex-1 py-2.5 rounded-xl font-bold bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/20 transition-all active:scale-95">
-                            確認刪除
+                            {t("確認刪除", "Confirm Delete")}
                           </button>
                         </div>
                       </div>
@@ -2446,14 +2455,14 @@ ${themeNote}
               className="bg-white dark:bg-mystic-900 w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden"
             >
               <div className="px-6 py-4 border-b border-slate-100 dark:border-mystic-800 flex justify-between items-center">
-                <h3 className="text-xl font-bold">自訂牌陣</h3>
+                <h3 className="text-xl font-bold">{t("自訂牌陣", "Custom Spread")}</h3>
                 <button onClick={() => setIsModalOpen(false)} className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
                   <X size={24} />
                 </button>
               </div>
               <form onSubmit={saveSpread} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
                 <div>
-                  <label className="block text-sm font-medium mb-1">牌陣名稱</label>
+                  <label className="block text-sm font-medium mb-1">{t("牌陣名稱", "Spread Name")}</label>
                   <input
                     required
                     value={editingSpread.name}
@@ -2462,25 +2471,25 @@ ${themeNote}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">提示文字</label>
+                  <label className="block text-sm font-medium mb-1">{t("提示文字", "Hint Text")}</label>
                   <input
                     value={editingSpread.hint}
                     onChange={e => setEditingSpread({ ...editingSpread, hint: e.target.value })}
-                    placeholder="例如：深入剖析..."
+                    placeholder={t("例如：深入剖析...", "e.g. Deep analysis...")}
                     className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-mystic-800 bg-slate-50 dark:bg-mystic-950"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">分類標籤 <span className="text-slate-400 font-normal">(選填)</span></label>
+                  <label className="block text-sm font-medium mb-1">{t("分類標籤", "Category Tag")} <span className="text-slate-400 font-normal">{t("(選填)", "(Optional)")}</span></label>
                   <input
                     value={editingSpread.category ?? ''}
                     onChange={e => setEditingSpread({ ...editingSpread, category: e.target.value })}
-                    placeholder="例如：關係、日常、工作…"
+                    placeholder={t("例如：關係、日常、工作…", "e.g. Relationship, Daily, Work...")}
                     className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-mystic-800 bg-slate-50 dark:bg-mystic-950"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">抽牌張數 ({editingSpread.count})</label>
+                  <label className="block text-sm font-medium mb-1">{t("抽牌張數 (", "Number of Cards (")}{editingSpread.count}{t(")", ")")}</label>
                   <input
                     type="range" min="1" max="20"
                     value={editingSpread.count}
@@ -2498,12 +2507,12 @@ ${themeNote}
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium">各位置名稱</label>
+                  <label className="block text-sm font-medium">{t("各位置名稱", "Position Names")}</label>
                   {editingSpread.positions.map((pos, i) => (
                     <input
                       key={i}
                       required
-                      placeholder={`位置 ${i + 1} 名稱`}
+                      placeholder={`${t("位置", "Position")} ${i + 1} ${t("名稱", "Name")}`}
                       value={pos}
                       onChange={e => {
                         const newPos = [...editingSpread.positions];
@@ -2518,7 +2527,7 @@ ${themeNote}
                   type="submit"
                   className="w-full py-3 bg-mystic-600 hover:bg-mystic-500 text-white rounded-xl font-bold transition-colors"
                 >
-                  儲存牌陣
+                  {t("儲存牌陣", "Save Spread")}
                 </button>
               </form>
             </motion.div>
@@ -2543,7 +2552,7 @@ ${themeNote}
 
       {/* Global Footer */}
       <footer className="text-center py-4 border-t border-stone-100/60 dark:border-mystic-900/60 bg-white/30 dark:bg-mystic-950/30 backdrop-blur-sm flex flex-col items-center gap-1.5">
-        <p className="text-xs text-slate-400 dark:text-mystic-600">© 2026 Tarot Draw｜本站內容僅供娛樂與自我探索參考</p>
+        <p className="text-xs text-slate-400 dark:text-mystic-600">{t("© 2026 Tarot Draw｜本站內容僅供娛樂與自我探索參考", "© 2026 Tarot Draw | Content is for entertainment & self-exploration only")}</p>
         <a
           href="https://forms.gle/oXj1gXmqR83f3cfP8"
           target="_blank"
@@ -2551,7 +2560,7 @@ ${themeNote}
           onClick={() => trackEvent('click_feedback')}
           className="text-xs text-slate-400 dark:text-mystic-600 hover:text-amber-600 dark:hover:text-mystic-400 transition-colors"
         >
-          有想反饋的嗎？點這裡 →
+          {t("有想反饋的嗎？點這裡 →", "Feedback? Click here →")}
         </a>
       </footer>
     </div>
