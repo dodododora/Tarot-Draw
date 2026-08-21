@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect, useCallback, type MouseEvent, type FormEvent } from 'react';
 import { flushSync } from 'react-dom';
 import { useNavigate, useLocation, Routes, Route, Navigate } from 'react-router-dom';
-import { Moon, Sun, Plus, Trash2, Edit2, Copy, ArrowLeft, Sparkles, Wand2, Info, X, History, CheckCircle2, Compass, Lightbulb, Clover, GitCompare, LayoutGrid, User, Heart, Briefcase, Coins, TreePine, Sparkles, BoxSelect, Navigation } from 'lucide-react';
+import { Moon, Sun, Plus, Trash2, Edit2, Copy, ArrowLeft, Sparkles, Wand2, Info, X, History, CheckCircle2, Compass, Lightbulb, Clover, GitCompare, LayoutGrid, User, Heart, Briefcase, Coins, TreePine, Sparkles, BoxSelect, Navigation, Star, Hexagon } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ALL_CARDS, THOTH_SPREADS, WAITE_SPREADS, WAITE_SPREAD_IDS, THOTH_SPREAD_IDS, getCardEmoji, getCardImagePath, TAROT_TRIVIA, LENORMAND_CARDS, LENORMAND_SPREADS, LENORMAND_TRIVIA, THOTH_ALL_CARDS, THOTH_TRIVIA, ORACLE_DATA, type Spread, type TarotCard, type LenormandCard } from './constants';
 import { shuffleAndDraw } from './deckEngine';
@@ -1373,7 +1373,7 @@ ${themeNote}
                 : 'tab-inactive'
                 }`}
             >
-              <Sun size={14} className="inline-block mr-1 -mt-0.5" /><span className="text-[10px] sm:text-xs"> {t("偉特", "Waite")}</span>
+              <Star size={14} className="inline-block mr-1 -mt-0.5" /><span className="text-[10px] sm:text-xs"> {t("偉特", "Waite")}</span>
             </button>
             <button
               onClick={() => { setMode('thoth'); navigate('/'); setSelectedSpread(null); trackEvent('select_system', { system: 'thoth' }); }}
@@ -1382,7 +1382,7 @@ ${themeNote}
                 : 'tab-inactive'
                 }`}
             >
-              <Moon size={14} className="inline-block mr-1 -mt-0.5" /><span className="text-[10px] sm:text-xs"> {t("托特", "Thoth")}</span>
+              <Hexagon size={14} className="inline-block mr-1 -mt-0.5" /><span className="text-[10px] sm:text-xs"> {t("托特", "Thoth")}</span>
             </button>
           </div>
 
