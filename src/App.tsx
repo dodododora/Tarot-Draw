@@ -1562,7 +1562,7 @@ ${themeNote}
                       <div className="flex items-center gap-2">
                         <button
                           onClick={(e) => { e.stopPropagation(); openAddModal(); }}
-                          className="flex items-center gap-2 px-4 py-2 bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 text-stone-50 dark:text-white rounded-lg transition-colors text-sm font-medium shadow-md dark:shadow-mystic-500/20"
+                          className="flex items-center gap-2 px-4 py-2 btn-primary text-stone-50 dark:text-white rounded-lg transition-colors text-sm font-medium shadow-md dark:shadow-mystic-500/20"
                         >
                           <Plus size={18} /> {t("新增牌陣", "Add Spread")}
                         </button>
@@ -1672,13 +1672,13 @@ ${themeNote}
                       </div>
 
                       {selectedSpread.id === 'len-36' && mode === 'lenormand' && (
-                        <div className="border border-stone-200 dark:border-mystic-800 rounded-xl p-4 bg-stone-50/50 dark:bg-mystic-950/40">
+                        <div className="border border-stone-200 dark:border-mystic-800 rounded-xl p-4 bg-[#F4EFE6]/50 dark:bg-[#09060E]/40">
                           <details className="group">
                             <summary className="flex items-center justify-between cursor-pointer select-none text-xs font-bold text-secondary uppercase tracking-widest list-none">
                               <span className="flex items-center gap-1.5 select-none">
                                 {t("🔮 大展開設定 (展開可自訂角色/主題)", "🔮 Grand Tableau Settings (Click to Customize)")}
                               </span>
-                              <span className="text-stone-400 group-open:rotate-180 transition-transform duration-200 select-none">
+                              <span className="text-hint group-open:rotate-180 transition-transform duration-200 select-none">
                                 ▼
                               </span>
                             </summary>
@@ -1696,8 +1696,8 @@ ${themeNote}
                                       onClick={() => setGtQuerent(opt.value as any)}
                                       className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-all select-none ${
                                         gtQuerent === opt.value
-                                          ? 'border-teal-500 bg-teal-50/30 text-teal-700 dark:text-teal-400'
-                                          : 'divider-subtle hover:bg-stone-50 dark:hover:bg-mystic-900/50 text-secondary'
+                                          ? 'border-[#2D5A4C] bg-[#E1E8E6]/30 text-[#2D5A4C] dark:text-[#5C9E82]'
+                                          : 'divider-subtle hover:bg-[#F4EFE6] dark:hover:bg-[#120E1E]/50 text-secondary'
                                       }`}
                                     >
                                       {opt.label}
@@ -1720,8 +1720,8 @@ ${themeNote}
                                       onClick={() => setGtPartner(opt.value as any)}
                                       className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-all select-none ${
                                         gtPartner === opt.value
-                                          ? 'border-teal-500 bg-teal-50/30 text-teal-700 dark:text-teal-400'
-                                          : 'divider-subtle hover:bg-stone-50 dark:hover:bg-mystic-900/50 text-secondary'
+                                          ? 'border-[#2D5A4C] bg-[#E1E8E6]/30 text-[#2D5A4C] dark:text-[#5C9E82]'
+                                          : 'divider-subtle hover:bg-[#F4EFE6] dark:hover:bg-[#120E1E]/50 text-secondary'
                                       }`}
                                     >
                                       {opt.label}
@@ -1746,8 +1746,8 @@ ${themeNote}
                                       onClick={() => setGtTheme(opt.value as any)}
                                       className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-all select-none ${
                                         gtTheme === opt.value
-                                          ? 'border-teal-500 bg-teal-50/30 text-teal-700 dark:text-teal-400'
-                                          : 'divider-subtle hover:bg-stone-50 dark:hover:bg-mystic-900/50 text-secondary'
+                                          ? 'border-[#2D5A4C] bg-[#E1E8E6]/30 text-[#2D5A4C] dark:text-[#5C9E82]'
+                                          : 'divider-subtle hover:bg-[#F4EFE6] dark:hover:bg-[#120E1E]/50 text-secondary'
                                       }`}
                                     >
                                       {opt.label}
@@ -1761,11 +1761,11 @@ ${themeNote}
                       )}
 
                       {/* Draw Mode Toggle */}
-                      <div className="flex rounded-xl overflow-hidden border border-slate-200 dark:border-mystic-700 p-0.5 gap-0.5 bg-slate-100/70 dark:bg-mystic-800/50">
+                      <div className="flex rounded-xl overflow-hidden surface-tab-group p-0.5 gap-0.5">
                         <button
                           onClick={() => setDrawInputMode('random')}
                           className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${drawInputMode === 'random'
-                            ? 'bg-white dark:bg-mystic-700 text-stone-800 dark:text-white shadow'
+                            ? 'bg-[#FAF6EE] dark:bg-[#2D2451] text-heading shadow'
                             : 'text-faint'
                             }`}
                         >
@@ -1774,7 +1774,7 @@ ${themeNote}
                         <button
                           onClick={() => setDrawInputMode('manual')}
                           className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${drawInputMode === 'manual'
-                            ? 'bg-white dark:bg-mystic-700 text-stone-800 dark:text-white shadow'
+                            ? 'bg-[#FAF6EE] dark:bg-[#2D2451] text-heading shadow'
                             : 'text-faint'
                             }`}
                         >
@@ -1829,7 +1829,7 @@ ${themeNote}
                                         })}
                                         placeholder="輸入牌名搜尋…"
                                         autoComplete="off"
-                                        className={`w-full px-2.5 py-1.5 rounded-lg input-field text-sm outline-none focus:ring-1 focus:ring-amber-400 dark:focus:ring-mystic-500 transition-all ${mode === 'waite' ? 'pr-10' : ''}`}
+                                        className={`w-full px-2.5 py-1.5 rounded-lg input-field text-sm outline-none focus:ring-1 transition-all ${mode === 'waite' ? 'pr-10' : ''}`}
                                       />
                                       {mode === 'waite' && (
                                         <button
@@ -1840,7 +1840,7 @@ ${themeNote}
                                           })}
                                           className={`absolute right-1 top-1/2 -translate-y-1/2 text-xs px-2 py-1 rounded border transition-all ${manualInputs[i]?.reversed
                                             ? 'border-[#6B1D2F]/70 dark:border-[#E06A75]/50 text-[#6B1D2F] dark:text-[#E06A75] bg-[#E8D9DC]/80 dark:bg-[#1F0E14]/60 font-semibold'
-                                            : 'border-stone-400/40 dark:border-mystic-600/50 text-hint bg-transparent hover:bg-stone-100/50 dark:hover:bg-mystic-700/50'
+                                            : 'border-[#D2C4AD]/40 dark:border-[#3A2B52]/50 text-hint bg-transparent hover:bg-[#F4EFE6]/50 dark:hover:bg-[#120E1E]/50'
                                             }`}
                                         >
                                           逆
@@ -1860,7 +1860,7 @@ ${themeNote}
                                                   return next;
                                                 });
                                               }}
-                                              className="w-full text-left px-3 py-2 text-sm hover:bg-stone-100 dark:hover:bg-mystic-800 transition-colors flex items-center justify-between gap-2"
+                                              className="w-full text-left px-3 py-2 text-sm hover:bg-[#F4EFE6] dark:hover:bg-[#120E1E] transition-colors flex items-center justify-between gap-2"
                                             >
                                               <span className="font-medium text-heading">{card.nameCN}</span>
                                               <span className="text-xs text-hint shrink-0">{card.nameEN}</span>
@@ -1952,7 +1952,7 @@ ${themeNote}
                             ))}
                           </div>
                           {/* Right fade-out hint */}
-                          <div className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-amber-50/95 dark:from-[#1e1a36]/95 to-transparent" />
+                          <div className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-[#F4EFE6]/95 dark:from-[#120E1E]/95 to-transparent" />
                         </div>
                       </div>
                     </div>
@@ -1998,7 +1998,7 @@ ${themeNote}
                             trackEvent('redraw', { spread_name: selectedSpread?.name ?? '', system: mode });
                             navigate('/draw');
                           }}
-                          className="px-4 py-2 rounded-lg border border-slate-200 dark:border-mystic-800 hover:bg-slate-50 dark:hover:bg-mystic-900 transition-colors text-sm font-medium"
+                          className="px-4 py-2 rounded-lg btn-ghost transition-colors text-sm font-medium"
                         >
                           {t("重新抽牌", "Draw Again")}
                         </button>
@@ -2007,8 +2007,8 @@ ${themeNote}
 
                   {/* Lenormand Result Layout */}
                   {mode === 'lenormand' && lenormandDrawnCards.length > 0 && (
-                    <div className="relative bg-white/40 dark:bg-mystic-950 rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-10 shadow-2xl shadow-emerald-900/5 dark:shadow-mystic-900/50 border-4 border-emerald-100/50 dark:border-emerald-900/20 overflow-hidden backdrop-blur-sm">
-                      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-emerald-50/30 via-white/20 to-teal-50/20 dark:from-emerald-950/30 dark:via-mystic-900/80 dark:to-mystic-950 pointer-events-none" />
+                    <div className="relative bg-[#FAF6EE]/40 dark:bg-[#09060E] rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-10 shadow-2xl shadow-[#2D5A4C]/5 dark:shadow-[#09060E]/50 border-4 border-[#A8BDB1]/30 dark:border-[#224032]/20 overflow-hidden backdrop-blur-sm">
+                      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#E1E8E6]/30 via-[#FAF6EE]/20 to-[#E1E8E6]/20 dark:from-[#101917]/30 dark:via-mystic-900/80 dark:to-mystic-950 pointer-events-none" />
                       {lenormandDrawnCards.length === 1 && (
                         <div className="relative z-10 flex flex-col items-center gap-6 mb-8 w-full max-w-lg mx-auto">
                           {(() => {
@@ -2103,7 +2103,7 @@ ${themeNote}
 
                   {/* Tarot Tablecloth Layout */}
                   {(mode === 'waite' || mode === 'thoth') && (
-                    <div className="relative bg-white/40 dark:bg-mystic-950 rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-12 shadow-2xl shadow-amber-900/5 dark:shadow-mystic-900/50 border-4 border-amber-100/50 dark:border-mystic-800/30 overflow-hidden backdrop-blur-sm">
+                    <div className="relative bg-[#FAF6EE]/40 dark:bg-[#09060E] rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-12 shadow-2xl shadow-[#6B5A4B]/5 dark:shadow-[#09060E]/50 border-4 border-[#DBCFB8]/30 dark:border-[#2D2451]/30 overflow-hidden backdrop-blur-sm">
                       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-amber-50/40 via-white/40 to-amber-100/30 dark:from-mystic-800/20 dark:via-mystic-900/80 dark:to-mystic-950 pointer-events-none"></div>
 
                       <div className="relative z-10 w-full max-w-6xl mx-auto">
@@ -2111,12 +2111,12 @@ ${themeNote}
                       </div>
 
                       {hasExtraCards && (
-                        <div className="relative z-10 mt-16 pt-16 border-t border-amber-200/50 dark:border-mystic-800/50">
+                        <div className="relative z-10 mt-16 pt-16 border-t divider-subtle">
                           <h3 className="text-center text-xl font-bold gold-text mb-8 tracking-widest">{t("✨ 補充指引", "✨ Follow-up Guidance")}</h3>
                           <div className="flex flex-wrap justify-center gap-6 sm:gap-10">
                             {extraCards.map((card, index) => (
                               <div key={index} className="flex flex-col items-center gap-4">
-                                <div className="text-secondary text-[13px] sm:text-sm font-medium text-center bg-white/80 dark:bg-mystic-900/80 px-4 py-2.5 rounded-xl border border-amber-200 dark:border-mystic-800 shadow-lg max-w-[160px] sm:max-w-[200px]">
+                                <div className="text-secondary text-[13px] sm:text-sm font-medium text-center surface-card px-4 py-2.5 rounded-xl shadow-lg max-w-[160px] sm:max-w-[200px]">
                                   <span className="text-hint mr-1">Q:</span>{card.extraQuestion}
                                 </div>
                                 <TarotCardDisplay card={card} index={index} isExtra={true} system={mode === 'thoth' ? 'thoth' : 'waite'} lang={lang} />
@@ -2127,10 +2127,10 @@ ${themeNote}
                       )}
 
                       <div className="relative z-10 mt-16 flex flex-col items-center justify-center w-full">
-                        <div className="flex flex-col items-center gap-4 bg-white/60 dark:bg-mystic-900/60 p-6 sm:p-8 rounded-[2rem] border border-amber-200/50 dark:border-mystic-800 w-full max-w-md backdrop-blur shadow-xl dark:shadow-2xl">
+                        <div className="flex flex-col items-center gap-4 surface-card p-6 sm:p-8 rounded-[2rem] w-full max-w-md backdrop-blur shadow-xl dark:shadow-2xl">
                           <div className="text-center mb-1">
                             <h4 className="font-bold text-lg text-secondary">{t("追加牌卡指引", "Ask Follow-up Questions")}</h4>
-                            <p className="text-xs text-amber-600 dark:text-mystic-500 mt-1">{t("若對上述結果有不懂之處，請在此發問", "If you have questions about the reading, ask here")}</p>
+                            <p className="text-xs text-hint mt-1">{t("若對上述結果有不懂之處，請在此發問", "If you have questions about the reading, ask here")}</p>
                           </div>
                           <input
                             type="text"
@@ -2138,7 +2138,7 @@ ${themeNote}
                             onChange={(e) => setExtraQuestion(e.target.value)}
                             onKeyDown={(e) => { if (e.key === 'Enter') drawExtraCard(); }}
                             placeholder={t("請輸入補抽想深入了解的事...", "What would you like to clarify or explore deeper?")}
-                            className="w-full px-5 py-3.5 rounded-xl input-field focus:ring-2 outline-none text-slate-800 dark:text-white text-center text-sm shadow-inner transition-colors"
+                            className="w-full px-5 py-3.5 rounded-xl input-field focus:ring-2 outline-none text-heading text-center text-sm shadow-inner transition-colors"
                           />
                           <button
                             onClick={drawExtraCard}
@@ -2153,7 +2153,7 @@ ${themeNote}
 
                   {/* Bottom Card — tarot/thoth only */}
                   {(mode === 'waite' || mode === 'thoth') && bottomCard && (
-                    <div className="relative bg-white/40 dark:bg-mystic-950 rounded-[2rem] p-6 sm:p-8 shadow-xl border-2 border-dashed border-amber-200/60 dark:border-mystic-700/40 backdrop-blur-sm">
+                    <div className="relative bg-[#FAF6EE]/40 dark:bg-[#09060E] rounded-[2rem] p-6 sm:p-8 shadow-xl border-2 border-dashed border-[#DBCFB8]/60 dark:border-[#3A2B52]/40 backdrop-blur-sm">
                       <div className="flex flex-col items-center gap-3">
                         <div className="text-center">
                           <p className="text-xs font-bold text-hint uppercase tracking-widest">{t("底牌", "Bottom Card")}</p>
@@ -2175,7 +2175,7 @@ ${themeNote}
                   </div>
 
                   {/* Fixed Bottom Action Bar */}
-                  <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/70 dark:bg-mystic-950/80 backdrop-blur-md border-t border-amber-100/50 dark:border-mystic-800 flex flex-col items-center justify-center gap-3 z-40 shadow-[0_-10px_40px_rgba(251,191,36,0.05)] dark:shadow-none">
+                  <div className="fixed bottom-0 left-0 right-0 p-4 surface-bottom-bar backdrop-blur-md border-t divider-subtle p-0 flex flex-col items-center justify-center gap-3 z-40 shadow-[0_-10px_40px_rgba(251,191,36,0.05)] dark:shadow-none">
                     <AnimatePresence>
                       {showCopySuccess && (
                         <motion.div
@@ -2232,7 +2232,7 @@ ${themeNote}
                           downloadShareCard({ spreadName: selectedSpread?.name ?? '', question, cards: cardList, mode });
                           trackEvent('download_share_image', { spread_name: selectedSpread?.name ?? '', system: mode });
                         }}
-                        className="btn-secondary px-5 py-2.5 text-sm bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 text-indigo-600 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800"
+                        className="btn-secondary px-5 py-2.5 text-sm bg-[#EBE7ED] hover:bg-[#DDD7E3] dark:bg-[#191423] dark:hover:bg-[#221A34] text-[#492673] dark:text-[#B8A8CE] border-[#D2C4DA] dark:border-[#3A2B52]"
                       >
                         {t("🖼 儲存分享圖", "🖼 Save Share Image")}
                       </button>
@@ -2344,7 +2344,7 @@ ${themeNote}
                  onClick={(e) => e.stopPropagation()}
                >
                  {/* Header */}
-                 <div className="px-6 lg:px-8 py-5 border-b border-stone-200 dark:border-mystic-800/50 flex items-center justify-between surface-drawer-header shrink-0">
+                 <div className="px-6 lg:px-8 py-5 border-b divider-subtle flex items-center justify-between surface-drawer-header shrink-0">
                    <h2 className="text-xl font-bold flex items-center gap-2">
                      <History size={20} className="text-hint" /> {t("歷史紀錄", "History")}
                    </h2>
@@ -2356,7 +2356,7 @@ ${themeNote}
                            e.stopPropagation();
                            setHistory(prev => prev.filter(r => r.question.trim() !== ''));
                          }}
-                         className="p-2 text-slate-400 hover:text-amber-600 transition-colors flex items-center gap-1 text-sm font-medium bg-slate-100/50 hover:bg-amber-50 dark:bg-mystic-800/50 dark:hover:bg-amber-900/20 rounded-lg px-3"
+                         className="p-2 text-hint hover:text-[#9B7114] transition-colors flex items-center gap-1 text-sm font-medium bg-[#EFE8DA]/50 hover:bg-[#F4EFE6] dark:bg-[#1C142B]/50 dark:hover:bg-[#191423] rounded-lg px-3"
                          title={t("清除未輸入問題的紀錄", "Clear records with no question input")}
                        >
                          <Trash2 size={16} />
@@ -2368,7 +2368,7 @@ ${themeNote}
                          onClick={toggleSelectMode}
                          className={`px-3 py-1.5 rounded-lg text-sm font-bold transition-all ${historySelectMode
                              ? 'bg-[#E8D9DC] dark:bg-[#1F0E14]/40 text-[#6B1D2F] dark:text-[#E06A75] hover:bg-[#DCCCCE]'
-                             : 'bg-slate-100/50 dark:bg-mystic-800/50 text-secondary hover:bg-slate-200 dark:hover:bg-mystic-700'
+                             : 'btn-ghost text-secondary'
                            }`}
                        >
                          {historySelectMode ? t('取消', 'Cancel') : t('管理', 'Manage')}
@@ -2389,8 +2389,8 @@ ${themeNote}
                         key={key}
                         onClick={() => { setHistoryFilter(key); setSelectedHistoryIds(new Set()); }}
                         className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 ${historyFilter === key
-                            ? 'bg-amber-100 dark:bg-mystic-700 text-amber-700 dark:text-mystic-200 shadow-sm'
-                            : 'text-hint hover:bg-stone-100 dark:hover:bg-mystic-800/60'
+                            ? 'bg-[#EFE8DA] dark:bg-[#2D2451] text-[#6B5A4B] dark:text-[#E4DAF0] shadow-sm'
+                            : 'text-hint hover:bg-[#F4EFE6] dark:hover:bg-[#120E1E]/60'
                           }`}
                       >
                         {label}
@@ -2420,7 +2420,7 @@ ${themeNote}
                           .map(r => r.id);
                         setSelectedHistoryIds(prev => new Set([...prev, ...noQuestionIds]));
                       }}
-                      className="ml-auto text-xs font-semibold px-2.5 py-1 rounded-lg border border-stone-300/60 dark:border-mystic-700 text-muted hover:bg-stone-100 dark:hover:bg-mystic-800 transition-colors select-none"
+                      className="ml-auto text-xs font-semibold px-2.5 py-1 rounded-lg border divider-subtle text-muted hover:bg-[#F4EFE6] dark:hover:bg-[#120E1E] transition-colors select-none"
                     >
                       {t("選取未提問的紀錄", "Select empty questions")}
                     </button>
@@ -2432,8 +2432,8 @@ ${themeNote}
                   {filteredHistory.length > 0 ? (
                     filteredHistory.map((record) => (
                       <div key={record.id} className={`relative group surface-card p-1 sm:p-2 rounded-[1.25rem] border transition-all flex flex-col ${historySelectMode && selectedHistoryIds.has(record.id)
-                          ? 'border-amber-400 dark:border-amber-500 ring-1 ring-amber-300/50 shadow-md'
-                          : 'border-stone-200/80 dark:border-mystic-800 shadow-sm hover:shadow-md hover:border-stone-400 dark:hover:border-mystic-600'
+                          ? 'border-[#A88C5A] dark:border-[#B58A4D] ring-1 ring-[#A88C5A]/40 shadow-md'
+                          : 'divider-subtle shadow-sm hover:shadow-md hover:border-[#A88C5A]/60 dark:hover:border-[#3A2B52]'
                         }`}>
                         <div
                           className="p-4 sm:p-5 cursor-pointer flex-1 flex gap-3"
@@ -2475,14 +2475,14 @@ ${themeNote}
                           <div className="flex-1 min-w-0">
                             <div className="flex justify-between items-start mb-2">
                               <h3 className="text-lg font-bold gold-text leading-tight font-serif-tc">{lang === 'en' ? (SPREAD_TRANSLATIONS[record.spread.id]?.name ?? record.spread.name) : record.spread.name}</h3>
-                              <span className="text-[11px] text-stone-600 dark:text-slate-400 bg-stone-200/50 dark:bg-mystic-800/50 px-2 py-1 rounded-md shrink-0 ml-2">
+                              <span className="text-[11px] text-dim bg-[#EFE8DA]/50 dark:bg-[#1C142B]/50 px-2 py-1 rounded-md shrink-0 ml-2">
                                 {new Date(record.date).toLocaleString('zh-TW', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })}
                               </span>
                             </div>
                             <p className="text-sm text-secondary line-clamp-2 min-h-[2.5rem] mb-3">
                               {record.question?.trim() || t('探索當下整體狀態', 'Exploring Current Situation')}
                             </p>
-                            <div className="flex items-center justify-between text-xs font-semibold text-stone-600 dark:text-mystic-400">
+                            <div className="flex items-center justify-between text-xs font-semibold text-muted">
                               {record.mode === 'lenormand' && <span className="badge-system-lenormand px-1.5 py-0.5 rounded-md">{t("雷諾曼", "Lenormand")}</span>}
                               {record.mode === 'thoth' && <span className="badge-system-thoth px-1.5 py-0.5 rounded-md">{t("托特", "Thoth")}</span>}
                               {record.mode === 'tarot' && <span className="badge-system-waite px-1.5 py-0.5 rounded-md">{t("偉特", "Waite")}</span>}
@@ -2555,7 +2555,7 @@ ${themeNote}
                       initial={{ y: 80, opacity: 0 }}
                       animate={{ y: 0, opacity: 1 }}
                       exit={{ y: 80, opacity: 0 }}
-                      className="shrink-0 px-4 lg:px-8 py-3 border-t border-stone-200 dark:border-mystic-800/60 surface-drawer-header flex items-center justify-between gap-3"
+                      className="shrink-0 px-4 lg:px-8 py-3 border-t divider-subtle surface-drawer-header flex items-center justify-between gap-3"
                     >
                       <span className="text-sm font-semibold text-secondary">
                         {t("已選", "Selected")} <span className="text-[#9B7114] dark:text-[#D4AF37] font-black">{selectedHistoryIds.size}</span> {t("筆", "items")}
@@ -2616,7 +2616,7 @@ ${themeNote}
             >
               <div className="px-6 py-4 border-b divider-subtle flex justify-between items-center">
                 <h3 className="text-xl font-bold">{t("自訂牌陣", "Custom Spread")}</h3>
-                <button onClick={() => setIsModalOpen(false)} className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
+                <button onClick={() => setIsModalOpen(false)} className="text-hint hover:text-heading transition-colors">
                   <X size={24} />
                 </button>
               </div>
@@ -2640,7 +2640,7 @@ ${themeNote}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">{t("分類標籤", "Category Tag")} <span className="text-slate-400 font-normal">{t("(選填)", "(Optional)")}</span></label>
+                  <label className="block text-sm font-medium mb-1">{t("分類標籤", "Category Tag")} <span className="text-dim font-normal">{t("(選填)", "(Optional)")}</span></label>
                   <input
                     value={editingSpread.category ?? ''}
                     onChange={e => setEditingSpread({ ...editingSpread, category: e.target.value })}
@@ -3189,13 +3189,13 @@ const SpreadCard = React.memo(function SpreadCard({ spread, isCustom, onSelect, 
   return (
     <div
       onClick={() => onSelect(spread)}
-      className="relative surface-card p-4 sm:p-6 rounded-xl sm:rounded-2xl hover:border-stone-300 dark:hover:border-mystic-600 shadow-sm hover:shadow-md transition-all cursor-pointer group flex flex-col min-h-[160px] sm:min-h-[220px] overflow-hidden"
+      className="relative surface-card p-4 sm:p-6 rounded-xl sm:rounded-2xl hover:border-[#A88C5A]/50 dark:hover:border-[#3A2B52] shadow-sm hover:shadow-md transition-all cursor-pointer group flex flex-col min-h-[160px] sm:min-h-[220px] overflow-hidden"
     >
       <div className="flex justify-between items-start mb-2 sm:mb-4 relative z-10 gap-2">
-        <h3 className="text-base sm:text-xl font-bold text-heading group-hover:text-stone-600 dark:group-hover:text-mystic-300 transition-colors drop-shadow-sm leading-tight line-clamp-2">
+        <h3 className="text-base sm:text-xl font-bold text-heading group-hover:text-[#6B5A4B] dark:group-hover:text-[#B8A8CE] transition-colors drop-shadow-sm leading-tight line-clamp-2">
           {translatedSpread.name}
         </h3>
-        <span className="shrink-0 px-2 sm:px-3 py-1 badge-dim text-[10px] sm:text-xs font-bold rounded-full border border-stone-200 dark:border-mystic-700 shadow-sm whitespace-nowrap">
+        <span className="shrink-0 px-2 sm:px-3 py-1 badge-dim text-[10px] sm:text-xs font-bold rounded-full shadow-sm whitespace-nowrap">
           {translatedSpread.count} {t("張牌", "Cards")}
         </span>
       </div>
@@ -3206,16 +3206,16 @@ const SpreadCard = React.memo(function SpreadCard({ spread, isCustom, onSelect, 
       </p>
 
       {/* Positions Area (Horizontal Scroll) */}
-      <div className="mt-auto relative z-10 w-full overflow-hidden rounded-lg bg-stone-50/50 dark:bg-mystic-950/30 p-2 sm:p-3 border border-stone-100 dark:border-mystic-800/50 shadow-inner">
+      <div className="mt-auto relative z-10 w-full overflow-hidden rounded-lg bg-[#F4EFE6]/50 dark:bg-[#09060E]/30 p-2 sm:p-3 border divider-subtle shadow-inner">
         <div className="relative">
           {/* Right fade-out gradient */}
-          <div className="absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-stone-50 dark:from-mystic-900 via-stone-50/80 dark:via-mystic-900/80 to-transparent pointer-events-none z-10 rounded-r-lg" />
+          <div className="absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-[#F4EFE6] dark:from-[#120E1E] via-[#F4EFE6]/80 dark:via-[#120E1E]/80 to-transparent pointer-events-none z-10 rounded-r-lg" />
 
           <div className="flex items-center gap-2.5 overflow-x-auto pb-1 pr-10 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {translatedSpread.positions.map((pos, idx) => (
               <div key={idx} className="flex items-center gap-2.5 shrink-0">
-                <div className="flex items-center gap-1.5 px-2 py-1.5 surface-card rounded-md text-secondary text-xs sm:text-sm font-semibold whitespace-nowrap shadow-sm border border-stone-200 dark:border-mystic-700">
-                  <span className="w-5 h-5 rounded-full bg-stone-100 dark:bg-mystic-800 text-secondary flex items-center justify-center text-[10px] sm:text-xs">
+                <div className="flex items-center gap-1.5 px-2 py-1.5 surface-card rounded-md text-secondary text-xs sm:text-sm font-semibold whitespace-nowrap shadow-sm border divider-subtle">
+                  <span className="w-5 h-5 rounded-full badge-dim text-secondary flex items-center justify-center text-[10px] sm:text-xs">
                     {idx + 1}
                   </span>
                   {pos}
@@ -3239,7 +3239,7 @@ const SpreadCard = React.memo(function SpreadCard({ spread, isCustom, onSelect, 
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); e.preventDefault(); onDelete?.(spread, e); }}
-            className="p-1.5 text-faint hover:text-red-500 dark:hover:text-red-400 transition-colors"
+            className="p-1.5 text-faint hover:text-[#964747] dark:hover:text-[#E06A75] transition-colors"
           >
             <Trash2 size={16} />
           </button>
@@ -3373,7 +3373,7 @@ function TarotSpreadLayout({ spread, cards, mode, lang }: { spread: Spread; card
           <div className={`grid ${colClass} gap-x-4 sm:gap-x-6 gap-y-8 place-items-center w-full max-w-5xl mx-auto`}>
             {/* Column labels */}
             {letters.map(l => (
-              <div key={l} className="text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-3 py-1 rounded-full border border-indigo-200 dark:border-indigo-800 whitespace-nowrap">
+              <div key={l} className="text-xs font-bold text-[#492673] dark:text-[#B8A8CE] bg-[#EBE7ED] dark:bg-[#191423] px-3 py-1 rounded-full border border-[#D2C4DA] dark:border-[#3A2B52] whitespace-nowrap">
                 選擇{l}
               </div>
             ))}
@@ -3499,7 +3499,7 @@ function TarotCardDisplay({ card, index, isExtra, system, lang, spreadId }: { ca
             <div className={`flex flex-col items-center justify-center text-center h-full w-full p-2 ${card.isReversed ? 'rotate-180' : ''
               }`}>
               <div className="text-4xl sm:text-5xl mb-2">{getCardEmoji(card.id, system)}</div>
-              <div className={`font-extrabold text-sm sm:text-base mb-0.5 leading-tight ${isMajor ? 'text-amber-900 dark:text-amber-50' : 'text-heading'
+              <div className={`font-extrabold text-sm sm:text-base mb-0.5 leading-tight ${isMajor ? 'text-heading' : 'text-heading'
                 }`}>{lang === 'en' ? card.nameEN : card.nameCN}</div>
             </div>
           </div>
@@ -3543,7 +3543,7 @@ function LenormandCardDisplay({ card, index, isCenter, isCompact, isSpine, lang,
     >
       {!isCompact && (
         <div className={`text-[10px] sm:text-xs font-bold uppercase tracking-widest text-center leading-tight ${
-          isCenter ? 'text-emerald-600 dark:text-emerald-400' : 'text-muted'
+          isCenter ? 'text-[#2D5A4C] dark:text-[#5C9E82]' : 'text-muted'
         }`}>
           {displayPositionName}
         </div>
@@ -3553,12 +3553,12 @@ function LenormandCardDisplay({ card, index, isCenter, isCompact, isSpine, lang,
         isCompact ? 'w-[52px] sm:w-[68px]' : 'w-[90px] sm:w-[110px] rounded-lg sm:rounded-xl shadow-lg'
       } ${
         isSpine
-          ? 'border-2 border-amber-400/80 dark:border-amber-500/70 shadow-md shadow-amber-400/25 ring-1 ring-amber-300/40 dark:ring-amber-600/30 scale-105'
+          ? 'border-2 border-[#A88C5A]/80 dark:border-[#B58A4D]/60 shadow-md shadow-[#A88C5A]/20 ring-1 ring-[#A88C5A]/30 dark:ring-[#6E5936]/30 scale-105'
           : isCenter
-            ? 'border-2 border-teal-400/50 dark:border-teal-600/40 shadow-teal-400/15 scale-110 ring-2 ring-teal-300/30 dark:ring-teal-700/25'
+            ? 'border-2 border-[#3B7262]/50 dark:border-[#2D5A4C]/40 shadow-[#3B7262]/15 scale-110 ring-2 ring-[#5C9E82]/25 dark:ring-[#224032]/25'
             : isCompact
-              ? 'border border-stone-300/60 dark:border-stone-600/40 shadow-sm'
-              : 'border-2 border-teal-300/50 dark:border-teal-700/35 shadow-teal-400/10'
+              ? 'border border-[#DBCFB8]/60 dark:border-[#3A2B52]/40 shadow-sm'
+              : 'border-2 border-[#A8BDB1]/50 dark:border-[#224032]/35 shadow-[#3B7262]/10'
       }`}>
         {imgSrc ? (
           <img
@@ -3569,7 +3569,7 @@ function LenormandCardDisplay({ card, index, isCenter, isCompact, isSpine, lang,
           />
         ) : (
           <>
-            <div className="absolute inset-0 bg-gradient-to-br from-stone-50 via-teal-50/30 to-emerald-50/50 dark:from-slate-900 dark:via-teal-950/40 dark:to-emerald-950/30" />
+            <div className="absolute inset-0 bg-gradient-to-br from-[#F4EFE6] via-[#E1E8E6]/30 to-[#E1E8E6]/50 dark:from-[#09060E] dark:via-[#101917]/40 dark:to-[#101917]/30" />
             <div className="absolute inset-0 flex items-center justify-center">
               <span className={`drop-shadow-sm select-none ${isCompact ? 'text-xl' : 'text-4xl sm:text-5xl'}`} role="img" aria-label={card.nameEN}>
                 {card.emoji}
