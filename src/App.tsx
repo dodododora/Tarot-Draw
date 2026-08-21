@@ -1839,7 +1839,7 @@ ${themeNote}
                                             return next;
                                           })}
                                           className={`absolute right-1 top-1/2 -translate-y-1/2 text-xs px-2 py-1 rounded border transition-all ${manualInputs[i]?.reversed
-                                            ? 'border-[#6B1D2F]/70 dark:border-[#E06A75]/50 text-[#8B2040] dark:text-[#E06A75] bg-[#EAE0DB]/80 dark:bg-[#1C142B]/60 font-semibold'
+                                            ? 'border-[#6B1D2F] dark:border-[#E06A75]/50 text-[#8B2040] dark:text-[#E06A75] bg-[#EAE0DB]/80 dark:bg-[#1C142B]/60 font-semibold'
                                             : 'border-[#D2C4AD]/40 dark:border-[#43327A]/40 text-hint bg-transparent hover:bg-[#F4EFE6]/50 dark:hover:bg-[#1C1438]/50'
                                             }`}
                                         >
@@ -2432,8 +2432,8 @@ ${themeNote}
                   {filteredHistory.length > 0 ? (
                     filteredHistory.map((record) => (
                       <div key={record.id} className={`relative group surface-card p-1 sm:p-2 rounded-[1.25rem] border transition-all flex flex-col ${historySelectMode && selectedHistoryIds.has(record.id)
-                          ? 'border-[#A88C5A] dark:border-[#B58A4D] ring-1 ring-[#A88C5A]/40 shadow-md'
-                          : 'divider-subtle shadow-sm hover:shadow-md hover:border-[#A88C5A]/60 dark:hover:border-[#43327A]'
+                          ? 'border-[#B8863A] dark:border-[#B58A4D] ring-1 ring-[#B8863A]/40 shadow-md'
+                          : 'divider-subtle shadow-sm hover:shadow-md hover:border-[#B8863A]/80 dark:hover:border-[#43327A]'
                         }`}>
                         <div
                           className="p-4 sm:p-5 cursor-pointer flex-1 flex gap-3"
@@ -3257,7 +3257,7 @@ const SpreadCard = React.memo(function SpreadCard({ spread, isCustom, onSelect, 
   return (
     <div
       onClick={() => onSelect(spread)}
-      className="relative surface-card p-4 sm:p-6 rounded-xl sm:rounded-2xl hover:border-[#A88C5A]/50 dark:hover:border-[#43327A] shadow-sm hover:shadow-md transition-all cursor-pointer group flex flex-col min-h-[160px] sm:min-h-[220px] overflow-hidden"
+      className="relative surface-card p-4 sm:p-6 rounded-xl sm:rounded-2xl hover:border-[#B8863A]/80 dark:hover:border-[#43327A] shadow-sm hover:shadow-md transition-all cursor-pointer group flex flex-col min-h-[160px] sm:min-h-[220px] overflow-hidden"
     >
       <div className="flex justify-between items-start mb-2 sm:mb-4 relative z-10 gap-2">
         <h3 className="text-base sm:text-xl font-bold text-heading group-hover:text-[#6B5A4B] dark:group-hover:text-[#C8B8E8] transition-colors drop-shadow-sm leading-tight line-clamp-2">
@@ -3547,9 +3547,9 @@ function TarotCardDisplay({ card, index, isExtra, system, lang, spreadId }: { ca
         </div>
       )}
 
-      <div className={`relative w-[110px] sm:w-[130px] aspect-[2/3] rounded-xl overflow-hidden border-2 ${card.isReversed ? 'border-[#964747]/70 dark:border-[#C47A8E]/50 shadow-[#964747]/15 dark:shadow-[#C47A8E]/15' :
-          isExtra ? 'border-[#B87A4F]/70 dark:border-[#C9A063]/50 shadow-[#B87A4F]/15 dark:shadow-[#C9A063]/15' :
-            'border-[#A88C5A]/70 dark:border-[#D4AF37]/35 shadow-[#A88C5A]/15 dark:shadow-[#D4AF37]/10'
+      <div className={`relative w-[110px] sm:w-[130px] aspect-[2/3] rounded-xl overflow-hidden border-2 ${card.isReversed ? 'border-[#8B1D33] dark:border-[#C47A8E]/50 shadow-[#8B1D33]/15 dark:shadow-[#C47A8E]/15' :
+          isExtra ? 'border-[#A3592E] dark:border-[#C9A063]/50 shadow-[#A3592E]/15 dark:shadow-[#C9A063]/15' :
+            'border-[#B8863A] dark:border-[#D4AF37]/35 shadow-[#B8863A]/15 dark:shadow-[#D4AF37]/10'
         } shadow-lg`}>
 
         {imgSrc ? (
@@ -3621,9 +3621,9 @@ function LenormandCardDisplay({ card, index, isCenter, isCompact, isSpine, lang,
         isCompact ? 'w-[52px] sm:w-[68px]' : 'w-[90px] sm:w-[110px] rounded-lg sm:rounded-xl shadow-lg'
       } ${
         isSpine
-          ? 'border-2 border-[#A88C5A]/80 dark:border-[#D4AF37]/50 shadow-md shadow-[#A88C5A]/20 ring-1 ring-[#A88C5A]/30 dark:ring-[#D4AF37]/20 scale-105'
+          ? 'border-2 border-[#B8863A] dark:border-[#D4AF37]/50 shadow-md shadow-[#B8863A]/20 ring-1 ring-[#B8863A]/30 dark:ring-[#D4AF37]/20 scale-105'
           : isCenter
-            ? 'border-2 border-[#3B7262]/50 dark:border-[#7C66DC]/40 shadow-[#3B7262]/15 scale-110 ring-2 ring-[#5C9E82]/25 dark:ring-[#7C66DC]/20'
+            ? 'border-2 border-[#2D5A4C] dark:border-[#7C66DC]/40 shadow-[#2D5A4C]/15 scale-110 ring-2 ring-[#2D5A4C]/20 dark:ring-[#7C66DC]/20'
             : isCompact
               ? 'border border-[#DBCFB8]/60 dark:border-[#43327A]/35 shadow-sm'
               : 'border-2 border-[#C5B99E]/50 dark:border-[#43367A]/30 shadow-[#3B7262]/10'
