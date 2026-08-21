@@ -1801,7 +1801,7 @@ ${themeNote}
                       return (
                         <div className="space-y-2">
                           <p className="text-xs text-faint text-center">
-                            搜尋你實體抽到的牌名{mode === 'waite' ? '，按「逆」切換逆位' : ''}
+                            {t('搜尋抽到的牌名或數字', 'Search card name or number')}{mode === 'waite' ? t('，按「逆」切換逆位', ' (click "Rev" to reverse)') : ''}
                           </p>
                           <div className="space-y-2 w-fit mx-auto">
                             {selectedSpread.positions.map((pos, i) => {                              const query = manualInputs[i]?.name || '';
@@ -1847,7 +1847,7 @@ ${themeNote}
                                           next[i] = { ...(next[i] || { name: '', reversed: false }), name: e.target.value };
                                           return next;
                                         })}
-                                        placeholder="輸入牌名搜尋…"
+                                        placeholder={t('輸入牌名或數字…', 'Search name or number...')}
                                         autoComplete="off"
                                         className={`w-full px-2.5 py-1.5 rounded-lg input-field text-sm outline-none focus:ring-1 transition-all ${mode === 'waite' ? 'pr-10' : ''}`}
                                       />
@@ -1862,9 +1862,7 @@ ${themeNote}
                                             ? 'border-[#6B1D2F] dark:border-[#C83244]/50 text-[#8B2040] dark:text-[#C83244] bg-[#EAE0DB]/80 dark:bg-[#1C142B]/60 font-semibold'
                                             : 'border-[#D2C4AD]/40 dark:border-[#43327A]/40 text-hint bg-transparent hover:bg-[#F4EFE6]/50 dark:hover:bg-[#1C1438]/50'
                                             }`}
-                                        >
-                                          逆
-                                        </button>
+                                        >{t('逆', 'Rev')}</button>
                                       )}
                                       {matches.length > 0 && (
                                         <div className="absolute z-50 left-0 right-0 top-full mt-1 surface-card rounded-lg shadow-lg overflow-hidden max-h-48 overflow-y-auto">
