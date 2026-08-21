@@ -1804,15 +1804,35 @@ ${themeNote}
                             搜尋你實體抽到的牌名{mode === 'waite' ? '，按「逆」切換逆位' : ''}
                           </p>
                           <div className="space-y-2 w-fit mx-auto">
-                            {selectedSpread.positions.map((pos, i) => {
-                              const query = manualInputs[i]?.name || '';
+                            {selectedSpread.positions.map((pos, i) => {                              const query = manualInputs[i]?.name || '';
                               const isExactMatch = deck.some(c => c.nameCN === query);
-                              const matches = query.length > 0 && !isExactMatch
-                                ? deck.filter(c =>
-                                  c.nameCN.includes(query) ||
-                                  c.nameEN.toLowerCase().includes(query.toLowerCase())
-                                ).slice(0, 8)
-                                : [];
+                              
+                              let matches = [];
+                              if (query.length > 0 && !isExactMatch) {
+                                const qLower = query.toLowerCase().trim();
+                                const digitMap: Record<string, string[]> = {
+                                  '1': ['一', '王牌'], '2': ['二'], '3': ['三'], '4': ['四'], '5': ['五'],
+                                  '6': ['六'], '7': ['七'], '8': ['八'], '9': ['九'], '10': ['十'],
+                                  '11': ['侍者', '公主'], '12': ['騎士', '王子'], '13': ['王后'], '14': ['國王', '騎士']
+                                };
+                                
+                                matches = deck.filter(c => {
+                                  if (c.id.toString() === qLower) return true;
+                                  if (c.nameCN.includes(query) || c.nameEN.toLowerCase().includes(qLower)) return true;
+                                  
+                                  if (/\d/.test(qLower)) {
+                                    const matchNum = qLower.match(/14|13|12|11|10|[1-9]/);
+                                    if (matchNum) {
+                                      const numStr = matchNum[0];
+                                      const replacements = digitMap[numStr] || [];
+                                      for (const rep of replacements) {
+                                        if (c.nameCN.includes(qLower.replace(numStr, rep))) return true;
+                                      }
+                                    }
+                                  }
+                                  return false;
+                                }).slice(0, 8);
+                              }
                               return (
                                 <div key={i} className="flex items-start gap-2 max-w-sm">
                                   <span className="mt-2.5 text-xs font-bold text-upright w-5 flex-shrink-0 text-right">{i + 1}</span>
