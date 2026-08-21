@@ -1369,7 +1369,7 @@ ${themeNote}
             <button
               onClick={() => { setMode('waite'); navigate('/'); setSelectedSpread(null); trackEvent('select_system', { system: 'waite' }); }}
               className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${mode === 'waite'
-                ? 'bg-amber-700/70 dark:bg-mystic-600/80 text-white shadow-sm'
+                ? 'bg-[#9A7341] dark:bg-[#B58A4D] text-white shadow-sm'
                 : 'tab-inactive'
                 }`}
             >
@@ -1378,7 +1378,7 @@ ${themeNote}
             <button
               onClick={() => { setMode('thoth'); navigate('/'); setSelectedSpread(null); trackEvent('select_system', { system: 'thoth' }); }}
               className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${mode === 'thoth'
-                ? 'bg-purple-600 dark:bg-purple-700 text-white shadow-sm'
+                ? 'bg-[#283A6D] dark:bg-[#3B4D82] text-white shadow-sm'
                 : 'tab-inactive'
                 }`}
             >
@@ -1394,7 +1394,7 @@ ${themeNote}
             <button
               onClick={() => { setMode('lenormand'); navigate('/'); setSelectedSpread(null); trackEvent('select_system', { system: 'lenormand' }); }}
               className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${mode === 'lenormand'
-                ? 'bg-teal-700/70 dark:bg-teal-700/70 text-white shadow-sm'
+                ? 'bg-[#2D5A4C] dark:bg-[#3B7262] text-white shadow-sm'
                 : 'tab-inactive'
                 }`}
             >
@@ -1648,7 +1648,7 @@ ${themeNote}
 
                   <div className="surface-card p-8 rounded-2xl shadow-xl">
                     <div className="text-center mb-8">
-                      <h2 className="text-3xl font-bold mb-2 bg-gradient-to-r from-mystic-700 to-indigo-500 bg-clip-text text-transparent dark:from-mystic-200 dark:to-indigo-300 drop-shadow-sm">{translatedSelectedSpread.name}</h2>
+                      <h2 className="text-3xl font-bold mb-2 bg-gradient-to-r from-[#2C1D38] to-[#492673] bg-clip-text text-transparent dark:from-[#EFE8DA] dark:to-[#B8A8CE] drop-shadow-sm">{translatedSelectedSpread.name}</h2>
                       <p className="text-muted">{translatedSelectedSpread.hint}</p>
                     </div>
 
@@ -1815,7 +1815,7 @@ ${themeNote}
                                 : [];
                               return (
                                 <div key={i} className="flex items-start gap-2 max-w-sm">
-                                  <span className="mt-2.5 text-xs font-bold text-amber-600 dark:text-mystic-400 w-5 flex-shrink-0 text-right">{i + 1}</span>
+                                  <span className="mt-2.5 text-xs font-bold text-upright w-5 flex-shrink-0 text-right">{i + 1}</span>
                                   <div className="flex-1 min-w-0">
                                     <p className="text-[10px] text-dim mb-0.5 truncate">{pos}</p>
                                     <div className="relative">
@@ -1984,7 +1984,7 @@ ${themeNote}
                         {mode === 'lenormand' && <span className="text-xs font-bold badge-system-lenormand px-2 py-0.5 rounded-full mb-1 inline-block">{t("雷諾曼", "Lenormand")}</span>}
                         {mode === 'thoth' && <span className="text-xs font-bold badge-system-thoth px-2 py-0.5 rounded-full mb-1 inline-block">{t("托特塔羅", "Thoth Tarot")}</span>}
                         {mode === 'tarot' && <span className="text-xs font-bold badge-system-waite px-2 py-0.5 rounded-full mb-1 inline-block">{t("偉特塔羅", "Waite Tarot")}</span>}
-                        <h2 className="text-2xl font-bold bg-gradient-to-r from-mystic-700 to-indigo-500 bg-clip-text text-transparent dark:from-mystic-200 dark:to-indigo-300 drop-shadow-sm font-serif-tc">{translatedSelectedSpread?.name}</h2>
+                        <h2 className="text-2xl font-bold bg-gradient-to-r from-[#2C1D38] to-[#492673] bg-clip-text text-transparent dark:from-[#EFE8DA] dark:to-[#B8A8CE] drop-shadow-sm font-serif-tc">{translatedSelectedSpread?.name}</h2>
                         <p className="text-muted">{t("問題：", "Question: ")}{question.trim() || t('探索當下整體狀態', 'Exploring Current Situation')}</p>
                       </div>
                       <div className="flex gap-3">
@@ -2182,7 +2182,7 @@ ${themeNote}
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -10 }}
-                          className="absolute -top-12 text-sm font-medium text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-900/30 px-4 py-2 rounded-full border border-green-200 dark:border-green-800 shadow-sm"
+                          className="absolute -top-12 text-sm font-medium text-[#3F5933] dark:text-[#7A9C69] bg-[#E3E8DE] dark:bg-[#141C12] px-4 py-2 rounded-full border border-[#B8C7AE] dark:border-[#2D4024] shadow-sm"
                         >
                           ✅ {t("已複製", "Copied")} {showCopySuccess === 'all' ? t('全部結果', 'all results') : showCopySuccess === 'main' ? t('主牌陣', 'main spread') : t('補抽指引', 'follow-up cards')} {t("到剪貼簿", "to clipboard")}
                         </motion.div>
@@ -2246,7 +2246,7 @@ ${themeNote}
                           href="https://chat.openai.com"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#10a37f]/10 hover:bg-[#10a37f]/20 text-[#10a37f] dark:text-emerald-400 border border-[#10a37f]/30 text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95"
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#2F5C54]/10 hover:bg-[#2F5C54]/20 text-[#2F5C54] dark:text-[#4F8A7D] border border-[#2F5C54]/30 text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95"
                         >
                           <span>🤖</span> ChatGPT
                         </a>
@@ -2254,7 +2254,7 @@ ${themeNote}
                           href="https://claude.ai"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-500/10 hover:bg-orange-500/20 text-orange-600 dark:text-orange-400 border border-orange-400/30 text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95"
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#9E5B3A]/10 hover:bg-[#9E5B3A]/20 text-[#9E5B3A] dark:text-[#C27653] border border-[#9E5B3A]/30 text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95"
                         >
                           <span>🧠</span> Claude
                         </a>
@@ -2262,7 +2262,7 @@ ${themeNote}
                           href="https://gemini.google.com"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-400/30 text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95"
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#3B5475]/10 hover:bg-[#3B5475]/20 text-[#3B5475] dark:text-[#5F7A9D] border border-[#3B5475]/30 text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95"
                         >
                           <span>✨</span> Gemini
                         </a>
@@ -2407,7 +2407,7 @@ ${themeNote}
                       type="checkbox"
                       checked={allFilteredSelected}
                       onChange={toggleSelectAll}
-                      className="w-4 h-4 accent-amber-500 cursor-pointer"
+                      className="w-4 h-4 accent-[#6B1D2F] dark:accent-[#633991] cursor-pointer"
                       id="select-all-history"
                     />
                     <label htmlFor="select-all-history" className="text-sm font-semibold text-secondary cursor-pointer select-none">
@@ -2468,7 +2468,7 @@ ${themeNote}
                                 checked={selectedHistoryIds.has(record.id)}
                                 onChange={() => toggleRecord(record.id)}
                                 onClick={e => e.stopPropagation()}
-                                className="w-4 h-4 accent-amber-500 cursor-pointer"
+                                className="w-4 h-4 accent-[#6B1D2F] dark:accent-[#633991] cursor-pointer"
                               />
                             </div>
                           )}
@@ -2555,7 +2555,7 @@ ${themeNote}
                       initial={{ y: 80, opacity: 0 }}
                       animate={{ y: 0, opacity: 1 }}
                       exit={{ y: 80, opacity: 0 }}
-                      className="shrink-0 px-4 lg:px-8 py-3 border-t border-stone-200 dark:border-mystic-800/60 bg-[#f0ead6]/90 dark:bg-mystic-900/80 flex items-center justify-between gap-3"
+                      className="shrink-0 px-4 lg:px-8 py-3 border-t border-stone-200 dark:border-mystic-800/60 surface-drawer-header flex items-center justify-between gap-3"
                     >
                       <span className="text-sm font-semibold text-secondary">
                         {t("已選", "Selected")} <span className="text-amber-600 dark:text-amber-400 font-black">{selectedHistoryIds.size}</span> {t("筆", "items")}
@@ -2578,18 +2578,18 @@ ${themeNote}
                       initial={{ opacity: 0, y: 50 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 50 }}
-                      className="absolute bottom-6 left-4 right-4 bg-white dark:bg-mystic-900 rounded-2xl shadow-2xl border-2 border-red-200 dark:border-red-900/50 p-5 z-50 overflow-hidden"
+                      className="absolute bottom-6 left-4 right-4 bg-white dark:bg-mystic-900 rounded-2xl shadow-2xl border-2 border-[#C7A3A9] dark:border-[#4A2028] p-5 z-50 overflow-hidden"
                     >
-                      <div className="absolute inset-0 bg-red-50/50 dark:bg-red-900/10 pointer-events-none" />
+                      <div className="absolute inset-0 bg-[#F0E6E8]/50 dark:bg-[#1A0C10]/40 pointer-events-none" />
                       <div className="relative z-10 flex flex-col items-center text-center gap-3">
-                        <div className="w-12 h-12 bg-red-100 dark:bg-red-900/40 rounded-full flex items-center justify-center text-red-500 mb-1">
+                        <div className="w-12 h-12 bg-[#E8D9DC] dark:bg-[#3A1520]/60 rounded-full flex items-center justify-center text-[#8B2525] dark:text-[#E06A75] mb-1">
                           <Trash2 size={24} />
                         </div>
-                        <h3 className="text-lg font-bold text-red-600 dark:text-red-400">{t("確定刪除", "Are you sure you want to delete")} {selectedHistoryIds.size} {t("筆紀錄？", " records?")}</h3>
-                        <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">{t("此動作無法復原，請確認是否要繼續。", "This action cannot be undone. Are you sure you want to proceed?")}</p>
+                        <h3 className="text-lg font-bold text-[#6B1D2F] dark:text-[#E06A75]">{t("確定刪除", "Are you sure you want to delete")} {selectedHistoryIds.size} {t("筆紀錄？", " records?")}</h3>
+                        <p className="text-sm text-muted mb-2">{t("此動作無法復原，請確認是否要繼續。", "This action cannot be undone. Are you sure you want to proceed?")}</p>
                         <div className="flex w-full gap-3 mt-1">
-                          <button onClick={() => setShowBatchDeleteConfirm(false)} className="flex-1 py-2.5 rounded-xl font-bold bg-slate-100 dark:bg-mystic-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-mystic-700 transition-colors">{t("取消", "Cancel")}</button>
-                          <button onClick={() => { executeBatchDelete(); trackEvent('delete_history', { type: 'batch', count: selectedHistoryIds.size }); }} className="flex-1 py-2.5 rounded-xl font-bold bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/20 transition-all active:scale-95">
+                          <button onClick={() => setShowBatchDeleteConfirm(false)} className="flex-1 py-2.5 btn-secondary justify-center">{t("取消", "Cancel")}</button>
+                          <button onClick={() => { executeBatchDelete(); trackEvent('delete_history', { type: 'batch', count: selectedHistoryIds.size }); }} className="flex-1 py-2.5 btn-danger justify-center">
                             {t("確認刪除", "Confirm Delete")}
                           </button>
                         </div>
@@ -3271,12 +3271,12 @@ interface OracleUI {
 
 function oracleUI(effectiveScore: number, lang: 'zh' | 'en'): OracleUI {
   switch (effectiveScore) {
-    case 2: return { label: lang === 'en' ? 'Yes' : '是 (Yes)', theme: 'text-teal-700 dark:text-teal-400', bg: 'bg-teal-50/80 dark:bg-teal-900/30 border-teal-200/60 dark:border-teal-800/50' };
-    case 1: return { label: lang === 'en' ? 'Maybe Yes' : '偏向是 (Maybe Yes)', theme: 'text-teal-600/80 dark:text-teal-400/70', bg: 'bg-teal-50/50 dark:bg-teal-900/20 border-teal-200/40 dark:border-teal-800/30' };
-    case 0: return { label: lang === 'en' ? 'Maybe' : '不確定 (Maybe)', theme: 'text-stone-600 dark:text-stone-400', bg: 'bg-stone-100/80 dark:bg-stone-800/30 border-stone-300/50 dark:border-stone-700/40' };
-    case -1: return { label: lang === 'en' ? 'Maybe No' : '偏向否 (Maybe No)', theme: 'text-rose-700/80 dark:text-rose-300/80', bg: 'bg-rose-100/50 dark:bg-rose-950/40 border-rose-300/40 dark:border-rose-700/30' };
-    case -2: return { label: lang === 'en' ? 'No' : '否 (No)', theme: 'text-rose-800 dark:text-rose-200', bg: 'bg-rose-100/70 dark:bg-rose-950/60 border-rose-300/60 dark:border-rose-700/50' };
-    default: return { label: lang === 'en' ? 'Maybe' : '不確定 (Maybe)', theme: 'text-stone-600 dark:text-stone-400', bg: 'bg-stone-100/80 dark:bg-stone-800/30 border-stone-300/50 dark:border-stone-700/40' };
+    case 2: return { label: lang === 'en' ? 'Yes' : '是 (Yes)', theme: 'text-[#285743] dark:text-[#5C9E82]', bg: 'bg-[#E3E8E3] dark:bg-[#111C17] border-[#A8BDB1] dark:border-[#224032]' };
+    case 1: return { label: lang === 'en' ? 'Maybe Yes' : '偏向是 (Maybe Yes)', theme: 'text-[#416954] dark:text-[#6BAF8F]', bg: 'bg-[#E9EBE7] dark:bg-[#0F1A14] border-[#C4D1CA] dark:border-[#1D3328]' };
+    case 0: return { label: lang === 'en' ? 'Maybe' : '不確定 (Maybe)', theme: 'text-[#6B5A4B] dark:text-[#B8A8CE]', bg: 'bg-[#EBE7DF] dark:bg-[#1C142B] border-[#D2C4AD] dark:border-[#3A2B52]' };
+    case -1: return { label: lang === 'en' ? 'Maybe No' : '偏向否 (Maybe No)', theme: 'text-[#8C4646] dark:text-[#D4868B]', bg: 'bg-[#EFE3E3] dark:bg-[#1A0C10] border-[#D9BDBD] dark:border-[#4A2028]' };
+    case -2: return { label: lang === 'en' ? 'No' : '否 (No)', theme: 'text-[#6B1D2F] dark:text-[#E8A3AE]', bg: 'bg-[#E8D9DC] dark:bg-[#1F0E14] border-[#C2969F] dark:border-[#5A2430]' };
+    default: return { label: lang === 'en' ? 'Maybe' : '不確定 (Maybe)', theme: 'text-[#6B5A4B] dark:text-[#B8A8CE]', bg: 'bg-[#EBE7DF] dark:bg-[#1C142B] border-[#D2C4AD] dark:border-[#3A2B52]' };
   }
 }
 
@@ -3403,8 +3403,8 @@ function TarotSpreadLayout({ spread, cards, mode, lang }: { spread: Spread; card
       return (
         <div className="flex flex-col gap-6 items-center w-full max-w-3xl mx-auto">
           <div className="z-10">{renderCard(0)}</div>
-          <div className="w-full h-px bg-cyan-200/50 dark:bg-cyan-900/50 my-2 relative">
-            <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-4 bg-white/40 dark:bg-mystic-950 text-xs text-cyan-600 dark:text-cyan-500 font-bold tracking-widest">水面之下</span>
+          <div className="w-full h-px bg-[#A3B8C7]/50 dark:bg-[#2D4559]/50 my-2 relative">
+            <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-4 bg-white/40 dark:bg-mystic-950 text-xs text-[#3B5A75] dark:text-[#6F95B5] font-bold tracking-widest">水面之下</span>
           </div>
           <div className="flex gap-8 justify-center z-0">{renderCard(1)}{renderCard(2)}</div>
           <div className="flex gap-8 justify-center z-0">{renderCard(3)}{renderCard(4)}</div>
@@ -3479,9 +3479,9 @@ function TarotCardDisplay({ card, index, isExtra, system, lang, spreadId }: { ca
         </div>
       )}
 
-      <div className={`relative w-[110px] sm:w-[130px] aspect-[2/3] rounded-xl overflow-hidden border-2 ${card.isReversed ? 'border-red-300/70 dark:border-red-400/45 shadow-red-400/20 dark:shadow-red-500/15' :
-          isExtra ? 'border-amber-300/70 dark:border-amber-500/45 shadow-amber-400/20 dark:shadow-amber-500/15' :
-            'border-amber-200/80 dark:border-gold-500/45 shadow-amber-400/20 dark:shadow-gold-500/15'
+      <div className={`relative w-[110px] sm:w-[130px] aspect-[2/3] rounded-xl overflow-hidden border-2 ${card.isReversed ? 'border-[#964747]/70 dark:border-[#6B2E2E]/60 shadow-[#964747]/15 dark:shadow-[#6B2E2E]/20' :
+          isExtra ? 'border-[#B87A4F]/70 dark:border-[#8A5633]/60 shadow-[#B87A4F]/15 dark:shadow-[#8A5633]/20' :
+            'border-[#A88C5A]/70 dark:border-[#6E5936]/60 shadow-[#A88C5A]/15 dark:shadow-[#6E5936]/20'
         } shadow-lg`}>
 
         {imgSrc ? (
@@ -3515,7 +3515,7 @@ function TarotCardDisplay({ card, index, isExtra, system, lang, spreadId }: { ca
 
       <div className="text-center w-[110px] sm:w-[130px]">
         <div className="font-bold text-sm text-heading truncate">{lang === 'en' ? card.nameEN : card.nameCN}</div>
-        <div className={`text-xs font-bold ${card.isReversed ? 'text-reversed' : 'text-amber-600 dark:text-mystic-400'
+        <div className={`text-xs font-bold ${card.isReversed ? 'text-reversed' : 'text-upright'
           }`}>
           {card.isReversed ? (lang === 'en' ? 'Reversed' : '逆位') : (lang === 'en' ? 'Upright' : '正位')}
         </div>
