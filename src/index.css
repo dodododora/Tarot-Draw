@@ -18,29 +18,37 @@
   --color-mystic-600: #5b4a9e;
   --color-mystic-700: #43367a;
   --color-mystic-800: #2d2451;
-  --color-mystic-900: #120E1E;   /* ← deeper: obsidian violet */
-  --color-mystic-950: #08060D;   /* ← deeper: true void */
+  --color-mystic-900: #120E1E;
+  --color-mystic-950: #09060E;
 
   /* ── Gold Metallics ─────────────────────────────────────── */
   --color-gold-500: #d4af37;
   --color-gold-400: #f1c40f;
 }
 
+/* ══════════════════════════════════════════════════════════════
+   BASE LAYER
+   ══════════════════════════════════════════════════════════════ */
+
 @layer base {
   html {
-    /* Pre-paint background — script in index.html adds .dark before first paint */
-    background-color: #c8cdd4; /* light mode cool grey */
+    background-color: #F4EFE6; /* Aged vellum / linen reading table */
   }
   html.dark {
-    background-color: #08060D; /* dark mode = mystic-950 (void) */
+    background-color: #09060E; /* Obsidian void */
   }
   body {
-    @apply font-sans bg-transparent text-slate-900 transition-colors duration-500 min-h-screen bg-fixed relative overflow-x-hidden;
+    @apply font-sans bg-transparent transition-colors duration-500 min-h-screen bg-fixed relative overflow-x-hidden;
+    color: #3B2E24; /* Iron gall ink */
   }
   .dark body {
-    color: #E8E4EC; /* warm starlight instead of pure white */
+    color: #E4DAF0; /* Luminous astral ash */
   }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   TYPOGRAPHY UTILITIES
+   ══════════════════════════════════════════════════════════════ */
 
 .font-serif-tc {
   font-family: var(--font-serif-tc);
@@ -50,168 +58,242 @@
   font-family: var(--font-display);
 }
 
-.card-gradient {
-  background: linear-gradient(135deg, var(--color-mystic-800) 0%, var(--color-mystic-900) 100%);
-}
-
-/* ── Gold Text — light mode: dark stone, dark mode: metallic gold foil ── */
+/* ── Gold Text ─────────────────────────────────────────────── */
 .gold-text {
-  background: linear-gradient(to right, #57534e, #292524);
+  background: linear-gradient(135deg, #7C5318 0%, #B2822E 50%, #68420E 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
-
 .dark .gold-text {
-  background: linear-gradient(135deg, #fff2b2 0%, #d4af37 35%, #aa7c11 65%, #f5e6a3 100%);
+  background: linear-gradient(135deg, #FFF0B8 0%, #D4AF37 40%, #9B7114 75%, #F3E3A0 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   filter: drop-shadow(0 0 12px rgba(212, 175, 55, 0.2));
+}
+
+.card-gradient {
+  background: linear-gradient(155deg, #FAF6EE 0%, #F3ECE0 100%);
+}
+.dark .card-gradient {
+  background: linear-gradient(155deg, rgba(25, 18, 40, 0.8) 0%, rgba(14, 10, 24, 0.9) 100%);
 }
 
 .reversed-card {
   transform: rotate(180deg);
 }
 
-/* ── Semantic utility classes ─────────────────────────────────────
-   Consolidates the most-repeated light/dark color pairs.
-   Adopt gradually in App.tsx to replace scattered inline variants. */
+/* ══════════════════════════════════════════════════════════════
+   SEMANTIC TEXT CLASSES
+   ══════════════════════════════════════════════════════════════ */
 
-/* Text: muted caption / secondary label */
-.text-muted {
-  @apply text-slate-500 dark:text-mystic-400;
-}
-
-/* Text: slightly stronger secondary */
-.text-secondary {
-  @apply text-slate-600 dark:text-mystic-300;
-}
-
-/* Text: faint / disabled / placeholder */
-.text-faint {
-  @apply text-slate-400 dark:text-mystic-500;
-}
-
-/* Text: primary heading / card title */
+/* Heading — card titles, section headers */
 .text-heading {
-  @apply text-slate-800 dark:text-mystic-100;
+  color: #241911;
+}
+.dark .text-heading {
+  color: #FAF5FF;
 }
 
-/* Surface: card / panel — frosted glass + gold hairline border */
-.surface-card {
-  @apply bg-white/80 dark:border-transparent;
-  @apply border border-stone-200/60;
+/* Secondary — subtitles, descriptions */
+.text-secondary {
+  color: #6B5A4B;
 }
-.dark .surface-card {
-  background: rgba(18, 14, 30, 0.65);
-  backdrop-filter: blur(16px) saturate(150%);
-  border: 1px solid rgba(212, 175, 55, 0.18);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 242, 178, 0.08),
-    0 8px 24px -6px rgba(0, 0, 0, 0.7);
+.dark .text-secondary {
+  color: #B8A8CE;
 }
 
-/* Text: extra dim / timestamp / fine-print */
-.text-dim {
-  @apply text-slate-400 dark:text-mystic-600;
+/* Muted — captions, labels */
+.text-muted {
+  color: #988675;
+}
+.dark .text-muted {
+  color: #796891;
 }
 
-/* Text: mid-tone hint / icon label */
+/* Hint — icon labels, mid-tone */
 .text-hint {
-  @apply text-slate-500 dark:text-mystic-500;
+  color: #8E7B6A;
+}
+.dark .text-hint {
+  color: #796891;
 }
 
-/* ── Buttons ──────────────────────────────────────────────────── */
+/* Faint — placeholders, disabled */
+.text-faint {
+  color: #BCADA0;
+}
+.dark .text-faint {
+  color: #4E3E64;
+}
 
-/* Primary CTA — "Draw Cards", "Copy AI Prompt", etc. */
+/* Dim — timestamps, fine-print */
+.text-dim {
+  color: #BCADA0;
+}
+.dark .text-dim {
+  color: #4E3E64;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   BUTTONS
+   ══════════════════════════════════════════════════════════════ */
+
+/* Primary CTA — Alchemical Wax Seal (Burgundy) */
 .btn-primary {
-  @apply rounded-xl font-bold shadow-lg transition-all
+  @apply rounded-xl font-bold transition-all
          hover:-translate-y-1 active:scale-95
-         flex items-center justify-center gap-2
-         bg-stone-700 hover:bg-stone-600 text-stone-50 shadow-stone-800/20;
+         flex items-center justify-center gap-2;
+  background-color: #6B1D2F;
+  color: #FAF5EB;
+  border: 1px solid #521422;
+  box-shadow: 0 2px 8px rgba(107, 29, 47, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+.btn-primary:hover {
+  background-color: #7F2438;
+}
+.btn-primary:active {
+  background-color: #4F1220;
 }
 .dark .btn-primary {
-  background-image: linear-gradient(to right, var(--color-mystic-600), var(--color-mystic-500));
-  color: #fff;
-  box-shadow: 0 10px 15px -3px rgba(91, 74, 158, 0.2);
+  background: linear-gradient(to right, #633991, #492673);
+  color: #FAF5FF;
+  border-color: #8B54C7;
+  box-shadow: 0 0 18px rgba(139, 84, 199, 0.25);
 }
 .dark .btn-primary:hover {
-  background-image: linear-gradient(to right, var(--color-mystic-500), var(--color-mystic-400));
+  background: linear-gradient(to right, #7544AB, #572E8A);
 }
 
-/* Secondary — "Main Only", "Follow-up Only" */
+/* Secondary — Antique Vellum / Obsidian Parchment */
 .btn-secondary {
   @apply rounded-xl font-bold transition-all
          hover:-translate-y-1 active:scale-95
-         flex items-center gap-2
-         bg-amber-50 hover:bg-amber-100 text-amber-700
-         border border-amber-200;
+         flex items-center gap-2;
+  background-color: #EFE8DA;
+  color: #4E3B27;
+  border: 1px solid #CBB99C;
+}
+.btn-secondary:hover {
+  background-color: #E5DCC8;
 }
 .dark .btn-secondary {
-  @apply bg-mystic-800 hover:bg-mystic-700 text-mystic-300 border-mystic-700;
+  background-color: #1C142B;
+  color: #DACBE8;
+  border-color: #3E2B5C;
+}
+.dark .btn-secondary:hover {
+  background-color: #271C3D;
 }
 
-/* Ghost — language toggle, toolbar icons */
+/* Ghost — Hairline Border, Invisible Fill */
 .btn-ghost {
-  @apply rounded-xl font-bold transition-colors
-         border border-stone-200 hover:bg-stone-300/50
-         text-stone-600 select-none;
+  @apply rounded-xl font-bold transition-colors select-none;
+  background: transparent;
+  color: #5A4733;
+  border: 1px solid #D2C4AD;
+}
+.btn-ghost:hover {
+  background: rgba(140, 99, 38, 0.08);
 }
 .dark .btn-ghost {
-  @apply border-mystic-800 hover:bg-mystic-800/50 text-mystic-300;
+  color: #BFAECF;
+  border-color: #3A2B52;
+}
+.dark .btn-ghost:hover {
+  background: rgba(175, 140, 230, 0.12);
 }
 
-/* Danger — delete history */
+/* Danger — Antique Cinnabar */
 .btn-danger {
   @apply rounded-xl font-bold transition-all active:scale-95
-         bg-red-400/80 hover:bg-red-500/80 text-white
-         shadow-lg shadow-red-500/20
          disabled:opacity-40 disabled:cursor-not-allowed;
+  background-color: #8B2525;
+  color: #FFF8F7;
+  border: 1px solid #701A1A;
+  box-shadow: 0 2px 8px rgba(139, 37, 37, 0.2);
+}
+.btn-danger:hover {
+  background-color: #A32E2E;
+}
+.dark .btn-danger {
+  background-color: #781D24;
+  color: #FFEBEB;
+  border-color: #A62B36;
+  box-shadow: 0 0 12px rgba(166, 43, 54, 0.2);
+}
+.dark .btn-danger:hover {
+  background-color: #96252E;
 }
 
-/* ── Surfaces ─────────────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════
+   SURFACES
+   ══════════════════════════════════════════════════════════════ */
 
 /* Navbar */
 .surface-nav {
   @apply sticky top-0 z-50 backdrop-blur-xl
-         border-b transition-colors duration-500
-         bg-white/60 border-white/20;
+         border-b transition-colors duration-500;
+  background: rgba(244, 239, 230, 0.75);
+  border-color: #DBCFB8;
 }
 .dark .surface-nav {
-  background: rgba(8, 6, 13, 0.5);
-  border-color: rgba(45, 36, 81, 0.5);
+  background: rgba(9, 6, 14, 0.6);
+  border-color: rgba(212, 175, 55, 0.12);
 }
 
-/* Tab group container (mode selector) */
+/* Tab group container */
 .surface-tab-group {
-  @apply rounded-xl p-1 border
-         bg-stone-100/80 border-stone-200;
+  @apply rounded-xl p-1 border;
+  background: rgba(239, 232, 218, 0.8);
+  border-color: #DBCFB8;
 }
 .dark .surface-tab-group {
-  @apply bg-mystic-900/80 border-mystic-800;
+  background: rgba(18, 14, 30, 0.8);
+  border-color: rgba(45, 36, 81, 0.6);
+}
+
+/* Card / Panel */
+.surface-card {
+  background: rgba(250, 246, 238, 0.85);
+  border: 1px solid #DBCFB8;
+  box-shadow: 0 4px 16px rgba(68, 48, 30, 0.06);
+}
+.dark .surface-card {
+  background: rgba(19, 14, 30, 0.75);
+  backdrop-filter: blur(16px) saturate(150%);
+  border: 1px solid rgba(212, 175, 55, 0.22);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 242, 178, 0.06),
+    0 8px 24px -6px rgba(0, 0, 0, 0.7);
 }
 
 /* Fixed bottom bar */
 .surface-bottom-bar {
   @apply fixed bottom-0 left-0 right-0 backdrop-blur-xl;
-  @apply bg-white/70;
+  background: rgba(244, 239, 230, 0.8);
 }
 .dark .surface-bottom-bar {
-  @apply bg-mystic-950/80;
+  background: rgba(9, 6, 14, 0.85);
 }
 
 /* Footer */
 .surface-footer {
-  @apply border-t bg-white/30 border-stone-100/60;
+  border-top: 1px solid rgba(219, 207, 184, 0.5);
+  background: rgba(244, 239, 230, 0.3);
 }
 .dark .surface-footer {
-  @apply bg-mystic-950/30 border-mystic-900/60;
+  border-color: rgba(212, 175, 55, 0.08);
+  background: rgba(9, 6, 14, 0.3);
 }
 
-/* Hide scrollbar globally — scroll still works, no layout shift on route change */
+/* ══════════════════════════════════════════════════════════════
+   SCROLLBAR
+   ══════════════════════════════════════════════════════════════ */
+
 * {
-  scrollbar-width: none;       /* Firefox */
-  -ms-overflow-style: none;    /* IE / Edge */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 *::-webkit-scrollbar {
-  display: none;               /* Chrome / Safari */
+  display: none;
 }
