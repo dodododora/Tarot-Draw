@@ -1417,13 +1417,13 @@ ${themeNote}
           </button>
           <button
             onClick={() => { setIsHistoryOpen(true); trackEvent('open_history'); }}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl hover:bg-stone-300/50 dark:hover:bg-mystic-800/50 transition-colors text-sm font-semibold text-stone-700 dark:text-mystic-200"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl hover:bg-[#DBCFB8]/50 dark:hover:bg-[#1C142B]/50 transition-colors text-sm font-semibold text-secondary"
           >
             <History size={18} /> <span className="hidden sm:inline">{t("歷史紀錄", "History")}</span>
           </button>
           <button
             onClick={() => { toggleTheme(); trackEvent('toggle_theme', { theme: theme === 'light' ? 'dark' : 'light' }); }}
-            className="p-2.5 rounded-xl hover:bg-stone-300/50 dark:hover:bg-mystic-800/50 transition-colors text-stone-700 dark:text-mystic-200"
+            className="p-2.5 rounded-xl hover:bg-[#DBCFB8]/50 dark:hover:bg-[#1C142B]/50 transition-colors text-secondary"
           >
             {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
           </button>
@@ -1458,7 +1458,7 @@ ${themeNote}
                           <span className="w-4 h-4 rounded-full badge-dim flex items-center justify-center text-[9px] font-bold shrink-0">{n}</span>
                           {label}
                         </span>
-                        {i < arr.length - 1 && <span className="text-slate-300 dark:text-mystic-700">›</span>}
+                        {i < arr.length - 1 && <span className="text-faint">›</span>}
                       </React.Fragment>
                     ))}
                   </div>
@@ -1555,14 +1555,14 @@ ${themeNote}
                         <h2 className="text-2xl font-bold text-heading font-serif-tc">
                           {t("我的牌陣", "My Spreads")}
                           {customSpreads.length > 0 && (
-                            <span className="ml-2 text-sm font-semibold text-stone-500 dark:text-mystic-500">{customSpreads.length}</span>
+                            <span className="ml-2 text-sm font-semibold text-muted">{customSpreads.length}</span>
                           )}
                         </h2>
                       </div>
                       <div className="flex items-center gap-2">
                         <button
                           onClick={(e) => { e.stopPropagation(); openAddModal(); }}
-                          className="flex items-center gap-2 px-4 py-2 btn-primary text-stone-50 dark:text-white rounded-lg transition-colors text-sm font-medium shadow-md dark:shadow-mystic-500/20"
+                          className="flex items-center gap-2 px-4 py-2 btn-primary rounded-lg transition-colors text-sm font-medium shadow-md dark:shadow-mystic-500/20"
                         >
                           <Plus size={18} /> {t("新增牌陣", "Add Spread")}
                         </button>
@@ -1606,7 +1606,7 @@ ${themeNote}
                           }
                         </div>
                       ) : (
-                        <div className="text-center py-12 border-2 border-dashed border-slate-200 dark:border-mystic-800 rounded-xl text-muted">
+                        <div className="text-center py-12 border-2 border-dashed divider-subtle rounded-xl text-muted">
                           <p>{t("尚未建立自訂牌陣", "No custom spreads created yet")}</p>
                         </div>
                       )}
@@ -1641,7 +1641,7 @@ ${themeNote}
                 >
                   <button
                     onClick={() => navigate('/')}
-                    className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-mystic-600 dark:hover:text-mystic-400 transition-colors"
+                    className="flex items-center gap-2 text-muted hover:text-[#492673] dark:hover:text-[#B8A8CE] transition-colors"
                   >
                     <ArrowLeft size={18} /> {t("返回首頁", "Back to Home")}
                   </button>
@@ -1672,7 +1672,7 @@ ${themeNote}
                       </div>
 
                       {selectedSpread.id === 'len-36' && mode === 'lenormand' && (
-                        <div className="border border-stone-200 dark:border-mystic-800 rounded-xl p-4 bg-[#F4EFE6]/50 dark:bg-[#09060E]/40">
+                        <div className="border divider-subtle rounded-xl p-4 bg-[#F4EFE6]/50 dark:bg-[#09060E]/40">
                           <details className="group">
                             <summary className="flex items-center justify-between cursor-pointer select-none text-xs font-bold text-secondary uppercase tracking-widest list-none">
                               <span className="flex items-center gap-1.5 select-none">
@@ -2104,7 +2104,7 @@ ${themeNote}
                   {/* Tarot Tablecloth Layout */}
                   {(mode === 'waite' || mode === 'thoth') && (
                     <div className="relative bg-[#FAF6EE]/40 dark:bg-[#09060E] rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-12 shadow-2xl shadow-[#6B5A4B]/5 dark:shadow-[#09060E]/50 border-4 border-[#DBCFB8]/30 dark:border-[#2D2451]/30 overflow-hidden backdrop-blur-sm">
-                      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-amber-50/40 via-white/40 to-amber-100/30 dark:from-mystic-800/20 dark:via-mystic-900/80 dark:to-mystic-950 pointer-events-none"></div>
+                      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#F4EFE6]/40 via-[#FAF6EE]/40 to-[#EFE8DA]/30 dark:from-[#120E1E]/20 dark:via-[#120E1E]/80 dark:to-[#09060E] pointer-events-none"></div>
 
                       <div className="relative z-10 w-full max-w-6xl mx-auto">
                         <TarotSpreadLayout spread={selectedSpread} cards={mainCards} mode={mode === 'thoth' ? 'thoth' : 'waite'} lang={lang} />
@@ -2340,7 +2340,7 @@ ${themeNote}
                  initial="hidden"
                  animate="visible"
                  exit="exit"
-                 className="w-full max-w-sm sm:max-w-md lg:w-[40vw] lg:max-w-2xl h-full surface-drawer backdrop-blur-2xl shadow-[-20px_0_40px_rgba(68,64,60,0.05)] dark:shadow-[-20px_0_40px_rgba(0,0,0,0.3)] border-l border-stone-200 dark:border-mystic-800/80 flex flex-col"
+                 className="w-full max-w-sm sm:max-w-md lg:w-[40vw] lg:max-w-2xl h-full surface-drawer backdrop-blur-2xl shadow-[-20px_0_40px_rgba(59,46,36,0.05)] dark:shadow-[-20px_0_40px_rgba(0,0,0,0.3)] flex flex-col"
                  onClick={(e) => e.stopPropagation()}
                >
                  {/* Header */}
@@ -2374,7 +2374,7 @@ ${themeNote}
                          {historySelectMode ? t('取消', 'Cancel') : t('管理', 'Manage')}
                        </button>
                      )}
-                    <button onClick={() => { setIsHistoryOpen(false); setHistorySelectMode(false); setSelectedHistoryIds(new Set()); }} className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors ml-1">
+                    <button onClick={() => { setIsHistoryOpen(false); setHistorySelectMode(false); setSelectedHistoryIds(new Set()); }} className="p-2 text-hint hover:text-heading transition-colors ml-1">
                       <X size={20} />
                     </button>
                   </div>
@@ -3494,7 +3494,7 @@ function TarotCardDisplay({ card, index, isExtra, system, lang, spreadId }: { ca
           />
         ) : (
           /* Fallback for manually-entered cards with no id */
-          <div className={`absolute inset-0 flex flex-col items-center justify-center p-4 ${isMajor ? 'bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-100/80 via-orange-50/50 to-white dark:from-mystic-800/80 dark:via-mystic-900 dark:to-mystic-950' : 'bg-white/90 dark:bg-mystic-900'
+          <div className={`absolute inset-0 flex flex-col items-center justify-center p-4 ${isMajor ? 'bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#EFE8DA]/80 via-[#F4EFE6]/50 to-[#FAF6EE] dark:from-[#1C142B]/80 dark:via-[#120E1E] dark:to-[#09060E]' : 'bg-[#FAF6EE]/90 dark:bg-[#120E1E]'
             }`}>
             <div className={`flex flex-col items-center justify-center text-center h-full w-full p-2 ${card.isReversed ? 'rotate-180' : ''
               }`}>
