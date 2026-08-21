@@ -61,6 +61,35 @@
   transform: rotate(180deg);
 }
 
+/* ── Semantic utility classes ─────────────────────────────────────
+   Consolidates the most-repeated light/dark color pairs.
+   Adopt gradually in App.tsx to replace scattered inline variants. */
+
+/* Text: muted caption / secondary label  (9 occurrences) */
+.text-muted {
+  @apply text-slate-500 dark:text-mystic-400;
+}
+
+/* Text: slightly stronger secondary  (6 occurrences) */
+.text-secondary {
+  @apply text-slate-600 dark:text-mystic-300;
+}
+
+/* Text: faint / disabled / placeholder  (10 occurrences) */
+.text-faint {
+  @apply text-slate-400 dark:text-mystic-500;
+}
+
+/* Text: primary heading / card title  (3 occurrences) */
+.text-heading {
+  @apply text-slate-800 dark:text-mystic-100;
+}
+
+/* Surface: card / panel background with subtle border */
+.surface-card {
+  @apply bg-white/80 dark:bg-mystic-900/60 border border-stone-200/60 dark:border-mystic-800/50;
+}
+
 /* Hide scrollbar globally — scroll still works, no layout shift on route change */
 * {
   scrollbar-width: none;       /* Firefox */
