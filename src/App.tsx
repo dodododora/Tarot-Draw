@@ -1960,7 +1960,7 @@ ${themeNote}
                     <div className="bg-[#EBE7ED]/60 dark:bg-[#191423]/30 p-4 sm:px-5 rounded-2xl border border-[#D2C4DA]/60 dark:border-[#3A2B52]/30 flex items-start gap-3">
                       <Lightbulb className="text-hint mt-0.5 flex-shrink-0" size={18} />
                       <div>
-                        <p className="text-sm font-bold text-heading mb-1.5 tracking-wide">{mode === 'lenormand' ? t('雷諾曼小知識', 'Lenormand Trivia') : mode === 'thoth' ? t('托特小知識', 'Thoth Trivia') : t('塔羅小知識', 'Tarot Trivia')}</p>
+                        <p className="text-sm font-bold text-heading mb-1.5 tracking-wide">{mode === 'lenormand' ? t('雷諾曼小知識', 'Lenormand Trivia') : mode === 'thoth' ? t('托特小知識', 'Thoth Trivia') : t('偉特小知識', 'Waite Trivia')}</p>
                         <p className="text-sm text-secondary leading-relaxed italic">
                           {currentTrivia}
                         </p>
