@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect, useCallback, type MouseEvent, type FormEvent } from 'react';
 import { flushSync } from 'react-dom';
 import { useNavigate, useLocation, Routes, Route, Navigate } from 'react-router-dom';
-import { Moon, Sun, Plus, Trash2, Edit2, Copy, ArrowLeft, Sparkles, Wand2, Info, X, History, CheckCircle2, Compass, Lightbulb, Clover, GitCompare, LayoutGrid, User, Heart, Briefcase, Coins, TreePine, Sparkles, BoxSelect, Navigation, Star, Hexagon } from 'lucide-react';
+import { Moon, Sun, Plus, Trash2, Edit2, Copy, ArrowLeft, Sparkles, Wand2, Info, X, History, CheckCircle2, Compass, Lightbulb, Clover, GitCompare, LayoutGrid, User, Heart, Briefcase, Coins, TreePine, Sparkles, BoxSelect, Navigation, Star, Hexagon, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ALL_CARDS, THOTH_SPREADS, WAITE_SPREADS, WAITE_SPREAD_IDS, THOTH_SPREAD_IDS, getCardEmoji, getCardImagePath, TAROT_TRIVIA, LENORMAND_CARDS, LENORMAND_SPREADS, LENORMAND_TRIVIA, THOTH_ALL_CARDS, THOTH_TRIVIA, ORACLE_DATA, type Spread, type TarotCard, type LenormandCard } from './constants';
 import { shuffleAndDraw } from './deckEngine';
@@ -1682,75 +1682,75 @@ ${themeNote}
                                 ▼
                               </span>
                             </summary>
-                            <div className="mt-4 space-y-4 text-sm border-t divider-subtle pt-4">
-                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                                <span className="font-bold text-xs text-muted">{t("問事者代表牌 (Querent)", "Querent Card")}</span>
-                                <div className="flex gap-1.5">
+                            <div className="mt-4 space-y-4 sm:space-y-5 text-sm border-t divider-subtle pt-4">
+                              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-4">
+                                <span className="font-bold text-xs text-muted w-24 shrink-0 mt-1">{t("問事者 (Querent)", "Querent")}</span>
+                                <div className="flex flex-wrap gap-1.5 flex-1 justify-end sm:justify-start">
                                   {[
-                                    { label: t('女人 (#29)', 'Lady (#29)'), value: 'woman' },
-                                    { label: t('男人 (#28)', 'Gentleman (#28)'), value: 'man' }
+                                    { label: t('女人 (Lady)', 'Lady'), value: 'woman', icon: <User size={14} /> },
+                                    { label: t('男人 (Gentleman)', 'Gentleman'), value: 'man', icon: <User size={14} /> }
                                   ].map(opt => (
                                     <button
                                       key={opt.value}
                                       type="button"
-                                      onClick={() => setGtQuerent(opt.value as any)}
-                                      className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-all select-none ${
+                                      onClick={() => setGtQuerent(opt.value)}
+                                      className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg border transition-all select-none ${
                                         gtQuerent === opt.value
                                           ? 'border-[#2D5A4C] bg-[#E6E3DA]/30 text-[#2A6A55] dark:text-[#5CC090]'
                                           : 'divider-subtle hover:bg-[#F4EFE6] dark:hover:bg-[#1C1438]/50 text-secondary'
                                       }`}
                                     >
-                                      {opt.label}
+                                      {opt.icon} {opt.label}
                                     </button>
                                   ))}
                                 </div>
                               </div>
 
-                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                                <span className="font-bold text-xs text-muted">{t("對象/伴侶代表 (Partner)", "Partner Card")}</span>
-                                <div className="flex gap-1.5">
+                              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-4">
+                                <span className="font-bold text-xs text-muted w-24 shrink-0 mt-2 sm:mt-1">{t("對象 (Partner)", "Partner")}</span>
+                                <div className="flex flex-wrap gap-1.5 flex-1 justify-end sm:justify-start">
                                   {[
-                                    { label: t('異性/對立能量', 'Opposite/Dual Energy'), value: 'opposite' },
-                                    { label: t('同性 (以 #18 狗代表)', 'Same-sex (Dog #18)'), value: 'same' },
-                                    { label: t('無對象', 'No Partner'), value: 'none' }
+                                    { label: t('異性 (Opposite)', 'Opposite'), value: 'opposite', icon: <GitCompare size={14} /> },
+                                    { label: t('同性 (Same-sex)', 'Same-sex'), value: 'same', icon: <Users size={14} /> },
+                                    { label: t('無 (None)', 'None'), value: 'none', icon: <X size={14} /> }
                                   ].map(opt => (
                                     <button
                                       key={opt.value}
                                       type="button"
-                                      onClick={() => setGtPartner(opt.value as any)}
-                                      className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-all select-none ${
+                                      onClick={() => setGtPartner(opt.value)}
+                                      className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg border transition-all select-none ${
                                         gtPartner === opt.value
                                           ? 'border-[#2D5A4C] bg-[#E6E3DA]/30 text-[#2A6A55] dark:text-[#5CC090]'
                                           : 'divider-subtle hover:bg-[#F4EFE6] dark:hover:bg-[#1C1438]/50 text-secondary'
                                       }`}
                                     >
-                                      {opt.label}
+                                      {opt.icon} {opt.label}
                                     </button>
                                   ))}
                                 </div>
                               </div>
 
-                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                                <span className="font-bold text-xs text-muted">{t("占卜主題與指示牌 (Theme)", "Reading Theme / Significator")}</span>
-                                <div className="flex gap-1.5 flex-wrap justify-end">
+                              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-4">
+                                <span className="font-bold text-xs text-muted w-24 shrink-0 mt-2 sm:mt-1">{t("主題 (Theme)", "Theme")}</span>
+                                <div className="flex flex-wrap gap-1.5 flex-1 justify-end sm:justify-start">
                                   {[
-                                    { label: t('綜合運勢', 'General Fortune'), value: 'general' },
-                                    { label: t('感情 (#24 心)', 'Love (Heart #24)'), value: 'love' },
-                                    { label: t('事業 (#35 錨)', 'Career (Anchor #35)'), value: 'career' },
-                                    { label: t('財運 (#34 魚)', 'Wealth (Fish #34)'), value: 'money' },
-                                    { label: t('健康 (#5 樹)', 'Health (Tree #5)'), value: 'health' }
+                                    { label: t('綜合 (General)', 'General'), value: 'general', icon: <BoxSelect size={14} /> },
+                                    { label: t('感情 (Love)', 'Love'), value: 'love', icon: <Heart size={14} /> },
+                                    { label: t('事業 (Career)', 'Career'), value: 'career', icon: <Briefcase size={14} /> },
+                                    { label: t('財運 (Wealth)', 'Wealth'), value: 'money', icon: <Coins size={14} /> },
+                                    { label: t('健康 (Health)', 'Health'), value: 'health', icon: <TreePine size={14} /> }
                                   ].map(opt => (
                                     <button
                                       key={opt.value}
                                       type="button"
-                                      onClick={() => setGtTheme(opt.value as any)}
-                                      className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-all select-none ${
+                                      onClick={() => setGtTheme(opt.value)}
+                                      className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg border transition-all select-none ${
                                         gtTheme === opt.value
                                           ? 'border-[#2D5A4C] bg-[#E6E3DA]/30 text-[#2A6A55] dark:text-[#5CC090]'
                                           : 'divider-subtle hover:bg-[#F4EFE6] dark:hover:bg-[#1C1438]/50 text-secondary'
                                       }`}
                                     >
-                                      {opt.label}
+                                      {opt.icon} {opt.label}
                                     </button>
                                   ))}
                                 </div>
