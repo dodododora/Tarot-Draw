@@ -35,7 +35,7 @@
     background-color: #F4EFE6; /* Aged vellum / linen reading table */
   }
   html.dark {
-    background-color: #09060E; /* Obsidian void */
+    background-color: #080510; /* Celestial midnight — deeper blue-black */
   }
   body {
     @apply font-sans bg-transparent transition-colors duration-500 min-h-screen bg-fixed relative overflow-x-hidden;
@@ -237,7 +237,7 @@
   border-color: #DBCFB8;
 }
 .dark .surface-nav {
-  background: rgba(9, 6, 14, 0.6);
+  background: rgba(8, 5, 16, 0.6);
   border-color: rgba(212, 175, 55, 0.12);
 }
 

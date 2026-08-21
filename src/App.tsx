@@ -1369,7 +1369,7 @@ ${themeNote}
             <button
               onClick={() => { setMode('waite'); navigate('/'); setSelectedSpread(null); trackEvent('select_system', { system: 'waite' }); }}
               className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${mode === 'waite'
-                ? 'bg-[#9A7341] dark:bg-[#B58A4D] text-white shadow-sm'
+                ? 'bg-[#8A6420] dark:bg-[#C9963A] text-white shadow-sm'
                 : 'tab-inactive'
                 }`}
             >
@@ -1378,7 +1378,7 @@ ${themeNote}
             <button
               onClick={() => { setMode('thoth'); navigate('/'); setSelectedSpread(null); trackEvent('select_system', { system: 'thoth' }); }}
               className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${mode === 'thoth'
-                ? 'bg-[#283A6D] dark:bg-[#3B4D82] text-white shadow-sm'
+                ? 'bg-[#3B4DA0] dark:bg-[#5566C0] text-white shadow-sm'
                 : 'tab-inactive'
                 }`}
             >
@@ -1394,7 +1394,7 @@ ${themeNote}
             <button
               onClick={() => { setMode('lenormand'); navigate('/'); setSelectedSpread(null); trackEvent('select_system', { system: 'lenormand' }); }}
               className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${mode === 'lenormand'
-                ? 'bg-[#2D5A4C] dark:bg-[#3B7262] text-white shadow-sm'
+                ? 'bg-[#2A6A55] dark:bg-[#3D8A70] text-white shadow-sm'
                 : 'tab-inactive'
                 }`}
             >
@@ -1641,7 +1641,7 @@ ${themeNote}
                 >
                   <button
                     onClick={() => navigate('/')}
-                    className="flex items-center gap-2 text-muted hover:text-[#492673] dark:hover:text-[#B8A8CE] transition-colors"
+                    className="flex items-center gap-2 text-muted hover:text-[#5B32A0] dark:hover:text-[#C8B8E8] transition-colors"
                   >
                     <ArrowLeft size={18} /> {t("返回首頁", "Back to Home")}
                   </button>
@@ -1696,8 +1696,8 @@ ${themeNote}
                                       onClick={() => setGtQuerent(opt.value as any)}
                                       className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-all select-none ${
                                         gtQuerent === opt.value
-                                          ? 'border-[#2D5A4C] bg-[#E1E8E6]/30 text-[#2D5A4C] dark:text-[#5C9E82]'
-                                          : 'divider-subtle hover:bg-[#F4EFE6] dark:hover:bg-[#120E1E]/50 text-secondary'
+                                          ? 'border-[#2D5A4C] bg-[#E1E8E6]/30 text-[#2A6A55] dark:text-[#5CC090]'
+                                          : 'divider-subtle hover:bg-[#F4EFE6] dark:hover:bg-[#1C1438]/50 text-secondary'
                                       }`}
                                     >
                                       {opt.label}
@@ -1720,8 +1720,8 @@ ${themeNote}
                                       onClick={() => setGtPartner(opt.value as any)}
                                       className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-all select-none ${
                                         gtPartner === opt.value
-                                          ? 'border-[#2D5A4C] bg-[#E1E8E6]/30 text-[#2D5A4C] dark:text-[#5C9E82]'
-                                          : 'divider-subtle hover:bg-[#F4EFE6] dark:hover:bg-[#120E1E]/50 text-secondary'
+                                          ? 'border-[#2D5A4C] bg-[#E1E8E6]/30 text-[#2A6A55] dark:text-[#5CC090]'
+                                          : 'divider-subtle hover:bg-[#F4EFE6] dark:hover:bg-[#1C1438]/50 text-secondary'
                                       }`}
                                     >
                                       {opt.label}
@@ -1746,8 +1746,8 @@ ${themeNote}
                                       onClick={() => setGtTheme(opt.value as any)}
                                       className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-all select-none ${
                                         gtTheme === opt.value
-                                          ? 'border-[#2D5A4C] bg-[#E1E8E6]/30 text-[#2D5A4C] dark:text-[#5C9E82]'
-                                          : 'divider-subtle hover:bg-[#F4EFE6] dark:hover:bg-[#120E1E]/50 text-secondary'
+                                          ? 'border-[#2D5A4C] bg-[#E1E8E6]/30 text-[#2A6A55] dark:text-[#5CC090]'
+                                          : 'divider-subtle hover:bg-[#F4EFE6] dark:hover:bg-[#1C1438]/50 text-secondary'
                                       }`}
                                     >
                                       {opt.label}
@@ -1839,8 +1839,8 @@ ${themeNote}
                                             return next;
                                           })}
                                           className={`absolute right-1 top-1/2 -translate-y-1/2 text-xs px-2 py-1 rounded border transition-all ${manualInputs[i]?.reversed
-                                            ? 'border-[#6B1D2F]/70 dark:border-[#E06A75]/50 text-[#6B1D2F] dark:text-[#E06A75] bg-[#E8D9DC]/80 dark:bg-[#1F0E14]/60 font-semibold'
-                                            : 'border-[#D2C4AD]/40 dark:border-[#3A2B52]/50 text-hint bg-transparent hover:bg-[#F4EFE6]/50 dark:hover:bg-[#120E1E]/50'
+                                            ? 'border-[#6B1D2F]/70 dark:border-[#E06A75]/50 text-[#8B2040] dark:text-[#E06A75] bg-[#E8D9DC]/80 dark:bg-[#1F0E14]/60 font-semibold'
+                                            : 'border-[#D2C4AD]/40 dark:border-[#43327A]/40 text-hint bg-transparent hover:bg-[#F4EFE6]/50 dark:hover:bg-[#1C1438]/50'
                                             }`}
                                         >
                                           逆
@@ -1860,7 +1860,7 @@ ${themeNote}
                                                   return next;
                                                 });
                                               }}
-                                              className="w-full text-left px-3 py-2 text-sm hover:bg-[#F4EFE6] dark:hover:bg-[#120E1E] transition-colors flex items-center justify-between gap-2"
+                                              className="w-full text-left px-3 py-2 text-sm hover:bg-[#F4EFE6] dark:hover:bg-[#1C1438] transition-colors flex items-center justify-between gap-2"
                                             >
                                               <span className="font-medium text-heading">{card.nameCN}</span>
                                               <span className="text-xs text-hint shrink-0">{card.nameEN}</span>
@@ -1885,7 +1885,7 @@ ${themeNote}
                     })()}
 
                     {selectedSpread.id === 'choice' && (
-                      <div className="bg-[#EBE7ED]/50 dark:bg-[#191423]/40 p-4 rounded-xl border border-[#D2C4DA] dark:border-[#3A2B52]/50">
+                      <div className="bg-[#F2EDE4]/60 dark:bg-[#141028]/40 p-4 rounded-xl border border-[#CBBA9E] dark:border-[#43327A]/40">
                         <label className="text-sm font-bold text-heading block mb-3">
                           {t("這題有幾個選項需要比較？（目前：", "How many options to compare? (Current: ")}{choiceCount}{t(" 個）", " options)")}
                         </label>
@@ -1895,8 +1895,8 @@ ${themeNote}
                               key={num}
                               onClick={() => setChoiceCount(num)}
                               className={`w-[42px] h-[42px] sm:w-11 sm:h-11 rounded-full font-bold text-sm sm:text-base flex items-center justify-center transition-all duration-300 ${choiceCount === num
-                                ? 'bg-[#492673] dark:bg-[#633991] text-white shadow-md shadow-[#492673]/30 scale-105 ring-2 ring-[#7C66DC]/40 dark:ring-[#492673] ring-offset-1 dark:ring-offset-mystic-900'
-                                : 'surface-card shadow-sm text-[#492673] dark:text-[#B8A8CE] border border-[#D2C4DA] dark:border-[#3A2B52] hover:bg-[#EBE7ED] dark:hover:bg-[#191423]'
+                                ? 'bg-[#5B32A0] dark:bg-[#7444B8] text-white shadow-md shadow-[#492673]/30 scale-105 ring-2 ring-[#7C66DC]/40 dark:ring-[#492673] ring-offset-1 dark:ring-offset-mystic-900'
+                                : 'surface-card shadow-sm text-[#5B32A0] dark:text-[#C8B8E8] border border-[#CBBA9E] dark:border-[#43327A] hover:bg-[#F2EDE4] dark:hover:bg-[#141028]'
                                 }`}
                             >
                               {num}
@@ -1920,8 +1920,8 @@ ${themeNote}
                               key={num}
                               onClick={() => setPeopleCount(num)}
                               className={`w-[42px] h-[42px] sm:w-11 sm:h-11 rounded-full font-bold text-sm sm:text-base flex items-center justify-center transition-all duration-300 ${peopleCount === num
-                                ? 'bg-[#2D5A4C] dark:bg-[#3B7262] text-white shadow-md shadow-[#2D5A4C]/20 scale-105 ring-2 ring-[#5C9E82]/40 dark:ring-[#224032] ring-offset-1 dark:ring-offset-mystic-900'
-                                : 'surface-card shadow-sm text-[#2D5A4C] dark:text-[#5C9E82] border border-[#A8BDB1]/50 dark:border-[#3A2B52] hover:bg-[#E1E8E6] dark:hover:bg-[#101917]'
+                                ? 'bg-[#2A6A55] dark:bg-[#3D8A70] text-white shadow-md shadow-[#2D5A4C]/20 scale-105 ring-2 ring-[#5C9E82]/40 dark:ring-[#224032] ring-offset-1 dark:ring-offset-mystic-900'
+                                : 'surface-card shadow-sm text-[#2A6A55] dark:text-[#5CC090] border border-[#A8BDB1]/50 dark:border-[#43327A] hover:bg-[#E1E8E6] dark:hover:bg-[#142A22]'
                                 }`}
                             >
                               {num}
@@ -1934,7 +1934,7 @@ ${themeNote}
                       </div>
                     )}
 
-                    <div className="bg-[#EBE7ED]/80 dark:bg-[#191423]/50 p-4 sm:px-5 rounded-2xl border border-[#D2C4DA]/50 dark:border-[#3A2B52]/30 flex items-start gap-3">
+                    <div className="bg-[#F2EDE4]/80 dark:bg-[#141028]/50 p-4 sm:px-5 rounded-2xl border border-[#CBBA9E]/40 dark:border-[#43327A]/25 flex items-start gap-3">
                       <Info className="text-hint mt-0.5 flex-shrink-0" size={18} />
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-bold text-heading mb-2 tracking-wide">{t("牌陣資訊", "Spread Info")}</p>
@@ -1957,7 +1957,7 @@ ${themeNote}
                       </div>
                     </div>
 
-                    <div className="bg-[#EBE7ED]/60 dark:bg-[#191423]/30 p-4 sm:px-5 rounded-2xl border border-[#D2C4DA]/60 dark:border-[#3A2B52]/30 flex items-start gap-3">
+                    <div className="bg-[#F2EDE4]/70 dark:bg-[#141028]/30 p-4 sm:px-5 rounded-2xl border border-[#CBBA9E]/50 dark:border-[#43327A]/25 flex items-start gap-3">
                       <Lightbulb className="text-hint mt-0.5 flex-shrink-0" size={18} />
                       <div>
                         <p className="text-sm font-bold text-heading mb-1.5 tracking-wide">{mode === 'lenormand' ? t('雷諾曼小知識', 'Lenormand Trivia') : mode === 'thoth' ? t('托特小知識', 'Thoth Trivia') : t('偉特小知識', 'Waite Trivia')}</p>
@@ -2104,7 +2104,7 @@ ${themeNote}
                   {/* Tarot Tablecloth Layout */}
                   {(mode === 'waite' || mode === 'thoth') && (
                     <div className="relative bg-[#FAF6EE]/40 dark:bg-[#09060E] rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-12 shadow-2xl shadow-[#6B5A4B]/5 dark:shadow-[#09060E]/50 border-4 border-[#DBCFB8]/30 dark:border-[#2D2451]/30 overflow-hidden backdrop-blur-sm">
-                      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#F4EFE6]/40 via-[#FAF6EE]/40 to-[#EFE8DA]/30 dark:from-[#120E1E]/20 dark:via-[#120E1E]/80 dark:to-[#09060E] pointer-events-none"></div>
+                      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#F4EFE6]/40 via-[#FAF6EE]/40 to-[#EFE8DA]/30 dark:from-[#1C1438]/20 dark:via-[#1C1438]/80 dark:to-[#09060E] pointer-events-none"></div>
 
                       <div className="relative z-10 w-full max-w-6xl mx-auto">
                         <TarotSpreadLayout spread={selectedSpread} cards={mainCards} mode={mode === 'thoth' ? 'thoth' : 'waite'} lang={lang} />
@@ -2153,7 +2153,7 @@ ${themeNote}
 
                   {/* Bottom Card — tarot/thoth only */}
                   {(mode === 'waite' || mode === 'thoth') && bottomCard && (
-                    <div className="relative bg-[#FAF6EE]/40 dark:bg-[#09060E] rounded-[2rem] p-6 sm:p-8 shadow-xl border-2 border-dashed border-[#DBCFB8]/60 dark:border-[#3A2B52]/40 backdrop-blur-sm">
+                    <div className="relative bg-[#FAF6EE]/40 dark:bg-[#09060E] rounded-[2rem] p-6 sm:p-8 shadow-xl border-2 border-dashed border-[#DBCFB8]/60 dark:border-[#43327A]/35 backdrop-blur-sm">
                       <div className="flex flex-col items-center gap-3">
                         <div className="text-center">
                           <p className="text-xs font-bold text-hint uppercase tracking-widest">{t("底牌", "Bottom Card")}</p>
@@ -2232,7 +2232,7 @@ ${themeNote}
                           downloadShareCard({ spreadName: selectedSpread?.name ?? '', question, cards: cardList, mode });
                           trackEvent('download_share_image', { spread_name: selectedSpread?.name ?? '', system: mode });
                         }}
-                        className="btn-secondary px-5 py-2.5 text-sm bg-[#EBE7ED] hover:bg-[#DDD7E3] dark:bg-[#191423] dark:hover:bg-[#221A34] text-[#492673] dark:text-[#B8A8CE] border-[#D2C4DA] dark:border-[#3A2B52]"
+                        className="btn-secondary px-5 py-2.5 text-sm bg-[#F2EDE4] hover:bg-[#DDD7E3] dark:bg-[#141028] dark:hover:bg-[#221A34] text-[#5B32A0] dark:text-[#C8B8E8] border-[#CBBA9E] dark:border-[#43327A]"
                       >
                         {t("儲存分享圖", "Save Share Image")}
                       </button>
@@ -2246,7 +2246,7 @@ ${themeNote}
                           href="https://chat.openai.com"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#2F5C54]/10 hover:bg-[#2F5C54]/20 text-[#2F5C54] dark:text-[#4F8A7D] border border-[#2F5C54]/30 text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95"
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1A7A60]/10 hover:bg-[#1A7A60]/20 text-[#1A7A60] dark:text-[#3DB890] border border-[#1A7A60]/30 text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95"
                         >
                           ChatGPT
                         </a>
@@ -2254,7 +2254,7 @@ ${themeNote}
                           href="https://claude.ai"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#9E5B3A]/10 hover:bg-[#9E5B3A]/20 text-[#9E5B3A] dark:text-[#C27653] border border-[#9E5B3A]/30 text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95"
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#B05E30]/10 hover:bg-[#B05E30]/20 text-[#B05E30] dark:text-[#D88350] border border-[#B05E30]/30 text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95"
                         >
                           Claude
                         </a>
@@ -2262,7 +2262,7 @@ ${themeNote}
                           href="https://gemini.google.com"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#3B5475]/10 hover:bg-[#3B5475]/20 text-[#3B5475] dark:text-[#5F7A9D] border border-[#3B5475]/30 text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95"
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#3565A0]/10 hover:bg-[#3565A0]/20 text-[#3565A0] dark:text-[#6899D0] border border-[#3565A0]/30 text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95"
                         >
                           <span>✦</span> Gemini
                         </a>
@@ -2356,7 +2356,7 @@ ${themeNote}
                            e.stopPropagation();
                            setHistory(prev => prev.filter(r => r.question.trim() !== ''));
                          }}
-                         className="p-2 text-hint hover:text-[#9B7114] transition-colors flex items-center gap-1 text-sm font-medium bg-[#EFE8DA]/50 hover:bg-[#F4EFE6] dark:bg-[#1C142B]/50 dark:hover:bg-[#191423] rounded-lg px-3"
+                         className="p-2 text-hint hover:text-[#9B7114] transition-colors flex items-center gap-1 text-sm font-medium bg-[#EFE8DA]/50 hover:bg-[#F4EFE6] dark:bg-[#1C142B]/50 dark:hover:bg-[#141028] rounded-lg px-3"
                          title={t("清除未輸入問題的紀錄", "Clear records with no question input")}
                        >
                          <Trash2 size={16} />
@@ -2367,7 +2367,7 @@ ${themeNote}
                        <button
                          onClick={toggleSelectMode}
                          className={`px-3 py-1.5 rounded-lg text-sm font-bold transition-all ${historySelectMode
-                             ? 'bg-[#E8D9DC] dark:bg-[#1F0E14]/40 text-[#6B1D2F] dark:text-[#E06A75] hover:bg-[#DCCCCE]'
+                             ? 'bg-[#E8D9DC] dark:bg-[#1F0E14]/40 text-[#8B2040] dark:text-[#E06A75] hover:bg-[#DCCCCE]'
                              : 'btn-ghost text-secondary'
                            }`}
                        >
@@ -2390,7 +2390,7 @@ ${themeNote}
                         onClick={() => { setHistoryFilter(key); setSelectedHistoryIds(new Set()); }}
                         className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 ${historyFilter === key
                             ? 'bg-[#EFE8DA] dark:bg-[#2D2451] text-[#6B5A4B] dark:text-[#E4DAF0] shadow-sm'
-                            : 'text-hint hover:bg-[#F4EFE6] dark:hover:bg-[#120E1E]/60'
+                            : 'text-hint hover:bg-[#F4EFE6] dark:hover:bg-[#1C1438]/60'
                           }`}
                       >
                         {label}
@@ -2420,7 +2420,7 @@ ${themeNote}
                           .map(r => r.id);
                         setSelectedHistoryIds(prev => new Set([...prev, ...noQuestionIds]));
                       }}
-                      className="ml-auto text-xs font-semibold px-2.5 py-1 rounded-lg border divider-subtle text-muted hover:bg-[#F4EFE6] dark:hover:bg-[#120E1E] transition-colors select-none"
+                      className="ml-auto text-xs font-semibold px-2.5 py-1 rounded-lg border divider-subtle text-muted hover:bg-[#F4EFE6] dark:hover:bg-[#1C1438] transition-colors select-none"
                     >
                       {t("選取未提問的紀錄", "Select empty questions")}
                     </button>
@@ -2433,7 +2433,7 @@ ${themeNote}
                     filteredHistory.map((record) => (
                       <div key={record.id} className={`relative group surface-card p-1 sm:p-2 rounded-[1.25rem] border transition-all flex flex-col ${historySelectMode && selectedHistoryIds.has(record.id)
                           ? 'border-[#A88C5A] dark:border-[#B58A4D] ring-1 ring-[#A88C5A]/40 shadow-md'
-                          : 'divider-subtle shadow-sm hover:shadow-md hover:border-[#A88C5A]/60 dark:hover:border-[#3A2B52]'
+                          : 'divider-subtle shadow-sm hover:shadow-md hover:border-[#A88C5A]/60 dark:hover:border-[#43327A]'
                         }`}>
                         <div
                           className="p-4 sm:p-5 cursor-pointer flex-1 flex gap-3"
@@ -2532,7 +2532,7 @@ ${themeNote}
                                 trackEvent('delete_history', { type: 'single', count: 1 });
                                 showToast(t('已刪除紀錄', 'Record deleted'));
                               }}
-                              className="flex-1 py-3.5 bg-transparent text-[#964747]/80 hover:text-[#6B1D2F] hover:scale-110 transition-all rounded-xl active:scale-95 flex items-center justify-center"
+                              className="flex-1 py-3.5 bg-transparent text-[#964747]/80 hover:text-[#8B2040] hover:scale-110 transition-all rounded-xl active:scale-95 flex items-center justify-center"
                               aria-label="刪除紀錄"
                             >
                               <Trash2 size={20} />
@@ -2585,7 +2585,7 @@ ${themeNote}
                         <div className="w-12 h-12 bg-[#E8D9DC] dark:bg-[#3A1520]/60 rounded-full flex items-center justify-center text-[#8B2525] dark:text-[#E06A75] mb-1">
                           <Trash2 size={24} />
                         </div>
-                        <h3 className="text-lg font-bold text-[#6B1D2F] dark:text-[#E06A75]">{t("確定刪除", "Are you sure you want to delete")} {selectedHistoryIds.size} {t("筆紀錄？", " records?")}</h3>
+                        <h3 className="text-lg font-bold text-[#8B2040] dark:text-[#E06A75]">{t("確定刪除", "Are you sure you want to delete")} {selectedHistoryIds.size} {t("筆紀錄？", " records?")}</h3>
                         <p className="text-sm text-muted mb-2">{t("此動作無法復原，請確認是否要繼續。", "This action cannot be undone. Are you sure you want to proceed?")}</p>
                         <div className="flex w-full gap-3 mt-1">
                           <button onClick={() => setShowBatchDeleteConfirm(false)} className="flex-1 py-2.5 btn-secondary justify-center">{t("取消", "Cancel")}</button>
@@ -3257,10 +3257,10 @@ const SpreadCard = React.memo(function SpreadCard({ spread, isCustom, onSelect, 
   return (
     <div
       onClick={() => onSelect(spread)}
-      className="relative surface-card p-4 sm:p-6 rounded-xl sm:rounded-2xl hover:border-[#A88C5A]/50 dark:hover:border-[#3A2B52] shadow-sm hover:shadow-md transition-all cursor-pointer group flex flex-col min-h-[160px] sm:min-h-[220px] overflow-hidden"
+      className="relative surface-card p-4 sm:p-6 rounded-xl sm:rounded-2xl hover:border-[#A88C5A]/50 dark:hover:border-[#43327A] shadow-sm hover:shadow-md transition-all cursor-pointer group flex flex-col min-h-[160px] sm:min-h-[220px] overflow-hidden"
     >
       <div className="flex justify-between items-start mb-2 sm:mb-4 relative z-10 gap-2">
-        <h3 className="text-base sm:text-xl font-bold text-heading group-hover:text-[#6B5A4B] dark:group-hover:text-[#B8A8CE] transition-colors drop-shadow-sm leading-tight line-clamp-2">
+        <h3 className="text-base sm:text-xl font-bold text-heading group-hover:text-[#6B5A4B] dark:group-hover:text-[#C8B8E8] transition-colors drop-shadow-sm leading-tight line-clamp-2">
           {translatedSpread.name}
         </h3>
         <span className="shrink-0 px-2 sm:px-3 py-1 badge-dim text-[10px] sm:text-xs font-bold rounded-full shadow-sm whitespace-nowrap">
@@ -3277,7 +3277,7 @@ const SpreadCard = React.memo(function SpreadCard({ spread, isCustom, onSelect, 
       <div className="mt-auto relative z-10 w-full overflow-hidden rounded-lg bg-[#F4EFE6]/50 dark:bg-[#09060E]/30 p-2 sm:p-3 border divider-subtle shadow-inner">
         <div className="relative">
           {/* Right fade-out gradient */}
-          <div className="absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-[#F4EFE6] dark:from-[#120E1E] via-[#F4EFE6]/80 dark:via-[#120E1E]/80 to-transparent pointer-events-none z-10 rounded-r-lg" />
+          <div className="absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-[#F4EFE6] dark:from-[#120E1E] via-[#F4EFE6]/80 dark:via-[#1C1438]/80 to-transparent pointer-events-none z-10 rounded-r-lg" />
 
           <div className="flex items-center gap-2.5 overflow-x-auto pb-1 pr-10 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {translatedSpread.positions.map((pos, idx) => (
@@ -3339,12 +3339,12 @@ interface OracleUI {
 
 function oracleUI(effectiveScore: number, lang: 'zh' | 'en'): OracleUI {
   switch (effectiveScore) {
-    case 2: return { label: lang === 'en' ? 'Yes' : '是 (Yes)', theme: 'text-[#285743] dark:text-[#5C9E82]', bg: 'bg-[#E3E8E3] dark:bg-[#111C17] border-[#A8BDB1] dark:border-[#224032]' };
-    case 1: return { label: lang === 'en' ? 'Maybe Yes' : '偏向是 (Maybe Yes)', theme: 'text-[#416954] dark:text-[#6BAF8F]', bg: 'bg-[#E9EBE7] dark:bg-[#0F1A14] border-[#C4D1CA] dark:border-[#1D3328]' };
-    case 0: return { label: lang === 'en' ? 'Maybe' : '不確定 (Maybe)', theme: 'text-[#6B5A4B] dark:text-[#B8A8CE]', bg: 'bg-[#EBE7DF] dark:bg-[#1C142B] border-[#D2C4AD] dark:border-[#3A2B52]' };
+    case 2: return { label: lang === 'en' ? 'Yes' : '是 (Yes)', theme: 'text-[#1D6B4A] dark:text-[#5CC090]', bg: 'bg-[#E3E8E3] dark:bg-[#111C17] border-[#A8BDB1] dark:border-[#224032]' };
+    case 1: return { label: lang === 'en' ? 'Maybe Yes' : '偏向是 (Maybe Yes)', theme: 'text-[#2D7A55] dark:text-[#6BAF8F]', bg: 'bg-[#E9EBE7] dark:bg-[#0F1A14] border-[#C4D1CA] dark:border-[#1D3328]' };
+    case 0: return { label: lang === 'en' ? 'Maybe' : '不確定 (Maybe)', theme: 'text-[#6B5A4B] dark:text-[#C8B8E8]', bg: 'bg-[#EBE7DF] dark:bg-[#1C142B] border-[#D2C4AD] dark:border-[#43327A]' };
     case -1: return { label: lang === 'en' ? 'Maybe No' : '偏向否 (Maybe No)', theme: 'text-[#8C4646] dark:text-[#D4868B]', bg: 'bg-[#EFE3E3] dark:bg-[#1A0C10] border-[#D9BDBD] dark:border-[#4A2028]' };
-    case -2: return { label: lang === 'en' ? 'No' : '否 (No)', theme: 'text-[#6B1D2F] dark:text-[#E8A3AE]', bg: 'bg-[#E8D9DC] dark:bg-[#1F0E14] border-[#C2969F] dark:border-[#5A2430]' };
-    default: return { label: lang === 'en' ? 'Maybe' : '不確定 (Maybe)', theme: 'text-[#6B5A4B] dark:text-[#B8A8CE]', bg: 'bg-[#EBE7DF] dark:bg-[#1C142B] border-[#D2C4AD] dark:border-[#3A2B52]' };
+    case -2: return { label: lang === 'en' ? 'No' : '否 (No)', theme: 'text-[#8B2040] dark:text-[#E8A3AE]', bg: 'bg-[#E8D9DC] dark:bg-[#1F0E14] border-[#C2969F] dark:border-[#5A2430]' };
+    default: return { label: lang === 'en' ? 'Maybe' : '不確定 (Maybe)', theme: 'text-[#6B5A4B] dark:text-[#C8B8E8]', bg: 'bg-[#EBE7DF] dark:bg-[#1C142B] border-[#D2C4AD] dark:border-[#43327A]' };
   }
 }
 
@@ -3441,7 +3441,7 @@ function TarotSpreadLayout({ spread, cards, mode, lang }: { spread: Spread; card
           <div className={`grid ${colClass} gap-x-4 sm:gap-x-6 gap-y-8 place-items-center w-full max-w-5xl mx-auto`}>
             {/* Column labels */}
             {letters.map(l => (
-              <div key={l} className="text-xs font-bold text-[#492673] dark:text-[#B8A8CE] bg-[#EBE7ED] dark:bg-[#191423] px-3 py-1 rounded-full border border-[#D2C4DA] dark:border-[#3A2B52] whitespace-nowrap">
+              <div key={l} className="text-xs font-bold text-[#5B32A0] dark:text-[#C8B8E8] bg-[#F2EDE4] dark:bg-[#141028] px-3 py-1 rounded-full border border-[#CBBA9E] dark:border-[#43327A] whitespace-nowrap">
                 選擇{l}
               </div>
             ))}
@@ -3611,7 +3611,7 @@ function LenormandCardDisplay({ card, index, isCenter, isCompact, isSpine, lang,
     >
       {!isCompact && (
         <div className={`text-[10px] sm:text-xs font-bold uppercase tracking-widest text-center leading-tight ${
-          isCenter ? 'text-[#2D5A4C] dark:text-[#5C9E82]' : 'text-muted'
+          isCenter ? 'text-[#2A6A55] dark:text-[#5CC090]' : 'text-muted'
         }`}>
           {displayPositionName}
         </div>
@@ -3625,7 +3625,7 @@ function LenormandCardDisplay({ card, index, isCenter, isCompact, isSpine, lang,
           : isCenter
             ? 'border-2 border-[#3B7262]/50 dark:border-[#2D5A4C]/40 shadow-[#3B7262]/15 scale-110 ring-2 ring-[#5C9E82]/25 dark:ring-[#224032]/25'
             : isCompact
-              ? 'border border-[#DBCFB8]/60 dark:border-[#3A2B52]/40 shadow-sm'
+              ? 'border border-[#DBCFB8]/60 dark:border-[#43327A]/35 shadow-sm'
               : 'border-2 border-[#A8BDB1]/50 dark:border-[#224032]/35 shadow-[#3B7262]/10'
       }`}>
         {imgSrc ? (
