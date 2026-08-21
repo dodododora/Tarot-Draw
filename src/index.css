@@ -6,34 +6,34 @@
 @theme {
   --font-sans: "Inter", "Noto Sans TC", ui-sans-serif, system-ui, sans-serif;
   --font-serif-tc: "Noto Serif TC", serif;
-  --color-mystic-50: #f4f2ff;
-  --color-mystic-100: #eae5ff;
-  --color-mystic-200: #d6ccff;
-  --color-mystic-300: #b9a8ff;
-  --color-mystic-400: #9b81f9;
-  --color-mystic-500: #7c66dc;
-  --color-mystic-600: #5b4a9e;
-  --color-mystic-700: #43367a;
-  --color-mystic-800: #2d2451;
-  --color-mystic-900: #1a1433;
-  --color-mystic-950: #141614;
-  --color-gold-500: #d4af37;
-  --color-gold-400: #f1c40f;
+  --color-mystic-50: #f7f6f2; /* Warm chalk */
+  --color-mystic-100: #eeebe0; /* Warm sand */
+  --color-mystic-200: #d6cfbe; /* Muted sand */
+  --color-mystic-300: #a3b899; /* Muted Sage Green */
+  --color-mystic-400: #88a1a8; /* Muted Slate Cyan */
+  --color-mystic-500: #627e85; /* Medium Slate Cyan */
+  --color-mystic-600: #495e63; /* Dark Slate Cyan */
+  --color-mystic-700: #334246; /* Deep Spruce */
+  --color-mystic-800: #1d2629; /* Slate Charcoal */
+  --color-mystic-900: #13191b; /* Charcoal Spruce */
+  --color-mystic-950: #0a0d0e; /* Deep Obsidian Slate */
+  --color-gold-500: #cf9f74;   /* Copper Gold */
+  --color-gold-400: #dfc2a5;   /* Champagne Sand */
 }
 
 @layer base {
   html {
     /* Pre-paint background — script in index.html adds .dark before first paint */
-    background-color: #c8cdd4; /* light mode cool grey */
+    background-color: #f7f6f2; /* light mode warm chalk */
   }
   html.dark {
-    background-color: #141614; /* dark mode = mystic-950 */
+    background-color: #0a0d0e; /* dark mode = mystic-950 */
   }
   body {
-    @apply font-sans bg-transparent text-slate-900 transition-colors duration-500 min-h-screen bg-fixed relative overflow-x-hidden;
+    @apply font-sans bg-transparent text-stone-800 dark:text-stone-100 transition-colors duration-500 min-h-screen bg-fixed relative overflow-x-hidden;
   }
   .dark body {
-    @apply text-slate-100;
+    @apply text-stone-100;
   }
 }
 

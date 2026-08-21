@@ -71,14 +71,14 @@ const GlobalBackground = ({ theme }: { theme: 'light' | 'dark' }) => (
   <div className="fixed inset-0 pointer-events-none -z-10 transition-colors duration-700 overflow-hidden"
     style={{
       background: theme === 'dark'
-        ? 'radial-gradient(ellipse at 20% 30%, #4c1d9540 0%, transparent 60%), radial-gradient(ellipse at 85% 80%, #1e3a8a30 0%, transparent 60%), #0b0a14'
-        : 'radial-gradient(ellipse at 50% 0%, #fde04720 0%, transparent 70%), #f7f3e8'
+        ? 'radial-gradient(ellipse at 20% 10%, #29213850 0%, transparent 60%), radial-gradient(ellipse at 80% 90%, #17242a40 0%, transparent 60%), #0e0b16'
+        : 'radial-gradient(ellipse at 50% 0%, #cfab7a15 0%, transparent 70%), #f6f3eb'
     }}
   >
     {/* Subtle star dots — dark only */}
     {theme === 'dark' && (
       <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
-        <g fill="#e0e7ff" opacity="0.25">
+        <g fill="#e0e7ff" opacity="0.15">
           <circle cx="150" cy="200" r="2" />
           <circle cx="850" cy="180" r="1.5" />
           <circle cx="700" cy="800" r="2.5" />
@@ -267,6 +267,11 @@ function ScrollToTop() {
 
 export default function App() {
   const [mode, setMode] = useState<'waite' | 'lenormand' | 'thoth'>('waite');
+  const [lang, setLang] = useState<'zh' | 'en'>(() => {
+    return (localStorage.getItem('tarot_lang') as 'zh' | 'en') || 'zh';
+  });
+  const t = (zh: string, en: string) => (lang === 'zh' ? zh : en);
+
   const [gtQuerent, setGtQuerent] = useState<'woman' | 'man'>('woman');
   const [gtPartner, setGtPartner] = useState<'opposite' | 'same' | 'none'>('opposite');
   const [gtTheme, setGtTheme] = useState<'general' | 'love' | 'career' | 'money' | 'health'>('general');
@@ -351,21 +356,21 @@ export default function App() {
     const spreads = masterPool.filter(s => allowedIds.includes(s.id));
     const cats = mode === 'waite'
       ? [
-        { label: '✦ 快速一問', ids: ['single', 'waite-triangle'] },
-        { label: '✦ 做決定', ids: ['breakthrough', 'choice'] },
-        { label: '✦ 關係與他人', ids: ['now-connect', 'lovers-pyramid', 'reconciliation', 'attraction', 'rel-seasons', 'mirror'] },
-        { label: '✦ 深入探索', ids: ['celtic', 'cycle', 'hero', 'resource'] },
+        { label: t('✦ 快速一問', '✦ Quick Guide'), ids: ['single', 'waite-triangle'] },
+        { label: t('✦ 做決定', '✦ Decisions'), ids: ['breakthrough', 'choice'] },
+        { label: t('✦ 關係與他人', '✦ Relationships'), ids: ['now-connect', 'lovers-pyramid', 'reconciliation', 'attraction', 'rel-seasons', 'mirror'] },
+        { label: t('✦ 深入探索', '✦ Deep Dive'), ids: ['celtic', 'cycle', 'hero', 'resource'] },
       ]
       : [
-        { label: '✦ 快速一問', ids: ['single', 'waite-triangle'] },
-        { label: '✦ 做決定', ids: ['breakthrough', 'choice'] },
-        { label: '✦ 關係與他人', ids: ['now-connect', 'lovers-pyramid', 'reconciliation', 'energy-resonance', 'mirror-mirror', 'mirror'] },
-        { label: '✦ 深入探索', ids: ['johari', 'cycle', 'iceberg', 'resource', 'elements'] },
+        { label: t('✦ 快速一問', '✦ Quick Guide'), ids: ['single', 'waite-triangle'] },
+        { label: t('✦ 做決定', '✦ Decisions'), ids: ['breakthrough', 'choice'] },
+        { label: t('✦ 關係與他人', '✦ Relationships'), ids: ['now-connect', 'lovers-pyramid', 'reconciliation', 'energy-resonance', 'mirror-mirror', 'mirror'] },
+        { label: t('✦ 深入探索', '✦ Deep Dive'), ids: ['johari', 'cycle', 'iceberg', 'resource', 'elements'] },
       ];
     return cats
       .map(({ label, ids }) => ({ label, catSpreads: spreads.filter(s => ids.includes(s.id)) }))
       .filter(c => c.catSpreads.length > 0);
-  }, [mode]);
+  }, [mode, lang]);
 
   // Memoized drawnCards partitions — filter once, reuse everywhere in result view
   const { mainCards, extraCards, hasExtraCards } = React.useMemo(() => {
@@ -1185,7 +1190,7 @@ ${themeNote}
         {isShuffling && <ShuffleOverlay question={question} mode={mode} />}
       </AnimatePresence>
       {/* Navbar */}
-      <nav className="sticky top-0 z-50 bg-white/60 dark:bg-mystic-950/50 backdrop-blur-xl border-b border-white/20 dark:border-mystic-800/50 px-4 py-4 flex justify-between items-center transition-colors duration-500">
+      <nav className="sticky top-0 z-50 bg-white/60 dark:bg-mystic-950/50 backdrop-blur-xl border-b border-stone-200/60 dark:border-mystic-800/50 px-4 py-4 flex justify-between items-center transition-colors duration-500">
         <div
           className="flex items-center gap-2 cursor-pointer group"
           onClick={() => navigate('/')}
@@ -1204,7 +1209,7 @@ ${themeNote}
                 : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
                 }`}
             >
-              🔮<span className="text-[10px] sm:text-xs"> 偉特</span>
+              🔮<span className="text-[10px] sm:text-xs"> {t("偉特", "Waite")}</span>
             </button>
             <button
               onClick={() => { setMode('thoth'); navigate('/'); setSelectedSpread(null); trackEvent('select_system', { system: 'thoth' }); }}
@@ -1213,7 +1218,7 @@ ${themeNote}
                 : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
                 }`}
             >
-              🌌<span className="text-[10px] sm:text-xs"> 托特</span>
+              🌌<span className="text-[10px] sm:text-xs"> {t("托特", "Thoth")}</span>
             </button>
           </div>
 
@@ -1229,16 +1234,28 @@ ${themeNote}
                 : 'text-stone-500 dark:text-mystic-400 hover:text-stone-700 dark:hover:text-mystic-200'
                 }`}
             >
-              🃏<span className="text-[10px] sm:text-xs"> 雷諾曼</span>
+              🃏<span className="text-[10px] sm:text-xs"> {t("雷諾曼", "Lenormand")}</span>
             </button>
           </div>
         </div>
         <div className="flex items-center gap-1 sm:gap-2">
+          {/* Language toggle */}
+          <button
+            onClick={() => {
+              const nextLang = lang === 'zh' ? 'en' : 'zh';
+              setLang(nextLang);
+              localStorage.setItem('tarot_lang', nextLang);
+              trackEvent('toggle_lang', { lang: nextLang });
+            }}
+            className="px-2.5 py-1.5 rounded-xl border border-stone-200 dark:border-mystic-800 hover:bg-stone-300/50 dark:hover:bg-mystic-800/50 transition-colors text-xs font-bold text-stone-600 dark:text-mystic-300 select-none"
+          >
+            {lang === 'zh' ? '🌐 EN' : '🌐 中文'}
+          </button>
           <button
             onClick={() => { setIsHistoryOpen(true); trackEvent('open_history'); }}
             className="flex items-center gap-1.5 px-3 py-2 rounded-xl hover:bg-stone-300/50 dark:hover:bg-mystic-800/50 transition-colors text-sm font-semibold text-stone-700 dark:text-mystic-200"
           >
-            <History size={18} /> <span className="hidden sm:inline">歷史紀錄</span>
+            <History size={18} /> <span className="hidden sm:inline">{t("歷史紀錄", "History")}</span>
           </button>
           <button
             onClick={() => { toggleTheme(); trackEvent('toggle_theme', { theme: theme === 'light' ? 'dark' : 'light' }); }}
@@ -1266,15 +1283,15 @@ ${themeNote}
                 <div className="overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                   <div className="flex items-center justify-start sm:justify-center gap-1.5 text-[11px] font-medium text-slate-500 dark:text-mystic-500 min-w-max mx-auto px-1">
                     {[
-                      { n: '1', label: '選系統' },
-                      { n: '2', label: '選牌陣' },
-                      { n: '3', label: '輸入問題' },
-                      { n: '4', label: '抽牌' },
-                      { n: '5', label: '複製給 AI 解讀' },
+                      { n: '1', label: t('選系統', 'System') },
+                      { n: '2', label: t('選牌陣', 'Spread') },
+                      { n: '3', label: t('輸入問題', 'Question') },
+                      { n: '4', label: t('抽牌', 'Draw') },
+                      { n: '5', label: t('複製解讀', 'Reading') },
                     ].map(({ n, label }, i, arr) => (
                       <React.Fragment key={n}>
-                        <span className="flex items-center gap-1">
-                          <span className="w-4 h-4 rounded-full bg-amber-100 dark:bg-mystic-800 text-amber-700 dark:text-mystic-400 flex items-center justify-center text-[9px] font-bold shrink-0">{n}</span>
+                        <span className="flex items-center gap-1 text-slate-500 dark:text-mystic-500">
+                          <span className="w-4 h-4 rounded-full bg-stone-100 dark:bg-mystic-800 text-stone-600 dark:text-mystic-400 flex items-center justify-center text-[9px] font-bold shrink-0">{n}</span>
                           {label}
                         </span>
                         {i < arr.length - 1 && <span className="text-slate-300 dark:text-mystic-700">›</span>}
@@ -1292,20 +1309,21 @@ ${themeNote}
                     >
                       <div className="flex items-center gap-3">
                         <span className="text-2xl">🃏</span>
-                        <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 font-serif-tc">雷諾曼牌陣</h2>
+                        <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 font-serif-tc">{t("雷諾曼牌陣", "Lenormand Spreads")}</h2>
                       </div>
                       <span className={`text-stone-400 dark:text-mystic-500 transition-transform duration-300 ${isBuiltinOpen ? 'rotate-180' : ''}`}>
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6" /></svg>
                       </span>
                     </div>
                     <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isBuiltinOpen ? 'max-h-[2000px] opacity-100 mt-4' : 'max-h-0 opacity-0 mt-0'}`}>
-                      <p className="text-sm text-slate-500 dark:text-mystic-400 mb-6">共 36 張牌・無正逆位・著重具體事件與組合連讀</p>
+                      <p className="text-sm text-slate-500 dark:text-mystic-400 mb-6">{t("共 36 張牌・無正逆位・著重具體事件與組合連讀", "36 cards · No reversals · Event and combination oriented")}</p>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mx-auto">
                         {LENORMAND_SPREADS.map((spread) => (
                           <SpreadCard
                             key={spread.id}
                             spread={spread}
                             onSelect={handleLenormandSpreadSelect}
+                            t={t}
                           />
                         ))}
                       </div>
@@ -1323,7 +1341,7 @@ ${themeNote}
                       <div className="flex items-center gap-3">
                         <span className="text-2xl">{mode === 'waite' ? '🔮' : '🌌'}</span>
                         <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 font-serif-tc">
-                          {mode === 'waite' ? '偉特牌陣' : '托特牌陣'}
+                          {mode === 'waite' ? t('偉特牌陣', 'Waite Spreads') : t('托特牌陣', 'Thoth Spreads')}
                         </h2>
                       </div>
                       <span className={`text-stone-400 dark:text-mystic-500 transition-transform duration-300 ${isBuiltinOpen ? 'rotate-180' : ''}`}>
@@ -1333,8 +1351,8 @@ ${themeNote}
                     <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isBuiltinOpen ? 'max-h-[2000px] opacity-100 mt-4' : 'max-h-0 opacity-0 mt-0'}`}>
                       <p className="text-sm text-slate-500 dark:text-mystic-400 mb-6">
                         {mode === 'waite'
-                          ? '共 78 張牌・含正逆位・適合敘事與心理探索'
-                          : '共 78 張牌・無逆位・著重能量狀態與深層解析'}
+                          ? t('共 78 張牌・含正逆位・適合敘事與心理探索', '78 cards · Reversals included · Narrative & psychological focus')
+                          : t('共 78 張牌・無逆位・著重能量狀態與深層解析', '78 cards · No reversals · Energy state & deep analytical focus')}
                       </p>
                       <div className="space-y-8">
                         {categorizedSpreads.map(({ label, catSpreads }) => (
@@ -1346,6 +1364,7 @@ ${themeNote}
                                   key={spread.id}
                                   spread={spread}
                                   onSelect={handleTarotSpreadSelect}
+                                  t={t}
                                 />
                               ))}
                             </div>
@@ -1368,7 +1387,7 @@ ${themeNote}
                       <div className="flex items-center gap-3">
                         <Edit2 className="text-stone-600 dark:text-mystic-500" size={24} />
                         <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 font-serif-tc">
-                          我的牌陣
+                          {t("我的牌陣", "My Spreads")}
                           {customSpreads.length > 0 && (
                             <span className="ml-2 text-sm font-semibold text-stone-500 dark:text-mystic-500">{customSpreads.length}</span>
                           )}
@@ -1379,7 +1398,7 @@ ${themeNote}
                           onClick={(e) => { e.stopPropagation(); openAddModal(); }}
                           className="flex items-center gap-2 px-4 py-2 bg-stone-700 hover:bg-stone-600 dark:bg-gradient-to-r dark:from-mystic-600 dark:to-mystic-500 text-stone-50 dark:text-white rounded-lg transition-colors text-sm font-medium shadow-md dark:shadow-mystic-500/20"
                         >
-                          <Plus size={18} /> 新增牌陣
+                          <Plus size={18} /> {t("新增牌陣", "Add Spread")}
                         </button>
                         <span className={`text-stone-400 dark:text-mystic-500 transition-transform duration-300 ${isCustomOpen ? 'rotate-180' : ''}`}>
                           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6" /></svg>
@@ -1393,12 +1412,12 @@ ${themeNote}
                         <div className="space-y-6">
                           {Object.entries(
                             customSpreads.reduce<Record<string, typeof customSpreads>>((acc, s) => {
-                              const key = s.category?.trim() || '其他';
+                              const key = s.category?.trim() || t('其他', 'Other');
                               acc[key] = acc[key] ? [...acc[key], s] : [s];
                               return acc;
                             }, {})
                           )
-                            .sort(([a], [b]) => a === '其他' ? 1 : b === '其他' ? -1 : a.localeCompare(b, 'zh'))
+                            .sort(([a], [b]) => a === t('其他', 'Other') ? 1 : b === t('其他', 'Other') ? -1 : a.localeCompare(b, 'zh'))
                             .map(([cat, spreads]) => (
                               <div key={cat}>
                                 <p className="text-xs font-bold text-stone-500 dark:text-mystic-400 uppercase tracking-widest mb-3">{cat}</p>
@@ -1411,6 +1430,7 @@ ${themeNote}
                                       onSelect={handleCustomSpreadSelect}
                                       onEdit={handleSpreadEdit}
                                       onDelete={handleSpreadDelete}
+                                      t={t}
                                     />
                                   ))}
                                 </div>
@@ -1420,7 +1440,7 @@ ${themeNote}
                         </div>
                       ) : (
                         <div className="text-center py-12 border-2 border-dashed border-slate-200 dark:border-mystic-800 rounded-xl text-slate-500 dark:text-mystic-400">
-                          <p>尚未建立自訂牌陣</p>
+                          <p>{t("尚未建立自訂牌陣", "No custom spreads created yet")}</p>
                         </div>
                       )}
                     </div>
@@ -2539,13 +2559,63 @@ ${themeNote}
   );
 }
 
-const SpreadCard = React.memo(function SpreadCard({ spread, isCustom, onSelect, onEdit, onDelete }: {
+const SPREAD_TRANSLATIONS: Record<string, { name: string; hint: string }> = {
+  'single': { name: 'Single Card Guidance', hint: 'Draw one card for a quick, direct answer or daily focus.' },
+  'waite-triangle': { name: 'Holy Triangle', hint: 'Three cards mapping Past root, Present status, and Future trajectory.' },
+  'cycle': { name: 'Transition Cycle', hint: 'Gain clarity on what is currently fading and what is beginning.' },
+  'breakthrough': { name: 'Breakthrough Strategy', hint: 'Unearth the main deadlock and locate your primary leverage step.' },
+  'choice': { name: 'Choice & Path', hint: 'Compare the developments and final outcomes of two different options.' },
+  'iceberg': { name: 'Subconscious Iceberg', hint: 'Expose hidden mental blocks, true desires, and defense systems.' },
+  'energy-resonance': { name: 'Energy Resonance', hint: 'Reveal the implicit energy exchange and mutual lesson between two paths.' },
+  'celtic': { name: 'Celtic Cross', hint: 'The most comprehensive classic 10-card layout for deep situation analysis.' },
+  'elements': { name: 'Four Elements Balance', hint: 'Audit the current state of your actions, emotions, mind, and physical life.' },
+  'now-connect': { name: 'Current Connection', hint: 'A pure reflection of how two hearts stand relative to each other right now.' },
+  'lovers-pyramid': { name: 'Lovers\' Pyramid', hint: 'Investigate your feelings, their thoughts, key friction points, and the final path.' },
+  'reconciliation': { name: 'Relationship Reconciliation', hint: 'Evaluate the root split causes, mutual desires, and the final likelihood of reunion.' },
+  'attraction': { name: 'Personal Attraction', hint: 'Map out the specific frequencies and relationship dynamics you are drawing.' },
+  'rel-seasons': { name: 'Relationship Seasons', hint: 'Identify the active seasonal cycle of your relationship and how to nourish it.' },
+  'len-36': { name: 'Grand Tableau', hint: 'Spread all 36 cards to read the complete grid of houses, lines, and futures.' }
+};
+
+const POSITION_TRANSLATIONS: Record<string, string[]> = {
+  'single': ['Direct Guidance'],
+  'waite-triangle': ['Past Background', 'Present Situation & Shift', 'Future Outcome & Advice'],
+  'cycle': ['Fading Old State', 'Sprouting New Opportunity', 'Core Challenge', 'What You Must Release', 'Strength to Carry Forward'],
+  'breakthrough': ['Core Deadlock', 'Baggage/Obstacle to Let Go', 'Breakthrough Opportunity', 'Next Action Step'],
+  'choice': ['Current Situation', 'Option A: Near Future', 'Option A: Outcome', 'Option B: Near Future', 'Option B: Outcome'],
+  'iceberg': ['Surface Behavior', 'Rational Belief', 'Deep Emotion', 'Core Value/Belief', 'Defense Mechanism', 'Integration Advice'],
+  'energy-resonance': ['My Deep Heart', 'Their Deep Heart', 'Relational Tension', 'Mutual Blindspot', 'Core Lesson'],
+  'celtic': [
+    'Core Situation', 'Direct Obstacle', 'Conscious Goal', 'Subconscious Root',
+    'Past Influences', 'Near Future', 'Self-Perception', 'External Environment',
+    'Hopes & Fears', 'Final Outcome'
+  ],
+  'elements': ['Fire (Action & Passion)', 'Water (Emotion & Flow)', 'Air (Intellect & Communication)', 'Earth (Resource & Material)'],
+  'now-connect': ['Relational State', 'My Mindset', 'Their Mindset'],
+  'lovers-pyramid': ['Your State & Heart', 'Their State & Heart', 'Interaction/Obstacles', 'Future Direction'],
+  'reconciliation': ['Core Cause of Split', 'Your True Attachment', 'Their Current Heart', 'Key Reconnect Block', 'Future Path/Reunion Opportunity']
+};
+
+const SpreadCard = React.memo(function SpreadCard({ spread, isCustom, onSelect, onEdit, onDelete, t }: {
   spread: Spread;
   isCustom?: boolean;
   onSelect: (spread: Spread) => void;
   onEdit?: (spread: Spread, e: MouseEvent) => void;
   onDelete?: (spread: Spread, e: MouseEvent) => void;
+  t: (zh: string, en: string) => string;
 }) {
+  const translatedSpread = React.useMemo(() => {
+    const trans = SPREAD_TRANSLATIONS[spread.id];
+    const posTrans = POSITION_TRANSLATIONS[spread.id];
+    if (!trans) return spread;
+    return {
+      ...spread,
+      name: trans.name,
+      hint: trans.hint,
+      positions: posTrans || spread.positions
+    };
+  }, [spread, t]);
+
   return (
     <div
       onClick={() => onSelect(spread)}
@@ -2553,16 +2623,16 @@ const SpreadCard = React.memo(function SpreadCard({ spread, isCustom, onSelect, 
     >
       <div className="flex justify-between items-start mb-2 sm:mb-4 relative z-10 gap-2">
         <h3 className="text-base sm:text-xl font-bold text-stone-800 dark:text-mystic-100 group-hover:text-stone-600 dark:group-hover:text-mystic-300 transition-colors drop-shadow-sm leading-tight line-clamp-2">
-          {spread.name}
+          {translatedSpread.name}
         </h3>
         <span className="shrink-0 px-2 sm:px-3 py-1 bg-stone-100 dark:bg-mystic-800 text-stone-600 dark:text-mystic-400 text-[10px] sm:text-xs font-bold rounded-full border border-stone-200 dark:border-mystic-700 shadow-sm whitespace-nowrap">
-          {spread.count} 張牌
+          {translatedSpread.count} {t("張牌", "Cards")}
         </span>
       </div>
 
       {/* Hint (Theory/Description) */}
       <p className="text-xs sm:text-sm text-slate-600 dark:text-mystic-300 line-clamp-2 mb-4 sm:mb-6 relative z-10 font-medium leading-relaxed">
-        {spread.hint || `自訂牌陣 · ${spread.count} 張`}
+        {translatedSpread.hint || t(`自訂牌陣 · ${translatedSpread.count} 張`, `Custom · ${translatedSpread.count} Cards`)}
       </p>
 
       {/* Positions Area (Horizontal Scroll) */}
@@ -2572,7 +2642,7 @@ const SpreadCard = React.memo(function SpreadCard({ spread, isCustom, onSelect, 
           <div className="absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-stone-50 dark:from-mystic-900 via-stone-50/80 dark:via-mystic-900/80 to-transparent pointer-events-none z-10 rounded-r-lg" />
 
           <div className="flex items-center gap-2.5 overflow-x-auto pb-1 pr-10 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            {spread.positions.map((pos, idx) => (
+            {translatedSpread.positions.map((pos, idx) => (
               <div key={idx} className="flex items-center gap-2.5 shrink-0">
                 <div className="flex items-center gap-1.5 px-2 py-1.5 bg-white dark:bg-mystic-900/80 rounded-md text-slate-700 dark:text-mystic-200 text-xs sm:text-sm font-semibold whitespace-nowrap shadow-sm border border-stone-200 dark:border-mystic-700">
                   <span className="w-5 h-5 rounded-full bg-stone-100 dark:bg-mystic-800 text-stone-600 dark:text-mystic-300 flex items-center justify-center text-[10px] sm:text-xs">
@@ -2580,7 +2650,7 @@ const SpreadCard = React.memo(function SpreadCard({ spread, isCustom, onSelect, 
                   </span>
                   {pos}
                 </div>
-                {idx < spread.positions.length - 1 && (
+                {idx < translatedSpread.positions.length - 1 && (
                   <span className="text-stone-300 dark:text-mystic-600 text-sm">➔</span>
                 )}
               </div>
