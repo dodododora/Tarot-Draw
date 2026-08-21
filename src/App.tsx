@@ -1696,7 +1696,7 @@ ${themeNote}
                                       onClick={() => setGtQuerent(opt.value as any)}
                                       className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-all select-none ${
                                         gtQuerent === opt.value
-                                          ? 'border-[#2D5A4C] bg-[#E1E8E6]/30 text-[#2A6A55] dark:text-[#5CC090]'
+                                          ? 'border-[#2D5A4C] bg-[#E6E3DA]/30 text-[#2A6A55] dark:text-[#5CC090]'
                                           : 'divider-subtle hover:bg-[#F4EFE6] dark:hover:bg-[#1C1438]/50 text-secondary'
                                       }`}
                                     >
@@ -1720,7 +1720,7 @@ ${themeNote}
                                       onClick={() => setGtPartner(opt.value as any)}
                                       className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-all select-none ${
                                         gtPartner === opt.value
-                                          ? 'border-[#2D5A4C] bg-[#E1E8E6]/30 text-[#2A6A55] dark:text-[#5CC090]'
+                                          ? 'border-[#2D5A4C] bg-[#E6E3DA]/30 text-[#2A6A55] dark:text-[#5CC090]'
                                           : 'divider-subtle hover:bg-[#F4EFE6] dark:hover:bg-[#1C1438]/50 text-secondary'
                                       }`}
                                     >
@@ -1746,7 +1746,7 @@ ${themeNote}
                                       onClick={() => setGtTheme(opt.value as any)}
                                       className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-all select-none ${
                                         gtTheme === opt.value
-                                          ? 'border-[#2D5A4C] bg-[#E1E8E6]/30 text-[#2A6A55] dark:text-[#5CC090]'
+                                          ? 'border-[#2D5A4C] bg-[#E6E3DA]/30 text-[#2A6A55] dark:text-[#5CC090]'
                                           : 'divider-subtle hover:bg-[#F4EFE6] dark:hover:bg-[#1C1438]/50 text-secondary'
                                       }`}
                                     >
@@ -1910,7 +1910,7 @@ ${themeNote}
                     )}
 
                     {(selectedSpread.id === 'mirror' || selectedSpread.id === 'energy-resonance' || selectedSpread.id === 'mirror-mirror') && (
-                      <div className="bg-[#E1E8E6]/50 dark:bg-[#101917]/30 p-4 rounded-xl border border-[#C5B99E]/50 dark:border-[#224032]/40">
+                      <div className="bg-[#E6E3DA]/50 dark:bg-[#141210]/30 p-4 rounded-xl border border-[#C5B99E]/50 dark:border-[#224032]/40">
                         <label className="text-sm font-bold text-heading block mb-3">
                           {t("這段關係牽涉多少人？（包含你，目前：", "How many people in this relationship? (Including you, current: ")}{peopleCount}{t(" 人）", " people)")}
                         </label>
@@ -1921,7 +1921,7 @@ ${themeNote}
                               onClick={() => setPeopleCount(num)}
                               className={`w-[42px] h-[42px] sm:w-11 sm:h-11 rounded-full font-bold text-sm sm:text-base flex items-center justify-center transition-all duration-300 ${peopleCount === num
                                 ? 'bg-[#2A6A55] dark:bg-[#3D8A70] text-white shadow-md shadow-[#2D5A4C]/20 scale-105 ring-2 ring-[#5C9E82]/40 dark:ring-[#224032] ring-offset-1 dark:ring-offset-mystic-900'
-                                : 'surface-card shadow-sm text-[#2A6A55] dark:text-[#5CC090] border border-[#C5B99E]/50 dark:border-[#43327A] hover:bg-[#E1E8E6] dark:hover:bg-[#142A22]'
+                                : 'surface-card shadow-sm text-[#2A6A55] dark:text-[#5CC090] border border-[#C5B99E]/50 dark:border-[#43327A] hover:bg-[#E6E3DA] dark:hover:bg-[#142A22]'
                                 }`}
                             >
                               {num}
@@ -2008,7 +2008,7 @@ ${themeNote}
                   {/* Lenormand Result Layout */}
                   {mode === 'lenormand' && lenormandDrawnCards.length > 0 && (
                     <div className="relative bg-[#FAF6EE]/40 dark:bg-[#09060E] rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-10 shadow-2xl shadow-[#2D5A4C]/5 dark:shadow-[#09060E]/50 border-4 border-[#C5B99E]/30 dark:border-[#224032]/20 overflow-hidden backdrop-blur-sm">
-                      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#E1E8E6]/30 via-[#FAF6EE]/20 to-[#E1E8E6]/20 dark:from-[#101917]/30 dark:via-mystic-900/80 dark:to-mystic-950 pointer-events-none" />
+                      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#E6E3DA]/30 via-[#FAF6EE]/20 to-[#E6E3DA]/20 dark:from-[#141210]/30 dark:via-mystic-900/80 dark:to-mystic-950 pointer-events-none" />
                       {lenormandDrawnCards.length === 1 && (
                         <div className="relative z-10 flex flex-col items-center gap-6 mb-8 w-full max-w-lg mx-auto">
                           {(() => {
@@ -3637,7 +3637,7 @@ function LenormandCardDisplay({ card, index, isCenter, isCompact, isSpine, lang,
           />
         ) : (
           <>
-            <div className="absolute inset-0 bg-gradient-to-br from-[#F4EFE6] via-[#E1E8E6]/30 to-[#E1E8E6]/50 dark:from-[#09060E] dark:via-[#101917]/40 dark:to-[#101917]/30" />
+            <div className="absolute inset-0 bg-gradient-to-br from-[#F4EFE6] via-[#E6E3DA]/30 to-[#E6E3DA]/50 dark:from-[#09060E] dark:via-[#141210]/40 dark:to-[#141210]/30" />
             <div className="absolute inset-0 flex items-center justify-center">
               <span className={`drop-shadow-sm select-none ${isCompact ? 'text-xl' : 'text-4xl sm:text-5xl'}`} role="img" aria-label={card.nameEN}>
                 {card.emoji}
