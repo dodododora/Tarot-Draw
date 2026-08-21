@@ -267,6 +267,9 @@ function ScrollToTop() {
 
 export default function App() {
   const [mode, setMode] = useState<'waite' | 'lenormand' | 'thoth'>('waite');
+  const [gtQuerent, setGtQuerent] = useState<'woman' | 'man'>('woman');
+  const [gtPartner, setGtPartner] = useState<'opposite' | 'same' | 'none'>('opposite');
+  const [gtTheme, setGtTheme] = useState<'general' | 'love' | 'career' | 'money' | 'health'>('general');
   const [lenormandDrawnCards, setLenormandDrawnCards] = useState<DrawnLenormandCard[]>([]);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -849,59 +852,121 @@ ${cardList}
         const f = (c: DrawnLenormandCard) => `${c.nameCN}(${c.nameEN})`;
         const posMap = cards.map((c, i) => `${String(i+1).padStart(2,'0')}. ${LENORMAND_CARDS[i]?.nameCN}宮 → ${f(c)}`);
 
-        // Significator detection
-        const manIdx  = cards.findIndex(c => c.id === 28);
-        const womanIdx = cards.findIndex(c => c.id === 29);
-        const sigIdx  = womanIdx >= 0 ? womanIdx : manIdx;
-        const sigCard = sigIdx >= 0 ? cards[sigIdx] : null;
-        const sigRow  = sigIdx >= 0 ? Math.floor(sigIdx / 9) : -1;
-        const sigCol  = sigIdx >= 0 ? sigIdx % 9 : -1;
-        const sigPos  = sigIdx + 1;
+        // 1. Identify Querent
+        const qCardId = gtQuerent === 'woman' ? 29 : 28;
+        const qIdx = cards.findIndex(c => c.id === qCardId);
+        const qCard = qIdx >= 0 ? cards[qIdx] : null;
+        const qRow = qIdx >= 0 ? Math.floor(qIdx / 9) : -1;
+        const qCol = qIdx >= 0 ? qIdx % 9 : -1;
+        const qPos = qIdx + 1;
 
-        // Surrounding cards (上下左右)
-        const above = sigRow > 0   ? f(cards[sigIdx - 9]) : '無';
-        const below = sigRow < 3   ? f(cards[sigIdx + 9]) : '無';
-        const left  = sigCol > 0   ? f(cards[sigIdx - 1]) : '無';
-        const right = sigCol < 8   ? f(cards[sigIdx + 1]) : '無';
+        // 2. Identify Partner
+        let pCardId = -1;
+        if (gtPartner === 'opposite') {
+          pCardId = qCardId === 29 ? 28 : 29;
+        } else if (gtPartner === 'same') {
+          pCardId = 18; // Use Dog (#18) to represent same-sex partner / companion
+        }
+        const pIdx = pCardId > 0 ? cards.findIndex(c => c.id === pCardId) : -1;
+        const pCard = pIdx >= 0 ? cards[pIdx] : null;
+        const pRow = pIdx >= 0 ? Math.floor(pIdx / 9) : -1;
+        const pCol = pIdx >= 0 ? pIdx % 9 : -1;
+        const pPos = pIdx + 1;
 
-        // Diagonal cards
-        const diagTL = (sigRow > 0 && sigCol > 0)   ? f(cards[sigIdx - 10]) : '無';
-        const diagTR = (sigRow > 0 && sigCol < 8)   ? f(cards[sigIdx - 8])  : '無';
-        const diagBL = (sigRow < 3 && sigCol > 0)   ? f(cards[sigIdx + 8])  : '無';
-        const diagBR = (sigRow < 3 && sigCol < 8)   ? f(cards[sigIdx + 10]) : '無';
+        // 3. Identify Theme card
+        let tCardId = -1;
+        if (gtTheme === 'love') tCardId = 24;      // Heart
+        else if (gtTheme === 'career') tCardId = 35; // Anchor
+        else if (gtTheme === 'money') tCardId = 34;  // Fish
+        else if (gtTheme === 'health') tCardId = 5;  // Tree
+        const tIdx = tCardId > 0 ? cards.findIndex(c => c.id === tCardId) : -1;
+        const tCard = tIdx >= 0 ? cards[tIdx] : null;
+        const tRow = tIdx >= 0 ? Math.floor(tIdx / 9) : -1;
+        const tCol = tIdx >= 0 ? tIdx % 9 : -1;
+        const tPos = tIdx + 1;
 
-        // Knighting from significator
+        // 4. Surrounding cards (上下左右 + 對角) around Querent
+        const above = (qIdx >= 0 && qRow > 0) ? f(cards[qIdx - 9]) : '無';
+        const below = (qIdx >= 0 && qRow < 3) ? f(cards[qIdx + 9]) : '無';
+        const left  = (qIdx >= 0 && qCol > 0) ? f(cards[qIdx - 1]) : '無';
+        const right = (qIdx >= 0 && qCol < 8) ? f(cards[qIdx + 1]) : '無';
+        const diagTL = (qIdx >= 0 && qRow > 0 && qCol > 0) ? f(cards[qIdx - 10]) : '無';
+        const diagTR = (qIdx >= 0 && qRow > 0 && qCol < 8) ? f(cards[qIdx - 8])  : '無';
+        const diagBL = (qIdx >= 0 && qRow < 3 && qCol > 0) ? f(cards[qIdx + 8])  : '無';
+        const diagBR = (qIdx >= 0 && qRow < 3 && qCol < 8) ? f(cards[qIdx + 10]) : '無';
+
+        // 5. Knighting from Querent
         const knightOffsets = [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]];
-        const knightCards = knightOffsets
-          .map(([dr, dc]) => {
-            const r2 = sigRow + dr, c2 = sigCol + dc;
-            return (r2 >= 0 && r2 < 4 && c2 >= 0 && c2 < 9) ? f(cards[r2 * 9 + c2]) : null;
-          }).filter(Boolean);
+        const knightCards = qIdx >= 0 ? knightOffsets.map(([dr, dc]) => {
+          const r2 = qRow + dr, c2 = qCol + dc;
+          return (r2 >= 0 && r2 < 4 && c2 >= 0 && c2 < 9) ? f(cards[r2 * 9 + c2]) : null;
+        }).filter(Boolean) : [];
 
-        // Mirroring (center reflection)
-        const mirrorRow = 3 - sigRow, mirrorCol = 8 - sigCol;
-        const mirrorCard = sigIdx >= 0 ? f(cards[mirrorRow * 9 + mirrorCol]) : '無';
+        // 6. Mirroring for Querent
+        const mirrorRow = 3 - qRow, mirrorCol = 8 - qCol;
+        const mirrorCard = qIdx >= 0 ? f(cards[mirrorRow * 9 + mirrorCol]) : '無';
 
-        // House card
-        const sigCardId = sigCard?.id ?? -1;
-        const houseCard = sigCardId > 0 ? f(cards[sigCardId - 1]) : '無';
+        // 7. House of Querent (the card that landed in Querent's natural house)
+        const houseCard = qCard ? f(cards[qCardId - 1]) : '無';
 
-        // Spine cards (col 4 / index 4,13,22,31)
+        // 8. Distance descriptions (Chebyshev distance / King's move distance)
+        const getDistanceDesc = (idx1: number, idx2: number) => {
+          if (idx1 < 0 || idx2 < 0) return '無';
+          const r1 = Math.floor(idx1 / 9), c1 = idx1 % 9;
+          const r2 = Math.floor(idx2 / 9), c2 = idx2 % 9;
+          const dist = Math.max(Math.abs(r1 - r2), Math.abs(c1 - c2));
+          const text = dist <= 2 ? '近' : dist >= 5 ? '遠' : '中度距離';
+          return `${dist}步 (${text})`;
+        };
+        const partnerDist = pIdx >= 0 ? getDistanceDesc(qIdx, pIdx) : '無對象';
+        const themeDist = tIdx >= 0 ? getDistanceDesc(qIdx, tIdx) : '無特定主題';
+
+        // 9. Facing direction and high-low power comparison
+        let heightComparison = '';
+        if (qIdx >= 0 && pIdx >= 0) {
+          if (qRow < pRow) heightComparison = '問事者在上行（主動性或掌控度較高）';
+          else if (qRow > pRow) heightComparison = '對象在上行（對方目前影響力較高）';
+          else heightComparison = '雙方等高';
+        }
+
+        let facingDesc = '';
+        if (qIdx >= 0 && pIdx >= 0) {
+          if (pCardId === 18) {
+            facingDesc = '同性伴侶關係（以#18狗代表對象），無傳統性別視線背向規則，主要以高低位與距離解讀。';
+          } else if ((qCardId === 29 && pCardId === 28) || (qCardId === 28 && pCardId === 29)) {
+            const wCol = qCardId === 29 ? qCol : pCol;
+            const mCol = qCardId === 28 ? qCol : pCol;
+            if (wCol < mCol) {
+              facingDesc = '背對彼此（女人在左、男人在右，雙方視線向外看，暗示缺乏溝通、互不關注或有隔閡）';
+            } else {
+              facingDesc = '面對彼此（女人在右、男人在左，雙方視線交會，代表溝通順暢、意願一致或彼此關注）';
+            }
+          } else {
+            facingDesc = '一般角色關係，主要觀察距離與高低位。';
+          }
+        }
+
+        // Spine and corners
         const spineCards = [4, 13, 22, 31].map(i => `第${i+1}宮(${LENORMAND_CARDS[i]?.nameCN ?? ''}宮) → ${f(cards[i])}`).join('、');
-
-        // Corner cards
         const corners = `位置1:${f(cards[0])}、位置9:${f(cards[8])}、位置28:${f(cards[27])}、位置36:${f(cards[35])}`;
-
-        const sigRowCards = (sigRow >= 0 && sigRow < 4) ? cards.slice(sigRow * 9, sigRow * 9 + 9) : [];
+        const sigRowCards = (qRow >= 0 && qRow < 4) ? cards.slice(qRow * 9, qRow * 9 + 9) : [];
         const sigRowText = sigRowCards.map(f).join(' → ');
 
-        const farNote = sigCol <= 2 ? '偏左側(象徵過去影響)'
-          : sigCol >= 6 ? '偏右側(象徵未來發展)'
+        const farNote = qCol <= 2 ? '偏左側(象徵過去影響)'
+          : qCol >= 6 ? '偏右側(象徵未來發展)'
           : '居中(當下核心)';
 
-        const sigNote = sigCard
-          ? `- 指示牌位置：${f(sigCard)} 落在第${sigRow+1}行第${sigCol+1}列（${farNote}，第 ${sigPos} 宮·${LENORMAND_CARDS[sigPos-1]?.nameCN ?? ''}宮）`
-          : '- 指示牌位置：未在牌面中定位到指示牌。';
+        const sigNote = qCard
+          ? `- 問事者指示牌：${f(qCard)} 落在第${qRow+1}行第${qCol+1}列（${farNote}，第 ${qPos} 宮·${LENORMAND_CARDS[qPos-1]?.nameCN ?? ''}宮）`
+          : '- 問事者指示牌：未定位到問事者。';
+
+        const partnerNote = pCard
+          ? `- 伴侶/對象指示牌：${f(pCard)} 落在第${pRow+1}行第${pCol+1}列（第 ${pPos} 宮·${LENORMAND_CARDS[pPos-1]?.nameCN ?? ''}宮）\n  * 雙方距離：${partnerDist}\n  * 雙方高低：${heightComparison || '無'}\n  * 雙方視線：${facingDesc}`
+          : '- 伴侶/對象指示牌：未指定或未在牌面中定位。';
+
+        const themeNote = tCard
+          ? `- 占卜主題牌：${f(tCard)} 落在第${tRow+1}行第${tCol+1}列（第 ${tPos} 宮·${LENORMAND_CARDS[tPos-1]?.nameCN ?? ''}宮），距離問事者 ${themeDist}`
+          : '- 占卜主題牌：無特定主題牌。';
 
         prompt = `${systemHeaderGrand}
 
@@ -913,16 +978,23 @@ ${posMap.join('\n')}
 
 【關鍵關聯資訊】
 ${sigNote}
-- 鄰牌（上下左右）：上=${above}、下=${below}、左=${left}、右=${right}
-- 對角鄰牌（四周）：左上=${diagTL}、右上=${diagTR}、左下=${diagBL}、右下=${diagBR}
-- 橫讀指示牌所在整行：${sigRowText}
-- 鏡像反射牌：${mirrorCard}
-- 騎士跳躍牌：${knightCards.join('、') || '無'}
-- 指示牌對應宮位的卡牌：${houseCard}
+${partnerNote}
+${themeNote}
+- 問事者鄰牌（上下左右）：上=${above}、下=${below}、左=${left}、右=${right}
+- 問事者對角鄰牌（四周）：左上=${diagTL}、右上=${diagTR}、左下=${diagBL}、右下=${diagBR}
+- 橫讀問事者所在整行：${sigRowText}
+- 問事者鏡像反射牌：${mirrorCard}
+- 問事者騎士跳躍牌：${knightCards.join('、') || '無'}
+- 問事者對應宮位的卡牌：${houseCard}
 - 四角牌：${corners}
 - 中軸脊骨牌：${spineCards}
 
-請結合上述宮位對照、指示牌及其聯牌、中軸與跳躍關係，解讀此雷諾曼大展開牌局並給出結論。`;
+請結合上述配置與關聯資訊，為此雷諾曼大展開進行深度解讀。
+
+【解讀規範】：
+1. 線索有機交織：請勿機械化地將解讀切分為「鄰牌意為... 鏡像牌意為...」這種孤立的技術名詞解說。請發揮占卜師直覺，將鄰牌、鏡像、騎士跳、遠近法與視線關係有機織入，還原出一個前因後果連貫的真實事件故事線。
+2. 結構化排版：請詳細展開分析，但必須使用標準 Markdown 格式（使用標題、清單、粗體字標記關鍵卡牌名）來進行清晰的排版，保持層次分明。
+3. 結論收尾：請以最具實體、日常事務性的導向進行解讀，尾聲以一段明確的結論與行動建議收尾。`;
       } else {
         // len-1: Lenormand single — direct Yes/No format, no analysis
         const card = cards[0];
@@ -1411,6 +1483,95 @@ ${sigNote}
                         </p>
                       )}
                     </div>
+
+                    {selectedSpread.id === 'len-36' && mode === 'lenormand' && (
+                      <div className="border border-stone-200 dark:border-mystic-800 rounded-xl p-4 bg-stone-50/50 dark:bg-mystic-950/40">
+                        <details className="group">
+                          <summary className="flex items-center justify-between cursor-pointer select-none text-xs font-bold text-stone-600 dark:text-mystic-300 uppercase tracking-widest list-none">
+                            <span className="flex items-center gap-1.5 select-none">
+                              🔮 大展開設定 (展開可自訂角色/主題)
+                            </span>
+                            <span className="text-stone-400 group-open:rotate-180 transition-transform duration-200 select-none">
+                              ▼
+                            </span>
+                          </summary>
+                          <div className="mt-4 space-y-4 text-sm border-t border-stone-200/50 dark:border-mystic-800/50 pt-4">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                              <span className="font-bold text-xs text-stone-500 dark:text-mystic-400">問事者代表牌 (Querent)</span>
+                              <div className="flex gap-1.5">
+                                {[
+                                  { label: '👩 女人 (#29)', value: 'woman' },
+                                  { label: '👨 男人 (#28)', value: 'man' }
+                                ].map(opt => (
+                                  <button
+                                    key={opt.value}
+                                    type="button"
+                                    onClick={() => setGtQuerent(opt.value as any)}
+                                    className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-all select-none ${
+                                      gtQuerent === opt.value
+                                        ? 'border-teal-500 bg-teal-50/30 text-teal-700 dark:text-teal-400'
+                                        : 'border-stone-200 dark:border-mystic-800 hover:bg-stone-50 dark:hover:bg-mystic-900/50 text-stone-600 dark:text-mystic-300'
+                                    }`}
+                                  >
+                                    {opt.label}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                              <span className="font-bold text-xs text-stone-500 dark:text-mystic-400">對象/伴侶代表 (Partner)</span>
+                              <div className="flex gap-1.5">
+                                {[
+                                  { label: '異性/對立能量', value: 'opposite' },
+                                  { label: '同性 (以 #18 狗代表)', value: 'same' },
+                                  { label: '無對象', value: 'none' }
+                                ].map(opt => (
+                                  <button
+                                    key={opt.value}
+                                    type="button"
+                                    onClick={() => setGtPartner(opt.value as any)}
+                                    className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-all select-none ${
+                                      gtPartner === opt.value
+                                        ? 'border-teal-500 bg-teal-50/30 text-teal-700 dark:text-teal-400'
+                                        : 'border-stone-200 dark:border-mystic-800 hover:bg-stone-50 dark:hover:bg-mystic-900/50 text-stone-600 dark:text-mystic-300'
+                                    }`}
+                                  >
+                                    {opt.label}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                              <span className="font-bold text-xs text-stone-500 dark:text-mystic-400">占卜主題與指示牌 (Theme)</span>
+                              <div className="flex gap-1.5 flex-wrap justify-end">
+                                {[
+                                  { label: '綜合運勢', value: 'general' },
+                                  { label: '💞 感情 (#24 心)', value: 'love' },
+                                  { label: '💼 事業 (#35 錨)', value: 'career' },
+                                  { label: '💰 財運 (#34 魚)', value: 'money' },
+                                  { label: '🌲 健康 (#5 樹)', value: 'health' }
+                                ].map(opt => (
+                                  <button
+                                    key={opt.value}
+                                    type="button"
+                                    onClick={() => setGtTheme(opt.value as any)}
+                                    className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-all select-none ${
+                                      gtTheme === opt.value
+                                        ? 'border-teal-500 bg-teal-50/30 text-teal-700 dark:text-teal-400'
+                                        : 'border-stone-200 dark:border-mystic-800 hover:bg-stone-50 dark:hover:bg-mystic-900/50 text-stone-600 dark:text-mystic-300'
+                                    }`}
+                                  >
+                                    {opt.label}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </details>
+                      </div>
+                    )}
 
                     {/* Draw Mode Toggle */}
                     <div className="flex rounded-xl overflow-hidden border border-slate-200 dark:border-mystic-700 p-0.5 gap-0.5 bg-slate-100/70 dark:bg-mystic-800/50">
