@@ -172,30 +172,27 @@ function getCardAnimation(offset: number, animType: ShuffleAnim, gatherX: number
 
 /** Full-screen shuffle animation overlay — random card count (5-7) and random style */
 function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mode: 'waite' | 'thoth' | 'lenormand'; lang: 'en' | 'zh'; theme: 'light' | 'dark' }) {
-  const cardCount = 14; // Dense enough to feel like a real deck
+  const cardCount = 14;
 
   // Generate deterministic but organic table-wash trajectories
   const trajectories = React.useMemo(() => {
     return Array.from({ length: cardCount }, (_, i) => {
       const isLeft = i < cardCount / 2;
-      const s = isLeft ? -1 : 1; // hand side sign
+      const s = isLeft ? -1 : 1;
       const phase = (i / cardCount) * Math.PI * 2;
 
-      // Orbital radii with variation per card
       const rx = 110 + (i % 4) * 20;
       const ry = 65 + (i % 3) * 16;
 
-      // Stack imperfections for the final gathered state
       const stackX = Math.sin(i * 99) * 1.5;
       const stackY = -i * 0.4 + Math.cos(i * 33) * 1.2;
       const stackRot = Math.sin(i * 123) * 2;
 
-      // 6 waypoints: stack -> breakout -> swirl1 -> crossover -> inward -> stack
       const xK = [
         0,
         s * rx * 0.85 + Math.cos(phase) * 20,
         s * rx * 0.3 + Math.sin(phase) * 40,
-        -s * rx * 0.65 + Math.cos(phase) * 25, // crossover!
+        -s * rx * 0.65 + Math.cos(phase) * 25,
         s * 35 + Math.sin(phase) * 12,
         stackX
       ];
@@ -215,7 +212,6 @@ function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mod
         i % 2 === 0 ? 180 + stackRot * 2 : stackRot * 2,
         i % 2 === 0 ? 180 + stackRot : stackRot
       ];
-      // Z-index: swap layers at crossover to simulate cards sliding over/under
       const zK = [
         i,
         s > 0 ? i + cardCount : cardCount - i,
@@ -231,15 +227,31 @@ function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mod
 
   const isLight = theme === 'light';
 
-  // Table surface: warm felt (light) or deep ritual cloth (dark)
   const bgStyle = isLight
     ? 'radial-gradient(ellipse at 50% 50%, #F5F0E4 0%, #E8DFC8 50%, #D6CCAF 100%)'
     : 'radial-gradient(ellipse at 50% 50%, #120A1F 0%, #08050D 60%, #000000 100%)';
 
-  // Contact shadow — tight and physical, NOT floating
   const cardShadow = isLight
     ? '0 1px 2px rgba(80,60,30,0.5), 0 4px 10px rgba(80,60,30,0.2), inset 0 0 0 1px rgba(255,255,255,0.15)'
     : '0 1px 3px rgba(0,0,0,0.7), 0 4px 12px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(255,255,255,0.06)';
+
+  // Ritual guidance text — changes each time for depth
+  const ritualTexts = React.useMemo(() => {
+    const zh = [
+      '讓心靜下來，將問題放入心中⋯',
+      '深呼吸，讓直覺引導你⋯',
+      '放下期待，聆聽牌的低語⋯',
+      '閉上眼，感受此刻的能量⋯',
+    ];
+    const en = [
+      'Calm your mind, hold your question within...',
+      'Breathe deeply, let intuition guide you...',
+      'Release expectations, listen to the whisper of the cards...',
+      'Close your eyes, feel the energy of this moment...',
+    ];
+    const idx = Math.floor(Math.random() * zh.length);
+    return { zh: zh[idx], en: en[idx] };
+  }, []);
 
   return (
     <motion.div
@@ -250,7 +262,7 @@ function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mod
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3, ease: 'easeInOut' }}
     >
-      {/* Subtle table-felt ambient warmth */}
+      {/* Subtle ambient warmth on the table surface */}
       <div className="absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2 pointer-events-none">
         <div
           className="rounded-full"
@@ -293,33 +305,31 @@ function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mod
         ))}
       </div>
 
-      {/* Typography */}
-      <div className="text-center flex flex-col items-center gap-6 px-8 relative z-20 w-full max-w-2xl mx-auto mt-24">
+      {/* Ritual guidance — this is a sacred moment, not a loading screen */}
+      <div className="text-center flex flex-col items-center gap-5 px-8 relative z-20 w-full max-w-lg mx-auto mt-20">
         <motion.p
-          animate={{ opacity: [0.3, 0.8, 0.3] }}
-          transition={{ duration: 2.3, ease: 'easeInOut' }}
+          animate={{ opacity: [0.4, 1, 0.4] }}
+          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
           style={{
-            fontFamily: "'Cinzel', 'Playfair Display', serif",
-            color: isLight ? '#9E8B74' : '#8A7A9E',
-            fontSize: '0.8rem',
-            letterSpacing: '0.5em',
-            fontWeight: 700,
+            color: isLight ? 'rgba(120, 90, 50, 0.7)' : 'rgba(180, 150, 255, 0.7)',
+            fontSize: '0.75rem',
+            letterSpacing: '0.25em',
+            fontWeight: 500,
             textTransform: 'uppercase'
           }}
         >
-          {lang === 'en' ? 'Shuffling...' : '洗牌中⋯'}
+          {lang === 'en' ? ritualTexts.en : ritualTexts.zh}
         </motion.p>
 
         {question.trim() && (
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.8, ease: 'easeOut' }}
+            transition={{ delay: 0.3, duration: 0.8, ease: 'easeOut' }}
           >
-            <p className="font-serif text-xl sm:text-2xl font-semibold leading-relaxed px-4 tracking-wider"
+            <p className="text-base sm:text-lg font-semibold max-w-sm leading-relaxed"
                style={{
-                 color: isLight ? '#332922' : '#F4EFE6',
-                 textShadow: isLight ? '0 1px 8px rgba(255,255,255,0.7)' : '0 2px 10px rgba(0,0,0,0.9)'
+                 color: isLight ? 'rgba(160, 120, 40, 0.9)' : 'rgba(252, 211, 77, 0.9)'
                }}>
               {question.trim()}
             </p>
