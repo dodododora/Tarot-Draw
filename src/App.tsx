@@ -177,7 +177,7 @@ function ShuffleOverlay({ question, mode, lang }: { question: string; mode: 'wai
   );
   const [cardCount] = useState(() => Math.floor(Math.random() * 3) + 5); // 5, 6, or 7
 
-  const ease = [0.2, 0, 0.8, 1] as [number, number, number, number];
+  const ease = [0.25, 1, 0.5, 1] as [number, number, number, number]; // Premium cubic-bezier
   const T = { duration: 2, repeat: 0, ease, times: [0, 0.15, 0.5, 0.75, 1] };
   const T_stagger = { duration: 2, repeat: 0, ease, times: [0, 0.25, 0.5, 0.75, 1] };
 
@@ -194,47 +194,59 @@ function ShuffleOverlay({ question, mode, lang }: { question: string; mode: 'wai
     cursor += w + 16;
   }
 
-  // System-based Cyberpunk colors
-  const glowColor = mode === 'thoth' ? '#FF2A6D' : mode === 'lenormand' ? '#01F9C6' : '#F3E3A0';
-  const ringColor = mode === 'thoth' ? '#01F9C6' : mode === 'lenormand' ? '#FF2A6D' : '#FFB703';
+  // Premium Hextech / Arcanepunk Colors
+  const glowColor = mode === 'thoth' ? 'rgba(74, 32, 90' : mode === 'lenormand' ? 'rgba(0, 240, 255' : 'rgba(212, 175, 55';
+  const rimColor = mode === 'thoth' ? 'rgba(212, 175, 55' : mode === 'lenormand' ? 'rgba(0, 240, 255' : 'rgba(255, 242, 178';
 
   return (
     <motion.div
       className="fixed inset-0 z-[200] flex flex-col items-center justify-center gap-16 overflow-hidden"
       style={{ 
-        background: 'radial-gradient(circle at 50% 45%, rgba(45, 20, 80, 0.9) 0%, rgba(12, 7, 24, 0.95) 60%, rgba(5, 3, 10, 1) 100%)', 
-        backdropFilter: 'blur(12px)' 
+        // Deep Obsidian with Volumetric Top-Light
+        background: 'radial-gradient(circle at 50% -20%, #1A1A24 0%, #0A0A0E 70%, #050508 100%)', 
+        backdropFilter: 'blur(20px)' 
       }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.4, ease: 'easeInOut' }}
+      transition={{ duration: 0.6, ease: 'easeInOut' }}
     >
-      {/* Arcanepunk Magic Rings & Energy Orb */}
-      <div className="absolute left-1/2 top-[45%] -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+      {/* Slow Drifting Astral Particles */}
+      <div className="absolute inset-0 pointer-events-none mix-blend-screen overflow-hidden">
+        {Array.from({ length: 15 }).map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute rounded-full"
+            style={{ 
+              width: Math.random() * 4 + 1, 
+              height: Math.random() * 4 + 1,
+              background: '#F3E5AB',
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              filter: 'blur(1px)'
+            }}
+            animate={{ 
+              y: [0, -100 - Math.random() * 100], 
+              opacity: [0, Math.random() * 0.5 + 0.2, 0],
+              scale: [1, Math.random() * 1.5 + 1, 1]
+            }}
+            transition={{ 
+              duration: Math.random() * 5 + 5, 
+              repeat: Infinity, 
+              ease: 'linear',
+              delay: Math.random() * 5
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Volumetric Center Glow */}
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none mix-blend-screen">
         <motion.div
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full mix-blend-screen"
-          style={{ width: 350, height: 350, background: `radial-gradient(circle, ${glowColor}33 0%, ${ringColor}22 35%, transparent 70%)`, filter: 'blur(25px)' }}
-          animate={{ scale: [1, 1.15, 1], opacity: [0.6, 1, 0.6] }}
-          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed mix-blend-screen opacity-30"
-          style={{ width: 280, height: 280, borderColor: glowColor, borderWidth: '1.5px' }}
-          animate={{ rotate: 360, scale: [0.98, 1.02, 0.98] }}
-          transition={{ rotate: { duration: 25, repeat: Infinity, ease: 'linear' }, scale: { duration: 4, repeat: Infinity, ease: 'easeInOut' } }}
-        />
-        <motion.div
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border mix-blend-screen opacity-20"
-          style={{ width: 310, height: 310, borderColor: ringColor, borderWidth: '1px' }}
-          animate={{ rotate: -360 }}
-          transition={{ duration: 35, repeat: Infinity, ease: 'linear' }}
-        />
-        <motion.div
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full mix-blend-screen opacity-15"
-          style={{ width: 330, height: 330, border: `1px dotted ${glowColor}` }}
-          animate={{ rotate: 180 }}
-          transition={{ duration: 45, repeat: Infinity, ease: 'linear' }}
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
+          style={{ width: 500, height: 500, background: `radial-gradient(circle, ${glowColor}, 0.1) 0%, ${glowColor}, 0.02) 40%, transparent 70%)`, filter: 'blur(40px)' }}
+          animate={{ scale: [0.95, 1.05, 0.95], opacity: [0.4, 0.8, 0.4] }}
+          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
         />
       </div>
 
@@ -251,14 +263,25 @@ function ShuffleOverlay({ question, mode, lang }: { question: string; mode: 'wai
           return (
             <motion.div
               key={i}
+              className="rounded-lg relative"
               style={{
                 width: isCenter ? 86 : 68, height: isCenter ? 134 : 108,
                 originX: 0.5, originY: 1, flexShrink: 0, position: 'relative',
-                filter: isCenter ? `drop-shadow(0 0 20px ${glowColor}66)` : 'drop-shadow(0 8px 12px rgba(0,0,0,0.7))'
+                // Premium Layered Shadows (Deep shadow + Astral Bloom)
+                boxShadow: isCenter 
+                  ? `0 10px 30px -5px rgba(0,0,0,0.9), 0 0 40px -10px ${glowColor}, 0.5)` 
+                  : '0 8px 20px -5px rgba(0,0,0,0.8)'
               }}
               animate={getCardAnimation(offset, animType, cardGatherX[i])}
               transition={useStagger ? T_stagger : T}
             >
+              {/* Ethereal Inner Rim Light */}
+              <motion.div
+                className="absolute inset-0 rounded-lg pointer-events-none z-10"
+                style={{ boxShadow: isCenter ? `inset 0 0 0 1px ${rimColor}, 0.5)` : 'none' }}
+                animate={isCenter ? { opacity: [0.3, 1, 0.3] } : {}}
+                transition={isCenter ? { duration: 3, repeat: Infinity, ease: 'easeInOut' } : {}}
+              />
               <CardBack featured={isCenter} system={mode} />
             </motion.div>
           );
@@ -266,26 +289,31 @@ function ShuffleOverlay({ question, mode, lang }: { question: string; mode: 'wai
       </div>
 
       {/* Question area */}
-      <div className="text-center flex flex-col items-center gap-5 px-8 relative z-10 w-full">
+      <div className="text-center flex flex-col items-center gap-8 px-8 relative z-10 w-full max-w-2xl mx-auto">
         <motion.p 
-          animate={{ 
-            opacity: [0.7, 1, 0.7], 
-            textShadow: [`0 0 5px ${glowColor}00`, `0 0 15px ${glowColor}99`, `0 0 5px ${glowColor}00`] 
+          animate={{ opacity: [0.5, 0.9, 0.5] }}
+          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+          style={{ 
+            fontFamily: "'Cinzel', 'Playfair Display', serif",
+            color: '#F3E5AB', // Warm, faded gold
+            fontSize: '0.85rem', 
+            letterSpacing: '0.3em',
+            fontWeight: 500, 
+            textTransform: 'uppercase',
+            textShadow: '0 0 15px rgba(212, 175, 55, 0.3)'
           }}
-          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-          style={{ color: '#E8E4EC', fontSize: '0.75rem', letterSpacing: '0.3em', fontWeight: 600, textTransform: 'uppercase' }}
         >
           {lang === 'en' ? 'Calm your mind, hold your question within...' : '讓心靜下來，將問題放入心中⋯'}
         </motion.p>
         
         {question.trim() && (
           <motion.div
-            initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.6, ease: "easeOut" }}
+            initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 1, ease: [0.25, 1, 0.5, 1] }}
           >
-            <p className="font-serif text-lg sm:text-xl md:text-2xl font-bold max-w-md mx-auto leading-relaxed px-4" 
+            <p className="font-serif text-xl sm:text-2xl font-medium leading-relaxed px-4 tracking-wider" 
                style={{ 
-                 color: '#F4EFE6', 
-                 textShadow: `0 2px 5px rgba(0,0,0,0.9), 0 0 20px ${ringColor}66`
+                 color: '#F4EFE6', // Premium ivory
+                 textShadow: '0 4px 12px rgba(0,0,0,0.9), 0 0 20px rgba(255,255,255,0.1)' 
                }}>
               {question.trim()}
             </p>
@@ -1770,11 +1798,11 @@ ${themeNote}
                             </summary>
                             <div className="mt-4 space-y-4 sm:space-y-5 text-sm border-t divider-subtle pt-4">
                               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-4">
-                                <span className="font-bold text-xs text-muted w-24 shrink-0 mt-1">{t("提問者 (Querent)", "Querent")}</span>
+                                <span className="font-bold text-xs text-muted w-24 shrink-0 mt-1">{t("提問者", "Querent")}</span>
                                 <div className="flex flex-wrap gap-1.5 flex-1 justify-end sm:justify-start">
                                   {[
-                                    { label: t('女人 (Lady)', 'Lady'), value: 'woman', icon: <User size={14} /> },
-                                    { label: t('男人 (Gentleman)', 'Gentleman'), value: 'man', icon: <User size={14} /> }
+                                    { label: t('女人', 'Lady'), value: 'woman', icon: <User size={14} /> },
+                                    { label: t('男人', 'Gentleman'), value: 'man', icon: <User size={14} /> }
                                   ].map(opt => (
                                     <button
                                       key={opt.value}
@@ -1793,12 +1821,12 @@ ${themeNote}
                               </div>
 
                               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-4">
-                                <span className="font-bold text-xs text-muted w-24 shrink-0 mt-2 sm:mt-1">{t("對象 (Partner)", "Partner")}</span>
+                                <span className="font-bold text-xs text-muted w-24 shrink-0 mt-2 sm:mt-1">{t("對象", "Partner")}</span>
                                 <div className="flex flex-wrap gap-1.5 flex-1 justify-end sm:justify-start">
                                   {[
-                                    { label: t('異性 (Opposite)', 'Opposite'), value: 'opposite', icon: <GitCompare size={14} /> },
-                                    { label: t('同性 (Same-sex)', 'Same-sex'), value: 'same', icon: <Users size={14} /> },
-                                    { label: t('無 (None)', 'None'), value: 'none', icon: <X size={14} /> }
+                                    { label: t('異性', 'Opposite'), value: 'opposite', icon: <GitCompare size={14} /> },
+                                    { label: t('同性', 'Same-sex'), value: 'same', icon: <Users size={14} /> },
+                                    { label: t('無', 'None'), value: 'none', icon: <X size={14} /> }
                                   ].map(opt => (
                                     <button
                                       key={opt.value}
@@ -1817,14 +1845,14 @@ ${themeNote}
                               </div>
 
                               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-4">
-                                <span className="font-bold text-xs text-muted w-24 shrink-0 mt-2 sm:mt-1">{t("主題 (Theme)", "Theme")}</span>
+                                <span className="font-bold text-xs text-muted w-24 shrink-0 mt-2 sm:mt-1">{t("主題", "Theme")}</span>
                                 <div className="flex flex-wrap gap-1.5 flex-1 justify-end sm:justify-start">
                                   {[
-                                    { label: t('綜合 (General)', 'General'), value: 'general', icon: <BoxSelect size={14} /> },
-                                    { label: t('感情 (Love)', 'Love'), value: 'love', icon: <Heart size={14} /> },
-                                    { label: t('事業 (Career)', 'Career'), value: 'career', icon: <Briefcase size={14} /> },
-                                    { label: t('財運 (Wealth)', 'Wealth'), value: 'money', icon: <Coins size={14} /> },
-                                    { label: t('健康 (Health)', 'Health'), value: 'health', icon: <TreePine size={14} /> }
+                                    { label: t('綜合', 'General'), value: 'general', icon: <BoxSelect size={14} /> },
+                                    { label: t('感情', 'Love'), value: 'love', icon: <Heart size={14} /> },
+                                    { label: t('事業', 'Career'), value: 'career', icon: <Briefcase size={14} /> },
+                                    { label: t('財運', 'Wealth'), value: 'money', icon: <Coins size={14} /> },
+                                    { label: t('健康', 'Health'), value: 'health', icon: <TreePine size={14} /> }
                                   ].map(opt => (
                                     <button
                                       key={opt.value}
