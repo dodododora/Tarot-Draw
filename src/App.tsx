@@ -297,7 +297,7 @@ function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mod
                 zIndex: card.zK
               }}
               transition={{
-                duration: 2.3,
+                duration: 2.8,
                 times: [0, 0.20, 0.45, 0.68, 0.88, 1.0],
                 ease: 'easeInOut'
               }}
@@ -310,7 +310,7 @@ function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mod
 
       {/* 2. CENTER SECTION: Ritual Guidance (Static, elegant) */}
       {/* Placed precisely at 55% down to bridge the gap between action and question */}
-      <div className="absolute top-[58%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-full px-8 text-center z-20 pointer-events-none">
+      <div className="absolute top-[52%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-full px-8 text-center z-20 pointer-events-none">
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.85 }}
@@ -330,7 +330,7 @@ function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mod
 
       {/* 3. BOTTOM SECTION: User's Question (Static, grounded) */}
       {/* Anchored to the bottom with graceful breathing room */}
-      <div className="absolute bottom-[10%] left-1/2 -translate-x-1/2 w-full max-w-2xl px-8 text-center z-20 pointer-events-none">
+      <div className="absolute bottom-[22%] left-1/2 -translate-x-1/2 w-full max-w-2xl px-8 text-center z-20 pointer-events-none">
         {question.trim() && (
           <motion.div
             initial={{ opacity: 0 }}
