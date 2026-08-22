@@ -3681,11 +3681,10 @@ function TarotCardDisplay({ card, index, isExtra, system, lang, spreadId }: { ca
       className="flex flex-col items-center gap-2 shrink-0 mx-auto"
     >
       {!isExtra && (
-        <div className="relative w-[110px] sm:w-[130px]">
-          <div className="overflow-x-auto whitespace-nowrap [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] text-[10px] sm:text-xs font-bold text-hint uppercase tracking-wide text-center drop-shadow-sm pr-4">
+        <div className="w-[110px] sm:w-[130px] flex justify-center items-end min-h-[2.5rem] mb-1">
+          <div className="text-[10px] sm:text-xs font-bold text-hint uppercase tracking-wide text-center drop-shadow-sm line-clamp-2 px-1 leading-tight">
             {index + 1}. {displayPositionName}
           </div>
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-white dark:from-mystic-950 to-transparent" />
         </div>
       )}
 
