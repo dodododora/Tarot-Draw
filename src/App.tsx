@@ -97,7 +97,7 @@ const GlobalBackground = ({ theme }: { theme: 'light' | 'dark' }) => (
 
 
 // Shuffle animation duration — change here to adjust the animation length
-const SHUFFLE_ANIMATION_MS = 2300; // 2s animation + 0.3s hold at gathered pile state
+const SHUFFLE_ANIMATION_MS = 2800; // 2s animation + 0.3s hold at gathered pile state
 
 /** Card back component — shows system-specific card back image */
 const CardBack = ({ system, featured }: { system?: 'waite' | 'thoth' | 'lenormand'; featured?: boolean }) => {
@@ -189,23 +189,26 @@ function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mod
 
       const xK = [
         0,
-        s * rx * 0.75 + Math.cos(phase) * 15,
-        s * rx * 0.15 - Math.sin(phase) * 20,
-        -s * rx * 0.35 + Math.cos(phase) * 15,
+        s * rx * 0.70 + Math.cos(phase) * 15,
+        s * rx * 0.20 + Math.sin(phase) * 30,
+        -s * rx * 0.50 + Math.cos(phase) * 20,
+        s * 25 + Math.sin(phase) * 10,
         stackX
       ];
       const yK = [
         0,
         -40 * s + Math.sin(phase) * 15,
-        65 * s + Math.cos(phase) * 20,
-        -40 * s + Math.sin(phase) * 15,
+        70 * s + Math.cos(phase) * 20,
+        -45 * s + Math.sin(phase) * 18,
+        15 * s + Math.cos(phase) * 8,
         stackY
       ];
       const rK = [
         (i - cardCount / 2) * 1.2,
-        s * (45 + (i * 12) % 40),
-        s * (110 + (i * 15) % 50),
-        s * (160 + (i * 15) % 50),
+        s * (40 + (i * 14) % 50),
+        s * (110 + (i * 18) % 70),
+        s * (150 + (i * 18) % 70),
+        i % 2 === 0 ? 180 + stackRot * 1.5 : stackRot * 1.5,
         i % 2 === 0 ? 180 + stackRot : stackRot
       ];
       const zK = [
@@ -213,6 +216,7 @@ function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mod
         s > 0 ? i + cardCount : cardCount - i,
         i % 2 === 0 ? i + 10 : i,
         (cardCount - i) + 5,
+        i,
         i
       ];
 
@@ -294,7 +298,7 @@ function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mod
               }}
               transition={{
                 duration: 2.3,
-                times: [0, 0.25, 0.55, 0.85, 1.0],
+                times: [0, 0.20, 0.45, 0.68, 0.88, 1.0],
                 ease: 'easeInOut'
               }}
             >
