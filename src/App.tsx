@@ -253,34 +253,15 @@ function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mod
 
   return (
     <motion.div
-      className="fixed inset-0 z-[200] flex flex-col items-center justify-between py-[12vh] overflow-hidden"
+      className="fixed inset-0 z-[200] flex flex-col items-center justify-between py-[10vh] overflow-hidden"
       style={{ background: bgStyle, backdropFilter: 'blur(20px)' }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3, ease: 'easeInOut' }}
     >
-      {/* Top Anchor: User's Question (Static, grounded) */}
-      <div className="z-20 px-6 w-full max-w-2xl text-center">
-        {question.trim() && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1.2, ease: 'easeInOut' }}
-          >
-            <p className="font-serif text-lg sm:text-xl font-medium leading-relaxed tracking-wider line-clamp-3"
-               style={{
-                 color: isLight ? '#4A3B2C' : '#F4EFE6',
-                 textShadow: isLight ? '0 1px 10px rgba(255,255,255,0.8)' : '0 2px 15px rgba(0,0,0,0.9)'
-               }}>
-              {question.trim()}
-            </p>
-          </motion.div>
-        )}
-      </div>
-
-      {/* Center Anchor: The Cards & Ambient Light (Dynamic) */}
-      <div className="relative flex-1 flex items-center justify-center w-full z-10 my-8">
+      {/* Top Anchor: The Cards & Ambient Light (Dynamic) */}
+      <div className="relative flex-1 flex items-center justify-center w-full z-10">
         {/* Subtle table-felt ambient warmth */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
           <div
@@ -325,8 +306,8 @@ function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mod
         </div>
       </div>
 
-      {/* Bottom Anchor: Ritual Guidance (Static, deeply grounded) */}
-      <div className="z-20 px-6 w-full text-center">
+      {/* Center Anchor: Ritual Guidance (Static, deeply grounded) */}
+      <div className="z-20 px-6 w-full text-center flex-1 flex items-center justify-center">
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.8 }}
@@ -342,6 +323,25 @@ function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mod
         >
           {lang === 'en' ? ritualTexts.en : ritualTexts.zh}
         </motion.p>
+      </div>
+
+      {/* Bottom Anchor: User's Question (Static, grounded) */}
+      <div className="z-20 px-6 w-full max-w-2xl text-center flex-1 flex items-end justify-center pb-4">
+        {question.trim() && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1.2, ease: 'easeInOut' }}
+          >
+            <p className="font-serif text-lg sm:text-xl font-medium leading-relaxed tracking-wider line-clamp-3"
+               style={{
+                 color: isLight ? '#4A3B2C' : '#F4EFE6',
+                 textShadow: isLight ? '0 1px 10px rgba(255,255,255,0.8)' : '0 2px 15px rgba(0,0,0,0.9)'
+               }}>
+              {question.trim()}
+            </p>
+          </motion.div>
+        )}
       </div>
     </motion.div>
   );
