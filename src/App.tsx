@@ -1996,19 +1996,18 @@ ${themeNote}
                                             <button
                                               key={card.id}
                                               type="button"
-                                              onClick={e => {
+                                              onPointerDown={e => { (e.currentTarget as any)._startY = e.clientY; }}
+                                              onPointerUp={e => {
+                                                const startY = (e.currentTarget as any)._startY ?? e.clientY;
+                                                if (Math.abs(e.clientY - startY) > 10) return;
                                                 e.preventDefault();
                                                 setManualInputs(prev => {
                                                   const next = [...prev];
                                                   next[i] = { ...(next[i] || { name: '', reversed: false }), name: card.nameCN };
                                                   return next;
                                                 });
-                                                
-                                                // End IME composition
                                                 const currentInput = document.getElementById(`manual-input-${i}`);
                                                 currentInput?.blur();
-                                                
-                                                // Auto-focus next input for convenience
                                                 setTimeout(() => {
                                                   document.getElementById(`manual-input-${i + 1}`)?.focus();
                                                 }, 50);
