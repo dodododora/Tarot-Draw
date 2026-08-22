@@ -1,9 +1,7 @@
-/**
- * shareCard.ts
- * ─────────────────────────────────────────────────────────────────────────────
- * Generates a 1080×1080px share card image using the Canvas API.
- * No external dependencies — renders directly from state data.
- */
+import { MODE_ACCENT } from './constants';
+import type { ShareCardOptions } from './shareCard';
+
+// ─── Interfaces ──────────────────────────────────────────────────────────────
 
 export interface ShareCardCard {
   nameCN: string;
@@ -13,66 +11,11 @@ export interface ShareCardCard {
   emoji?: string;
 }
 
-export interface ShareCardOptions {
-  spreadName: string;
-  question: string;
-  cards: ShareCardCard[];
-  mode: 'tarot' | 'thoth' | 'lenormand';
-}
-
-// ─── Constants ───────────────────────────────────────────────────────────────
-
-const W = 1080;
-const H = 1080;
-const PADDING = 72;
-
-// Palette
-const COL = {
-  bg1:       '#0b0a14',
-  bg2:       '#1a1630',
-  gold:      '#f5c842',
-  goldDim:   '#c9a227',
-  text:      '#f0ece8',
-  textDim:   '#a09880',
-  reversed:  '#f87171',
-  green:     '#4ade80',
-  teal:      '#2dd4bf',
-  purple:    '#a78bfa',
-  border:    'rgba(245,200,66,0.18)',
-  cardBg:    'rgba(255,255,255,0.05)',
-};
-
-const MODE_ACCENT: Record<string, string> = {
-  tarot:      COL.gold,
-  thoth:      COL.purple,
-  lenormand:  COL.teal,
-};
-
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function fillRoundRect(
-  ctx: CanvasRenderingContext2D,
-  x: number, y: number, w: number, h: number,
-  r: number
-) {
-  ctx.beginPath();
-  ctx.roundRect(x, y, w, h, r);
-  ctx.fill();
-}
-
-function strokeRoundRect(
-  ctx: CanvasRenderingContext2D,
-  x: number, y: number, w: number, h: number,
-  r: number
-) {
-  ctx.beginPath();
-  ctx.roundRect(x, y, w, h, r);
-  ctx.stroke();
-}
 
 /** Wraps text at maxWidth, returns array of lines */
 function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
-  const chars = [...text]; // Unicode-safe split
+  const chars = [...text];
   const lines: string[] = [];
   let current = '';
 
@@ -93,169 +36,181 @@ function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number)
 
 /**
  * Draw the share card and return a PNG data URL.
- * Call with the current draw state; no DOM dependency required beyond canvas.
+ * Redesigned for premium, classical aesthetic.
  */
 export async function generateShareCard(opts: ShareCardOptions): Promise<string> {
   const { spreadName, question, cards, mode } = opts;
-  const accent = MODE_ACCENT[mode] ?? COL.gold;
+  const isLenormand = mode === 'lenormand';
 
+  // Aesthetic Proportions: IG Story / Mobile Poster
+  const W = 1080;
+  const H = 1920;
+  
   const canvas = document.createElement('canvas');
   canvas.width  = W;
   canvas.height = H;
   const ctx = canvas.getContext('2d')!;
 
-  // ── Background gradient ──────────────────────────────────────────────────
-  const grad = ctx.createRadialGradient(W / 2, H * 0.3, 0, W / 2, H / 2, W * 0.8);
-  grad.addColorStop(0,   '#1e1a38');
-  grad.addColorStop(0.6, COL.bg2);
-  grad.addColorStop(1,   COL.bg1);
+  // 1. Background: Deep Obsidian / Void
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, '#0F0C16');
+  grad.addColorStop(0.5, '#0A0812');
+  grad.addColorStop(1, '#050408');
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, W, H);
 
-  // Subtle star-noise texture
-  ctx.save();
-  for (let i = 0; i < 140; i++) {
-    const sx = Math.random() * W;
-    const sy = Math.random() * H;
-    const sr = Math.random() * 1.2;
-    const sa = Math.random() * 0.5 + 0.1;
-    ctx.fillStyle = `rgba(255,255,255,${sa})`;
-    ctx.beginPath();
-    ctx.arc(sx, sy, sr, 0, Math.PI * 2);
-    ctx.fill();
-  }
-  ctx.restore();
+  // Subtle ambient glow in the center
+  const glow = ctx.createRadialGradient(W / 2, H / 3, 0, W / 2, H / 3, W);
+  glow.addColorStop(0, 'rgba(212, 175, 55, 0.05)');
+  glow.addColorStop(1, 'transparent');
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, W, H);
 
-  // Border frame
-  ctx.strokeStyle = COL.border;
-  ctx.lineWidth = 2;
-  strokeRoundRect(ctx, 32, 32, W - 64, H - 64, 32);
-
-  // Inner subtle glow ring near top
-  const glowGrad = ctx.createRadialGradient(W / 2, 140, 10, W / 2, 140, 260);
-  glowGrad.addColorStop(0,   `${accent}22`);
-  glowGrad.addColorStop(1,   'transparent');
-  ctx.fillStyle = glowGrad;
-  ctx.fillRect(0, 0, W, 360);
-
-  // ── Logo / header ────────────────────────────────────────────────────────
-  const modeEmoji = { tarot: '🔮', thoth: '🌌', lenormand: '🃏' }[mode] ?? '🔮';
-  const modeLabel = { tarot: '偉特塔羅', thoth: '托特塔羅', lenormand: '雷諾曼' }[mode] ?? '';
-
-  ctx.font = `bold 52px "Apple Color Emoji", "Segoe UI Emoji", sans-serif`;
-  ctx.textAlign = 'center';
-  ctx.fillText(modeEmoji, W / 2, PADDING + 60);
-
-  ctx.font = `900 52px "PingFang SC", "Noto Sans TC", "Microsoft JhengHei", sans-serif`;
-  ctx.fillStyle = accent;
-  ctx.textAlign = 'center';
-  ctx.fillText('Tarot Draw', W / 2, PADDING + 128);
-
-  ctx.font = `500 26px "PingFang SC", "Noto Sans TC", sans-serif`;
-  ctx.fillStyle = COL.textDim;
-  ctx.fillText(`${modeLabel}  ·  tarot-draw.app`, W / 2, PADDING + 164);
-
-  // Divider
-  const divY = PADDING + 190;
-  const divGrad = ctx.createLinearGradient(PADDING, divY, W - PADDING, divY);
-  divGrad.addColorStop(0,   'transparent');
-  divGrad.addColorStop(0.5, accent);
-  divGrad.addColorStop(1,   'transparent');
-  ctx.strokeStyle = divGrad;
-  ctx.lineWidth = 1.5;
+  // 2. Elegant Hairline Frame
+  const margin = 64;
+  ctx.strokeStyle = 'rgba(212, 175, 55, 0.15)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(margin, margin, W - margin * 2, H - margin * 2);
+  
+  // Corner accents (+)
+  const crossSize = 8;
   ctx.beginPath();
-  ctx.moveTo(PADDING, divY);
-  ctx.lineTo(W - PADDING, divY);
+  const corners = [
+    [margin, margin], [W - margin, margin],
+    [margin, H - margin], [W - margin, H - margin]
+  ];
+  for (const [cx, cy] of corners) {
+    ctx.moveTo(cx - crossSize, cy); ctx.lineTo(cx + crossSize, cy);
+    ctx.moveTo(cx, cy - crossSize); ctx.lineTo(cx, cy + crossSize);
+  }
   ctx.stroke();
 
-  // ── Spread name ──────────────────────────────────────────────────────────
-  ctx.font = `700 38px "PingFang SC", "Noto Sans TC", sans-serif`;
-  ctx.fillStyle = COL.text;
-  ctx.textAlign = 'center';
-  ctx.fillText(spreadName, W / 2, divY + 52);
+  // 3. Header Typography
+  const modeLabel = { waite: '偉特塔羅', thoth: '托特塔羅', lenormand: '雷諾曼' }[mode] ?? '塔羅占卜';
 
-  // ── Question ─────────────────────────────────────────────────────────────
-  if (question.trim()) {
-    ctx.font = `400 26px "PingFang SC", "Noto Sans TC", sans-serif`;
-    ctx.fillStyle = COL.textDim;
-    const qLines = wrapText(ctx, `「${question}」`, W - PADDING * 2 - 40);
-    qLines.slice(0, 2).forEach((line, i) => {
-      ctx.fillText(line, W / 2, divY + 96 + i * 36);
-    });
+  ctx.textAlign = 'center';
+  
+  // App Title
+  ctx.font = '300 48px "Cinzel", "Times New Roman", serif';
+  ctx.fillStyle = 'rgba(212, 175, 55, 0.9)';
+  // Fallback for letterSpacing
+  if ('letterSpacing' in ctx) {
+    (ctx as any).letterSpacing = '12px';
+  }
+  ctx.fillText('TAROT DRAW', W / 2, 180);
+  if ('letterSpacing' in ctx) {
+    (ctx as any).letterSpacing = '0px';
   }
 
-  // ── Card list ─────────────────────────────────────────────────────────────
-  const listTop = divY + (question.trim() ? 160 : 96);
-  const maxCards = Math.min(cards.length, 10);
-  const cardH = Math.min(68, (H - listTop - PADDING - 100) / maxCards);
-  const cardW = W - PADDING * 2;
+  // Subtitle
+  ctx.font = '300 22px "Cinzel", "Noto Serif TC", "Songti TC", serif';
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+  if ('letterSpacing' in ctx) {
+    (ctx as any).letterSpacing = '4px';
+  }
+  ctx.fillText(`tarot-draw.app  ·  ${modeLabel}`, W / 2, 230);
+  if ('letterSpacing' in ctx) {
+    (ctx as any).letterSpacing = '0px';
+  }
+
+  // Divider Star
+  ctx.font = '20px serif';
+  ctx.fillStyle = 'rgba(212, 175, 55, 0.5)';
+  ctx.fillText('✦', W / 2, 320);
+
+  // 4. Spread Name
+  ctx.font = '500 42px "Noto Serif TC", "Songti TC", "PMingLiU", serif';
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+  ctx.fillText(spreadName, W / 2, 400);
+
+  // 5. Question
+  let listTop = 480;
+  if (question.trim()) {
+    ctx.font = 'italic 300 32px "Noto Serif TC", "Songti TC", "PMingLiU", serif';
+    ctx.fillStyle = 'rgba(212, 175, 55, 0.7)';
+    const qLines = wrapText(ctx, `「${question.trim()}」`, W - margin * 2 - 80);
+    qLines.forEach((line, i) => {
+      ctx.fillText(line, W / 2, 480 + i * 46);
+    });
+    listTop = 480 + qLines.length * 46 + 60;
+  }
+
+  // 6. Card List (Table of Contents Style)
+  const maxCards = Math.min(cards.length, 36);
+  const availableH = H - listTop - 180;
+  const rowH = Math.min(64, availableH / maxCards);
+  const fontSize = Math.min(30, rowH * 0.6);
+  const labelFontSize = Math.min(26, fontSize * 0.9);
 
   for (let i = 0; i < maxCards; i++) {
     const card = cards[i];
-    const cy = listTop + i * (cardH + 8);
+    const cy = listTop + i * rowH + rowH / 2;
 
-    // Row background
-    ctx.fillStyle = COL.cardBg;
-    fillRoundRect(ctx, PADDING, cy, cardW, cardH, 12);
+    const posStr = `${i + 1}. ${card.positionName}`;
+    const nameStr = isLenormand ? `${card.nameCN}` : card.nameCN;
+    const isRev = card.isReversed;
 
-    // Left accent strip
-    ctx.fillStyle = card.isReversed ? COL.reversed : accent;
-    fillRoundRect(ctx, PADDING, cy, 5, cardH, 4);
-
-    // Position label (left)
-    ctx.font = `500 ${Math.round(cardH * 0.3)}px "PingFang SC", "Noto Sans TC", sans-serif`;
-    ctx.fillStyle = COL.textDim;
+    // Left: Position
+    ctx.font = `300 ${labelFontSize}px "Noto Serif TC", "Songti TC", serif`;
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
     ctx.textAlign = 'left';
-    const posLabel = `${i + 1}. ${card.positionName}`;
-    ctx.fillText(posLabel, PADDING + 20, cy + cardH * 0.52);
+    ctx.fillText(posStr, margin + 40, cy);
+    const posWidth = ctx.measureText(posStr).width;
 
-    // Card name (right-ish, bold)
-    const nameX = W / 2 + 20;
-    ctx.font = `700 ${Math.round(cardH * 0.33)}px "PingFang SC", "Noto Sans TC", sans-serif`;
-    ctx.fillStyle = card.isReversed ? COL.reversed : COL.text;
-    ctx.textAlign = 'left';
+    // Right: Card Name
+    let revWidth = 0;
+    if (isRev) {
+      ctx.font = `300 ${labelFontSize}px "Noto Serif TC", "Songti TC", serif`;
+      revWidth = ctx.measureText(' (逆)').width;
+    }
+    
+    ctx.font = `400 ${fontSize}px "Noto Serif TC", "Songti TC", serif`;
+    const nameWidth = ctx.measureText(nameStr).width;
 
-    const emoji = card.emoji ?? '';
-    const nameStr = `${emoji ? emoji + ' ' : ''}${card.nameCN}`;
-    ctx.fillText(nameStr, nameX, cy + cardH * 0.52);
+    // Draw Dot Leaders (Dashed line)
+    ctx.save();
+    ctx.setLineDash([2, 12]);
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(margin + 40 + posWidth + 24, cy - fontSize * 0.3);
+    ctx.lineTo(W - margin - 40 - nameWidth - revWidth - 24, cy - fontSize * 0.3);
+    ctx.stroke();
+    ctx.restore();
 
-    // Reversed badge
-    if (card.isReversed) {
-      const badgeX = W - PADDING - 56;
-      const badgeY = cy + cardH * 0.5 - 14;
-      ctx.fillStyle = 'rgba(248,113,113,0.2)';
-      fillRoundRect(ctx, badgeX, badgeY, 48, 28, 8);
-      ctx.font = `bold 16px "PingFang SC", sans-serif`;
-      ctx.fillStyle = COL.reversed;
-      ctx.textAlign = 'center';
-      ctx.fillText('逆位', badgeX + 24, badgeY + 19);
-    } else if (mode !== 'lenormand') {
-      const badgeX = W - PADDING - 56;
-      const badgeY = cy + cardH * 0.5 - 14;
-      ctx.fillStyle = 'rgba(74,222,128,0.12)';
-      fillRoundRect(ctx, badgeX, badgeY, 48, 28, 8);
-      ctx.font = `bold 16px "PingFang SC", sans-serif`;
-      ctx.fillStyle = COL.green;
-      ctx.textAlign = 'center';
-      ctx.fillText('正位', badgeX + 24, badgeY + 19);
+    // Draw Card Name
+    ctx.fillStyle = isRev ? 'rgba(212, 175, 55, 0.8)' : 'rgba(255, 255, 255, 0.9)';
+    ctx.textAlign = 'right';
+    ctx.fillText(nameStr, W - margin - 40 - revWidth, cy);
+
+    // Draw Reversed Tag
+    if (isRev) {
+      ctx.font = `300 ${labelFontSize}px "Noto Serif TC", "Songti TC", serif`;
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+      ctx.fillText(' (逆)', W - margin - 40, cy);
     }
   }
 
-  if (cards.length > 10) {
-    ctx.font = `400 22px "PingFang SC", sans-serif`;
-    ctx.fillStyle = COL.textDim;
+  if (cards.length > 36) {
+    ctx.font = '300 24px "Noto Serif TC", serif';
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
     ctx.textAlign = 'center';
-    ctx.fillText(`…還有 ${cards.length - 10} 張牌`, W / 2, listTop + 10 * (cardH + 8) + 28);
+    ctx.fillText(`…還有 ${cards.length - 36} 張牌`, W / 2, listTop + maxCards * rowH + 40);
   }
 
-  // ── Footer ────────────────────────────────────────────────────────────────
-  const footY = H - PADDING + 12;
-  ctx.font = `400 22px "PingFang SC", "Noto Sans TC", sans-serif`;
-  ctx.fillStyle = COL.textDim;
+  // 7. Footer
+  ctx.font = '300 22px "Noto Serif TC", "Songti TC", serif';
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
   ctx.textAlign = 'center';
-  ctx.fillText('牌卡只是指引，真正的答案在你的內心', W / 2, footY);
+  if ('letterSpacing' in ctx) {
+    (ctx as any).letterSpacing = '6px';
+  }
+  ctx.fillText('牌卡只是指引，真正的答案在你的內心', W / 2, H - margin - 30);
+  if ('letterSpacing' in ctx) {
+    (ctx as any).letterSpacing = '0px';
+  }
 
-  // ── Export ───────────────────────────────────────────────────────────────
   return canvas.toDataURL('image/png');
 }
 
