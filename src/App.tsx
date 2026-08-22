@@ -788,7 +788,7 @@ export default function App() {
       setHistory(prev => [{ id: newHistoryId, date: Date.now(), question: question || '', spread: selectedSpread, cards: [], lenormandCards: lenResults, mode: 'lenormand' as const }, ...prev]);
       drawn.forEach(card => { const img = new Image(); img.src = getCardImagePath('lenormand', card.id); });
       setIsShuffling(true);
-      trackEvent('draw_cards', { spread_name: selectedSpread.name, spread_count: selectedSpread.count, system: mode, has_question: (question.trim().length > 0) });
+      trackEvent('draw_cards', { spread_name: selectedSpread.name, spread_count: selectedSpread.count, system: mode, has_question: (question.trim().length > 0), question_length: question.trim().length });
       setTimeout(() => { setIsShuffling(false); navigate('/result'); }, SHUFFLE_ANIMATION_MS);
       return;
     }
@@ -817,7 +817,7 @@ export default function App() {
     setHistory(prev => [{ id: newHistoryId, date: Date.now(), question: question || '', spread: selectedSpread, cards: results, mode, bottomCard: bottomResult }, ...prev]);
     drawn.forEach(card => { const img = new Image(); img.src = getCardImagePath(mode === 'thoth' ? 'thoth' : 'waite', card.id); });
     setIsShuffling(true);
-    trackEvent('draw_cards', { spread_name: selectedSpread.name, spread_count: selectedSpread.count, system: mode, has_question: (question.trim().length > 0) });
+    trackEvent('draw_cards', { spread_name: selectedSpread.name, spread_count: selectedSpread.count, system: mode, has_question: (question.trim().length > 0), question_length: question.trim().length });
     setTimeout(() => { setIsShuffling(false); navigate('/result'); }, SHUFFLE_ANIMATION_MS);
   };
 
@@ -832,7 +832,7 @@ export default function App() {
       return;
     }
 
-    trackEvent('manual_submit', { spread_name: selectedSpread.name, system: mode });
+    trackEvent('manual_submit', { spread_name: selectedSpread.name, system: mode, question_length: question.trim().length });
     if (mode === 'lenormand') {
       const results: DrawnLenormandCard[] = selectedSpread.positions.map((pos, i) => {
         const input = manualInputs[i] ?? { name: '', reversed: false };
