@@ -332,6 +332,15 @@ export default function App() {
     };
   }, [selectedSpread, lang]);
   const [isShuffling, setIsShuffling] = useState(false);
+
+  // Fix mobile Safari/Chrome back-forward cache freeze
+  useEffect(() => {
+    const handlePageShow = (e: PageTransitionEvent) => {
+      if (e.persisted) setIsShuffling(false);
+    };
+    window.addEventListener('pageshow', handlePageShow);
+    return () => window.removeEventListener('pageshow', handlePageShow);
+  }, []);
   const [bottomCard, setBottomCard] = useState<DrawnCard | null>(null);
   const [isCustomOpen, setIsCustomOpen] = useState(true);
   const [isBuiltinOpen, setIsBuiltinOpen] = useState(true);
@@ -1055,7 +1064,7 @@ ${cardList}
         // 9. Facing direction and high-low power comparison
         let heightComparison = '';
         if (qIdx >= 0 && pIdx >= 0) {
-          if (qRow < pRow) heightComparison = isEn ? 'Querent is in upper row (higher initiative/control)' : '問事者在上行（主動性或掌控度較高）';
+          if (qRow < pRow) heightComparison = isEn ? 'Querent is in upper row (higher initiative/control)' : '提問者在上行（主動性或掌控度較高）';
           else if (qRow > pRow) heightComparison = isEn ? 'Partner is in upper row (partner has higher influence)' : '對象在上行（對方目前影響力較高）';
           else heightComparison = isEn ? 'Same row' : '雙方等高';
         }
@@ -1090,8 +1099,8 @@ ${cardList}
         const sigNote = qCard
           ? (isEn 
              ? `- Querent card: ${f(qCard)} at Row ${qRow+1}, Col ${qCol+1} (${farNote}, House ${qPos}·${LENORMAND_CARDS[qPos-1]?.nameEN ?? ''})`
-             : `- 問事者指示牌：${f(qCard)} 落在第${qRow+1}行第${qCol+1}列（${farNote}，第 ${qPos} 宮·${LENORMAND_CARDS[qPos-1]?.nameCN ?? ''}宮）`)
-          : (isEn ? '- Querent card: Querent not found.' : '- 問事者指示牌：未定位到問事者。');
+             : `- 提問者指示牌：${f(qCard)} 落在第${qRow+1}行第${qCol+1}列（${farNote}，第 ${qPos} 宮·${LENORMAND_CARDS[qPos-1]?.nameCN ?? ''}宮）`)
+          : (isEn ? '- Querent card: Querent not found.' : '- 提問者指示牌：未定位到提問者。');
 
         const partnerNote = pCard
           ? (isEn
@@ -1102,7 +1111,7 @@ ${cardList}
         const themeNote = tCard
           ? (isEn
              ? `- Theme card: ${f(tCard)} at Row ${tRow+1}, Col ${tCol+1} (House ${tPos}·${LENORMAND_CARDS[tPos-1]?.nameEN ?? ''}), distance to Querent is ${themeDist}`
-             : `- 占卜主題牌：${f(tCard)} 落在第${tRow+1}行第${tCol+1}列（第 ${tPos} 宮·${LENORMAND_CARDS[tPos-1]?.nameCN ?? ''}宮），距離問事者 ${themeDist}`)
+             : `- 占卜主題牌：${f(tCard)} 落在第${tRow+1}行第${tCol+1}列（第 ${tPos} 宮·${LENORMAND_CARDS[tPos-1]?.nameCN ?? ''}宮），距離提問者 ${themeDist}`)
           : (isEn ? '- Theme card: N/A' : '- 占卜主題牌：無特定主題牌。');
 
         prompt = isEn ? `${systemHeaderGrand}
@@ -1143,12 +1152,12 @@ ${posMap.join('\n')}
 ${sigNote}
 ${partnerNote}
 ${themeNote}
-- 問事者鄰牌（上下左右）：上=${above}、下=${below}、左=${left}、右=${right}
-- 問事者對角鄰牌（四周）：左上=${diagTL}、右上=${diagTR}、左下=${diagBL}、右下=${diagBR}
-- 橫讀問事者所在整行：${sigRowText}
-- 問事者鏡像反射牌：${mirrorCard}
-- 問事者騎士跳躍牌：${knightCards.join('、') || '無'}
-- 問事者對應宮位的卡牌：${houseCard}
+- 提問者鄰牌（上下左右）：上=${above}、下=${below}、左=${left}、右=${right}
+- 提問者對角鄰牌（四周）：左上=${diagTL}、右上=${diagTR}、左下=${diagBL}、右下=${diagBR}
+- 橫讀提問者所在整行：${sigRowText}
+- 提問者鏡像反射牌：${mirrorCard}
+- 提問者騎士跳躍牌：${knightCards.join('、') || '無'}
+- 提問者對應宮位的卡牌：${houseCard}
 - 四角牌：${corners}
 - 中軸脊骨牌：${spineCards}
 
@@ -1712,7 +1721,7 @@ ${themeNote}
                             </summary>
                             <div className="mt-4 space-y-4 sm:space-y-5 text-sm border-t divider-subtle pt-4">
                               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-4">
-                                <span className="font-bold text-xs text-muted w-24 shrink-0 mt-1">{t("問事者 (Querent)", "Querent")}</span>
+                                <span className="font-bold text-xs text-muted w-24 shrink-0 mt-1">{t("提問者 (Querent)", "Querent")}</span>
                                 <div className="flex flex-wrap gap-1.5 flex-1 justify-end sm:justify-start">
                                   {[
                                     { label: t('女人 (Lady)', 'Lady'), value: 'woman', icon: <User size={14} /> },
@@ -1894,12 +1903,12 @@ ${themeNote}
                                         >{t('逆', 'Rev')}</button>
                                       )}
                                       {matches.length > 0 && (
-                                        <div className="absolute z-50 left-0 right-0 top-full mt-1 surface-card rounded-lg shadow-lg overflow-hidden max-h-48 overflow-y-auto">
+                                        <div className="absolute z-50 left-0 right-0 top-full mt-1 surface-card rounded-lg shadow-lg overflow-hidden max-h-48 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                                           {matches.map(card => (
                                             <button
                                               key={card.id}
                                               type="button"
-                                              onPointerDown={e => {
+                                              onClick={e => {
                                                 e.preventDefault();
                                                 setManualInputs(prev => {
                                                   const next = [...prev];
@@ -2960,7 +2969,7 @@ const TRIVIA_TRANSLATIONS: Record<string, string> = {
     "Lenormand's reading style differs from Tarot—focusing not on single cards, but on combinations of adjacent cards to tell a story.",
   "雷諾曼牌沒有正逆位的概念，每張牌都以正立方式解讀，牌義傾向具體的日常事件而非抽象的心理狀態。":
     "Lenormand has no reversals. Cards are read upright, focusing on concrete daily events rather than abstract psychology.",
-  "第 28 號「男人」與第 29 號「女人」是雷諾曼牌中的「指示牌」，代表問事者本人，是牌陣中的基準點。":
+  "第 28 號「男人」與第 29 號「女人」是雷諾曼牌中的「指示牌」，代表提問者本人，是牌陣中的基準點。":
     "Card 28 (Man) and 29 (Woman) are signifiers representing the querent, serving as reference anchors in the spread.",
   "九宮格（Grand Tableau 的縮版）是雷諾曼最經典的牌陣，透過中心牌與四周牌的位置關係進行整體解讀。":
     "The 3x9 grid (mini Grand Tableau) is a classic Lenormand layout, reading relationships between center and surrounding cards.",
@@ -3202,7 +3211,7 @@ const ORACLE_TRANSLATIONS: Record<string, string> = {
   "擔憂、匱乏": "Worry, lack",
   "物質成功": "Material success",
   "失敗、徒勞": "Failure, futility",
-  "橫讀問事者所在整行": "Horizontal reading of Querent's entire row",
+  "橫讀提問者所在整行": "Horizontal reading of Querent's entire row",
   "謹慎、技藝累積": "Prudence, skill accumulation",
   "獲得、豐盛": "Gain, abundance",
   "富足、巔峰": "Wealth, peak",
