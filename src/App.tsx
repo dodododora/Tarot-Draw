@@ -669,6 +669,19 @@ export default function App() {
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
+    const bgColor = theme === 'dark' ? '#09060E' : '#F4EFE6';
+    document.documentElement.style.backgroundColor = bgColor;
+    document.body.style.backgroundColor = bgColor;
+    
+    // Also update theme-color meta tag for URL bar and overscroll areas
+    let metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (!metaTheme) {
+      metaTheme = document.createElement('meta');
+      metaTheme.name = 'theme-color';
+      document.head.appendChild(metaTheme);
+    }
+    metaTheme.setAttribute('content', bgColor);
+    
     localStorage.setItem('tarot-theme', theme);
   }, [theme]);
 
@@ -1487,7 +1500,7 @@ ${themeNote}
   };
 
   return (
-    <div className="min-h-screen flex flex-col relative z-0">
+    <div className="min-h-[100svh] flex flex-col relative z-0">
       <GlobalBackground theme={theme} />
 
       {/* Shuffle animation overlay — appears on top of everything */}
