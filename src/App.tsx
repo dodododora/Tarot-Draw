@@ -172,47 +172,53 @@ function getCardAnimation(offset: number, animType: ShuffleAnim, gatherX: number
 
 /** Full-screen shuffle animation overlay — random card count (5-7) and random style */
 function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mode: 'waite' | 'thoth' | 'lenormand'; lang: 'en' | 'zh'; theme: 'light' | 'dark' }) {
-  const cardCount = 7; // Essential for a satisfying "crossover" weave shuffle
-  const centerIndex = 3;
-
-  // Real "Mid-Air Crossover Shuffle" (Cards fly out, cross over each other, and gather)
-  const getShuffleAnimation = (index: number) => {
-    const offset = index - centerIndex; // -3 to 3
+  const cardCount = 12; // Sufficient to look like a deck being washed/scrambled
+  
+  // Deterministic "random" generation for smooth consistent washes
+  const getWashAnimation = (index: number) => {
+    // Generate pseudo-random deterministic values based on index
+    const r1 = Math.sin(index * 1.1) * 120; // x spread
+    const r2 = Math.cos(index * 1.3) * 80;  // y spread
+    const r3 = Math.sin(index * 1.7) * 180; // rotation
     
-    // 1. Spread wide (Fling out)
-    const spreadX = offset * 65; 
-    const spreadY = Math.abs(offset) * 15 - 35; 
-    const spreadAngle = offset * 15;
+    const s1 = Math.cos(index * 2.1) * 140; 
+    const s2 = Math.sin(index * 2.3) * 90;
+    const s3 = Math.cos(index * 2.7) * 250;
 
-    // 2. Cross over to the opposite side (The actual mix)
-    const crossX = offset * -35;
-    const crossY = Math.abs(offset) * 8 - 15;
-    const crossAngle = offset * -8;
+    const t1 = Math.sin(index * 3.1) * 100;
+    const t2 = Math.cos(index * 3.3) * 100;
+    const t3 = Math.sin(index * 3.7) * 120;
 
     return {
-      x: [0, spreadX, crossX, 0],
-      y: [0, spreadY, crossY, 0],
-      rotateZ: [0, spreadAngle, crossAngle, 0],
-      rotateX: [0, 15, -10, 0],
-      scale: [0.85, 1.15, 0.9, 0.85],
-      // Z-index trick: cards swap stacking order mid-air to simulate shuffling
-      zIndex: [10, 10 - Math.abs(offset), 10 + offset, 10]
+      x: [0, r1, s1, t1, 0],
+      y: [0, r2, s2, t2, 0],
+      rotateZ: [0, r3, s3, t3, index % 2 === 0 ? 3 : -2], // Ends slightly messy
+      rotateX: [0, 10, -5, 8, 0],
+      rotateY: [0, -8, 10, -5, 0],
+      // Z-index changes as hands mix the cards
+      zIndex: [
+        index, 
+        Math.floor(Math.abs(Math.sin(index) * 20)), 
+        Math.floor(Math.abs(Math.cos(index) * 20)), 
+        Math.floor(Math.abs(Math.sin(index * 2) * 20)), 
+        index
+      ]
     };
   };
 
   const isLight = theme === 'light';
 
-  // Distinct Themes
+  // Distinct Themes (Keeping the gorgeous aesthetics but making the motion physical)
   const bgStyle = isLight 
-    ? 'radial-gradient(circle at 50% 30%, #FFFFFF 0%, #F5F1E7 60%, #E3D9C6 100%)' // Sunlit Marble Altar
-    : 'radial-gradient(circle at 50% 50%, #120A1F 0%, #08050D 60%, #000000 100%)'; // Deep Obsidian Void
+    ? 'radial-gradient(circle at 50% 30%, #FFFFFF 0%, #F5F1E7 60%, #E3D9C6 100%)'
+    : 'radial-gradient(circle at 50% 50%, #120A1F 0%, #08050D 60%, #000000 100%)';
   
   const particleColor = isLight ? 'rgba(212, 175, 55, 0.5)' : 'rgba(180, 144, 255, 0.6)';
-  const particleDirection = isLight ? 1 : -1; // Light mode sun dust falls, Dark mode embers rise
+  const particleDirection = isLight ? 1 : -1;
 
-  // Center Magic Circle Glow
+  // Ambient Center Glow (Representing the reading space)
   const glowColor = isLight 
-    ? 'rgba(235, 195, 50' // Holy Gold
+    ? 'rgba(235, 195, 50' 
     : mode === 'thoth' ? 'rgba(255, 42, 109' : mode === 'lenormand' ? 'rgba(1, 249, 198' : 'rgba(155, 129, 249';
 
   return (
@@ -241,10 +247,10 @@ function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mod
             animate={{ 
               y: [0, particleDirection * (100 + Math.random() * 200)], 
               opacity: [0, Math.random() * 0.6 + 0.2, 0],
-              x: [0, (Math.random() - 0.5) * 60] // Gentle drift
+              x: [0, (Math.random() - 0.5) * 60] 
             }}
             transition={{ 
-              duration: Math.random() * 2 + 1.5, // Faster to match the 2.3s timeframe
+              duration: Math.random() * 2 + 1.5, 
               repeat: Infinity, 
               ease: 'linear',
               delay: Math.random() * 2
@@ -263,10 +269,10 @@ function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mod
         />
       </div>
 
-      {/* Mid-Air Crossover Shuffle */}
+      {/* Realistic Table Wash Shuffle */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        position: 'relative', width: '100%', height: 200, zIndex: 10, perspective: 1200
+        position: 'relative', width: '100%', height: 250, zIndex: 10, perspective: 1000
       }}>
         {Array.from({ length: cardCount }, (_, i) => {
           return (
@@ -274,16 +280,16 @@ function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mod
               key={i}
               className="rounded-lg absolute"
               style={{
-                width: 74, height: 118, originX: 0.5, originY: 0.5,
+                width: 68, height: 108, originX: 0.5, originY: 0.5,
                 boxShadow: isLight 
-                  ? '0 20px 40px rgba(130, 100, 70, 0.25), 0 0 0 1px rgba(255,255,255,0.9)'
-                  : `0 15px 35px rgba(0,0,0,0.9), 0 0 25px ${glowColor}, 0.4), inset 0 0 0 1px rgba(255,255,255,0.1)`
+                  ? '0 12px 30px rgba(130, 100, 70, 0.2), 0 0 0 1px rgba(255,255,255,0.9)'
+                  : `0 10px 25px rgba(0,0,0,0.8), 0 0 15px ${glowColor}, 0.3), inset 0 0 0 1px rgba(255,255,255,0.1)`
               }}
-              animate={getShuffleAnimation(i)}
+              animate={getWashAnimation(i)}
               transition={{
                 duration: 2.3, // Matches exactly the 2.3s lifecycle
-                times: [0, 0.35, 0.7, 1], // Explode -> Cross over -> Collapse
-                ease: [0.25, 1, 0.5, 1] // Premium smooth cubic bezier
+                times: [0, 0.25, 0.55, 0.85, 1], // Spread -> Swirl -> Swirl -> Gather
+                ease: 'easeInOut' // Smooth, continuous realistic motion
               }}
             >
               <CardBack featured={false} system={mode} />
@@ -292,7 +298,7 @@ function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mod
         })}
       </div>
 
-      {/* Magical Typography */}
+      {/* Typography */}
       <div className="text-center flex flex-col items-center gap-6 px-8 relative z-10 w-full max-w-2xl mx-auto mt-4">
         <motion.p 
           animate={{ opacity: [0.3, 0.9, 0.3] }}
@@ -306,7 +312,7 @@ function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mod
             textTransform: 'uppercase'
           }}
         >
-          {lang === 'en' ? 'The Fates are Weaving...' : '命運交織中⋯'}
+          {lang === 'en' ? 'The Fates are Weaving...' : '洗牌與感應中⋯'}
         </motion.p>
         
         {question.trim() && (
@@ -1083,7 +1089,7 @@ ${cardList}
         if (gtPartner === 'opposite') {
           pCardId = qCardId === 29 ? 28 : 29;
         } else if (gtPartner === 'same') {
-          pCardId = 18; // Use Dog (#18) to represent same-sex partner / companion
+          pCardId = qCardId === 29 ? 2902 : 2802; // Use Lady 2 or Gentleman 2
         }
         const pIdx = pCardId > 0 ? cards.findIndex(c => c.id === pCardId) : -1;
         const pCard = pIdx >= 0 ? cards[pIdx] : null;
