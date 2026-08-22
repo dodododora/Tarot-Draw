@@ -785,16 +785,20 @@ export default function App() {
     if (!selectedSpread) return;
 
     if (mode === 'lenormand') {
-      const { drawn } = shuffleAndDraw(LENORMAND_CARDS, 'lenormand', selectedSpread.count);
-      const lenResults: DrawnLenormandCard[] = drawn.map((card, index) => ({
-        id: card.id,
-        nameCN: card.nameCN,
-        nameEN: card.nameEN,
-        suit: LENORMAND_CARDS.find(c => c.id === card.id)!.suit,
-        emoji: LENORMAND_CARDS.find(c => c.id === card.id)!.emoji,
-        keywords: LENORMAND_CARDS.find(c => c.id === card.id)!.keywords,
-        positionName: selectedSpread.positions[index] || `位置 ${index + 1}`,
-      }));
+      const activeDeck = getActiveDeck() as LenormandCard[];
+      const { drawn } = shuffleAndDraw(activeDeck, 'lenormand', selectedSpread.count);
+      const lenResults: DrawnLenormandCard[] = drawn.map((card, index) => {
+        const fullCard = activeDeck.find(c => c.id === card.id)!;
+        return {
+          id: card.id,
+          nameCN: card.nameCN,
+          nameEN: card.nameEN,
+          suit: fullCard.suit,
+          emoji: fullCard.emoji,
+          keywords: fullCard.keywords,
+          positionName: selectedSpread.positions[index] || `位置 ${index + 1}`,
+        };
+      });
       setLenormandDrawnCards(lenResults);
       const newHistoryId = Date.now().toString() + Math.random().toString(36).substring(2, 9);
       setCurrentHistoryId(newHistoryId);
@@ -1963,9 +1967,7 @@ ${themeNote}
                         </p>
                       </>
                     ) : (() => {
-                      const deck = mode === 'lenormand'
-                        ? LENORMAND_CARDS
-                        : mode === 'thoth' ? THOTH_ALL_CARDS : ALL_CARDS;
+                      const deck = getActiveDeck();
                       return (
                         <div className="space-y-2">
                           <p className="text-xs text-faint text-center">
