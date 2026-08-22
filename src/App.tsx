@@ -182,12 +182,9 @@ function ShuffleOverlay({ question, mode, lang }: { question: string; mode: 'wai
   const T_stagger = { duration: 2, repeat: 0, ease, times: [0, 0.25, 0.5, 0.75, 1] };
 
   const centerIndex = Math.floor(cardCount / 2);
-  // Container wide enough for all cards (non-center 68px, center 86px, gap 16px)
   const containerW = cardCount * 68 + (cardCount - 1) * 16 + 18;
   const containerCenter = containerW / 2;
 
-  // Compute each card's natural center x (within container coords)
-  // then gatherX = how much transform to apply to reach containerCenter
   const cardGatherX: number[] = [];
   let cursor = 0;
   for (let i = 0; i < cardCount; i++) {
@@ -197,19 +194,55 @@ function ShuffleOverlay({ question, mode, lang }: { question: string; mode: 'wai
     cursor += w + 16;
   }
 
+  // System-based Cyberpunk colors
+  const glowColor = mode === 'thoth' ? '#FF2A6D' : mode === 'lenormand' ? '#01F9C6' : '#F3E3A0';
+  const ringColor = mode === 'thoth' ? '#01F9C6' : mode === 'lenormand' ? '#FF2A6D' : '#FFB703';
+
   return (
     <motion.div
-      className="fixed inset-0 z-[200] flex flex-col items-center justify-center gap-14"
-      style={{ background: 'rgba(20, 15, 40, 0.85)', backdropFilter: 'blur(8px)' }}
+      className="fixed inset-0 z-[200] flex flex-col items-center justify-center gap-16 overflow-hidden"
+      style={{ 
+        background: 'radial-gradient(circle at 50% 45%, rgba(45, 20, 80, 0.9) 0%, rgba(12, 7, 24, 0.95) 60%, rgba(5, 3, 10, 1) 100%)', 
+        backdropFilter: 'blur(12px)' 
+      }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.3, ease: 'easeInOut' }}
+      transition={{ duration: 0.4, ease: 'easeInOut' }}
     >
-      {/* Card row — overflow visible so cross/fan cards can travel outside bounds */}
+      {/* Arcanepunk Magic Rings & Energy Orb */}
+      <div className="absolute left-1/2 top-[45%] -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+        <motion.div
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full mix-blend-screen"
+          style={{ width: 350, height: 350, background: `radial-gradient(circle, ${glowColor}33 0%, ${ringColor}22 35%, transparent 70%)`, filter: 'blur(25px)' }}
+          animate={{ scale: [1, 1.15, 1], opacity: [0.6, 1, 0.6] }}
+          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        <motion.div
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed mix-blend-screen opacity-30"
+          style={{ width: 280, height: 280, borderColor: glowColor, borderWidth: '1.5px' }}
+          animate={{ rotate: 360, scale: [0.98, 1.02, 0.98] }}
+          transition={{ rotate: { duration: 25, repeat: Infinity, ease: 'linear' }, scale: { duration: 4, repeat: Infinity, ease: 'easeInOut' } }}
+        />
+        <motion.div
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border mix-blend-screen opacity-20"
+          style={{ width: 310, height: 310, borderColor: ringColor, borderWidth: '1px' }}
+          animate={{ rotate: -360 }}
+          transition={{ duration: 35, repeat: Infinity, ease: 'linear' }}
+        />
+        <motion.div
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full mix-blend-screen opacity-15"
+          style={{ width: 330, height: 330, border: `1px dotted ${glowColor}` }}
+          animate={{ rotate: 180 }}
+          transition={{ duration: 45, repeat: Infinity, ease: 'linear' }}
+        />
+      </div>
+
+      {/* Card row */}
       <div style={{
         display: 'flex', alignItems: 'flex-end', gap: 16, height: 148,
-        position: 'relative', width: containerW, justifyContent: 'center', overflow: 'visible'
+        position: 'relative', width: containerW, justifyContent: 'center', overflow: 'visible',
+        zIndex: 10
       }}>
         {Array.from({ length: cardCount }, (_, i) => {
           const isCenter = i === centerIndex;
@@ -220,7 +253,8 @@ function ShuffleOverlay({ question, mode, lang }: { question: string; mode: 'wai
               key={i}
               style={{
                 width: isCenter ? 86 : 68, height: isCenter ? 134 : 108,
-                originX: 0.5, originY: 1, flexShrink: 0, position: 'relative'
+                originX: 0.5, originY: 1, flexShrink: 0, position: 'relative',
+                filter: isCenter ? `drop-shadow(0 0 20px ${glowColor}66)` : 'drop-shadow(0 8px 12px rgba(0,0,0,0.7))'
               }}
               animate={getCardAnimation(offset, animType, cardGatherX[i])}
               transition={useStagger ? T_stagger : T}
@@ -232,20 +266,35 @@ function ShuffleOverlay({ question, mode, lang }: { question: string; mode: 'wai
       </div>
 
       {/* Question area */}
-      <div className="text-center flex flex-col items-center gap-3 px-8">
-        <p style={{ color: 'rgba(180,150,255,0.7)', fontSize: '0.7rem', letterSpacing: '0.25em', fontWeight: 500, textTransform: 'uppercase' }}>
+      <div className="text-center flex flex-col items-center gap-5 px-8 relative z-10 w-full">
+        <motion.p 
+          animate={{ 
+            opacity: [0.7, 1, 0.7], 
+            textShadow: [`0 0 5px ${glowColor}00`, `0 0 15px ${glowColor}99`, `0 0 5px ${glowColor}00`] 
+          }}
+          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+          style={{ color: '#E8E4EC', fontSize: '0.75rem', letterSpacing: '0.3em', fontWeight: 600, textTransform: 'uppercase' }}
+        >
           {lang === 'en' ? 'Calm your mind, hold your question within...' : '讓心靜下來，將問題放入心中⋯'}
-        </p>
+        </motion.p>
+        
         {question.trim() && (
-          <p style={{ color: 'rgba(252,211,77,0.9)' }} className="text-base sm:text-lg font-semibold max-w-sm leading-relaxed">
-            {question.trim()}
-          </p>
+          <motion.div
+            initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.6, ease: "easeOut" }}
+          >
+            <p className="font-serif text-lg sm:text-xl md:text-2xl font-bold max-w-md mx-auto leading-relaxed px-4" 
+               style={{ 
+                 color: '#F4EFE6', 
+                 textShadow: `0 2px 5px rgba(0,0,0,0.9), 0 0 20px ${ringColor}66`
+               }}>
+              {question.trim()}
+            </p>
+          </motion.div>
         )}
       </div>
     </motion.div>
   );
 }
-
 /** Guards the /result route: redirects to / if there's no drawn card data */
 function ResultGuard({ hasData, children }: { hasData: boolean; children: React.ReactNode }) {
   const navigate = useNavigate();
