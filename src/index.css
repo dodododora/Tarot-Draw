@@ -38,7 +38,7 @@
     background-color: #09060E; /* Obsidian void */
   }
   body {
-    @apply font-sans bg-transparent transition-colors duration-500 min-h-screen bg-fixed relative overflow-x-hidden;
+    @apply font-sans bg-transparent transition-colors duration-500 min-h-[100svh] relative overflow-x-hidden;
     color: #3B2E24; /* Iron gall ink */
   }
   .dark body {
