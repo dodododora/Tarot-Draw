@@ -68,7 +68,7 @@ const TarotLogoSVG = () => (
 );
 
 const GlobalBackground = ({ theme }: { theme: 'light' | 'dark' }) => (
-  <div className="fixed inset-0 pointer-events-none -z-10 transition-colors duration-700 overflow-hidden"
+  <div className="fixed top-0 left-0 w-full h-[100lvh] pointer-events-none -z-10 transition-colors duration-700 overflow-hidden"
     style={{
       background: theme === 'dark'
         ? 'radial-gradient(ellipse at 20% 30%, #4c1d9540 0%, transparent 60%), radial-gradient(ellipse at 85% 80%, #1e3a5f30 0%, transparent 50%), #0e0b16'
@@ -2353,7 +2353,7 @@ ${themeNote}
                   </div>
 
                   {/* Fixed Bottom Action Bar */}
-                  <div className="fixed bottom-0 left-0 right-0 p-4 surface-bottom-bar backdrop-blur-md border-t divider-subtle p-0 flex flex-col items-center justify-center gap-3 z-40 shadow-[0_-10px_40px_rgba(251,191,36,0.05)] dark:shadow-none">
+                  <div className="fixed bottom-0 left-0 right-0 p-4 surface-bottom-bar backdrop-blur-md border-t divider-subtle p-0 flex flex-col items-center justify-center gap-3 z-40 shadow-[0_-10px_40px_rgba(251,191,36,0.05)] dark:shadow-none transform-gpu">
                     <AnimatePresence>
                       {showCopySuccess && (
                         <motion.div

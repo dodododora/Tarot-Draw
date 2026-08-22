@@ -33,6 +33,36 @@
 @layer base {
   html {
     background-color: #F4EFE6; /* Aged vellum / linen reading table */
+    -webkit-text-size-adjust: 100%; /* Fix Safari random font scaling */
+    text-size-adjust: 100%;
+  }
+  html.dark {
+    background-color: #09060E; /* Obsidian void */
+  }
+  body {
+    @apply font-sans bg-transparent transition-colors duration-500 min-h-[100svh] relative;
+    color: #3B2E24; /* Iron gall ink */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    /* REMOVED overflow-x-hidden from body, as it destroys scrolling performance on Chrome Android */
+  }
+  .dark body {
+    color: #E4DAF0; /* Luminous astral ash */
+  }
+  
+  /* Put overflow-x-hidden on root instead of body to keep hardware accelerated scroll on body */
+  #root {
+    @apply overflow-x-hidden min-h-[100svh] flex flex-col;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   BASE LAYER
+   ══════════════════════════════════════════════════════════════ */
+
+@layer base {
+  html {
+    background-color: #F4EFE6; /* Aged vellum / linen reading table */
   }
   html.dark {
     background-color: #09060E; /* Obsidian void */
