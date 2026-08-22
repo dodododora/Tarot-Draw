@@ -172,159 +172,154 @@ function getCardAnimation(offset: number, animType: ShuffleAnim, gatherX: number
 
 /** Full-screen shuffle animation overlay — random card count (5-7) and random style */
 function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mode: 'waite' | 'thoth' | 'lenormand'; lang: 'en' | 'zh'; theme: 'light' | 'dark' }) {
-  const cardCount = 12; // Sufficient to look like a deck being washed/scrambled
-  
-  // Deterministic "random" generation for smooth consistent washes
-  const getWashAnimation = (index: number) => {
-    // Generate pseudo-random deterministic values based on index
-    const r1 = Math.sin(index * 1.1) * 120; // x spread
-    const r2 = Math.cos(index * 1.3) * 80;  // y spread
-    const r3 = Math.sin(index * 1.7) * 180; // rotation
-    
-    const s1 = Math.cos(index * 2.1) * 140; 
-    const s2 = Math.sin(index * 2.3) * 90;
-    const s3 = Math.cos(index * 2.7) * 250;
+  const cardCount = 14; // Dense enough to feel like a real deck
 
-    const t1 = Math.sin(index * 3.1) * 100;
-    const t2 = Math.cos(index * 3.3) * 100;
-    const t3 = Math.sin(index * 3.7) * 120;
+  // Generate deterministic but organic table-wash trajectories
+  const trajectories = React.useMemo(() => {
+    return Array.from({ length: cardCount }, (_, i) => {
+      const isLeft = i < cardCount / 2;
+      const s = isLeft ? -1 : 1; // hand side sign
+      const phase = (i / cardCount) * Math.PI * 2;
 
-    return {
-      x: [0, r1, s1, t1, 0],
-      y: [0, r2, s2, t2, 0],
-      rotateZ: [0, r3, s3, t3, index % 2 === 0 ? 3 : -2], // Ends slightly messy
-      rotateX: [0, 10, -5, 8, 0],
-      rotateY: [0, -8, 10, -5, 0],
-      // Z-index changes as hands mix the cards
-      zIndex: [
-        index, 
-        Math.floor(Math.abs(Math.sin(index) * 20)), 
-        Math.floor(Math.abs(Math.cos(index) * 20)), 
-        Math.floor(Math.abs(Math.sin(index * 2) * 20)), 
-        index
-      ]
-    };
-  };
+      // Orbital radii with variation per card
+      const rx = 110 + (i % 4) * 20;
+      const ry = 65 + (i % 3) * 16;
+
+      // Stack imperfections for the final gathered state
+      const stackX = Math.sin(i * 99) * 1.5;
+      const stackY = -i * 0.4 + Math.cos(i * 33) * 1.2;
+      const stackRot = Math.sin(i * 123) * 2;
+
+      // 6 waypoints: stack -> breakout -> swirl1 -> crossover -> inward -> stack
+      const xK = [
+        0,
+        s * rx * 0.85 + Math.cos(phase) * 20,
+        s * rx * 0.3 + Math.sin(phase) * 40,
+        -s * rx * 0.65 + Math.cos(phase) * 25, // crossover!
+        s * 35 + Math.sin(phase) * 12,
+        stackX
+      ];
+      const yK = [
+        0,
+        -50 * s + Math.sin(phase) * 18,
+        80 * s + Math.cos(phase) * 25,
+        -55 * s + Math.sin(phase) * 20,
+        18 * s + Math.cos(phase) * 8,
+        stackY
+      ];
+      const rK = [
+        (i - cardCount / 2) * 1.2,
+        s * (40 + (i * 14) % 55),
+        s * (120 + (i * 18) % 80),
+        s * (160 + (i * 18) % 80),
+        i % 2 === 0 ? 180 + stackRot * 2 : stackRot * 2,
+        i % 2 === 0 ? 180 + stackRot : stackRot
+      ];
+      // Z-index: swap layers at crossover to simulate cards sliding over/under
+      const zK = [
+        i,
+        s > 0 ? i + cardCount : cardCount - i,
+        i % 2 === 0 ? i + 10 : i,
+        (cardCount - i) + 5,
+        i,
+        i
+      ];
+
+      return { xK, yK, rK, zK, stackX, stackY, stackRot };
+    });
+  }, []);
 
   const isLight = theme === 'light';
 
-  // Distinct Themes (Keeping the gorgeous aesthetics but making the motion physical)
-  const bgStyle = isLight 
-    ? 'radial-gradient(circle at 50% 30%, #FFFFFF 0%, #F5F1E7 60%, #E3D9C6 100%)'
-    : 'radial-gradient(circle at 50% 50%, #120A1F 0%, #08050D 60%, #000000 100%)';
-  
-  const particleColor = isLight ? 'rgba(212, 175, 55, 0.5)' : 'rgba(180, 144, 255, 0.6)';
-  const particleDirection = isLight ? 1 : -1;
+  // Table surface: warm felt (light) or deep ritual cloth (dark)
+  const bgStyle = isLight
+    ? 'radial-gradient(ellipse at 50% 50%, #F5F0E4 0%, #E8DFC8 50%, #D6CCAF 100%)'
+    : 'radial-gradient(ellipse at 50% 50%, #120A1F 0%, #08050D 60%, #000000 100%)';
 
-  // Ambient Center Glow (Representing the reading space)
-  const glowColor = isLight 
-    ? 'rgba(235, 195, 50' 
-    : mode === 'thoth' ? 'rgba(255, 42, 109' : mode === 'lenormand' ? 'rgba(1, 249, 198' : 'rgba(155, 129, 249';
+  // Contact shadow — tight and physical, NOT floating
+  const cardShadow = isLight
+    ? '0 1px 2px rgba(80,60,30,0.5), 0 4px 10px rgba(80,60,30,0.2), inset 0 0 0 1px rgba(255,255,255,0.15)'
+    : '0 1px 3px rgba(0,0,0,0.7), 0 4px 12px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(255,255,255,0.06)';
 
   return (
     <motion.div
-      className="fixed inset-0 z-[200] flex flex-col items-center justify-center gap-12 overflow-hidden"
+      className="fixed inset-0 z-[200] flex flex-col items-center justify-center gap-10 overflow-hidden"
       style={{ background: bgStyle, backdropFilter: 'blur(20px)' }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3, ease: 'easeInOut' }}
     >
-      {/* Dynamic Ambient Particles */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ mixBlendMode: isLight ? 'multiply' : 'screen' }}>
-        {Array.from({ length: 24 }).map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full"
-            style={{ 
-              width: Math.random() * 4 + 2, 
-              height: Math.random() * 4 + 2,
-              background: particleColor,
-              left: `${Math.random() * 100}%`,
-              top: isLight ? `-${Math.random() * 20}%` : `${100 + Math.random() * 20}%`,
-              filter: 'blur(1px)'
-            }}
-            animate={{ 
-              y: [0, particleDirection * (100 + Math.random() * 200)], 
-              opacity: [0, Math.random() * 0.6 + 0.2, 0],
-              x: [0, (Math.random() - 0.5) * 60] 
-            }}
-            transition={{ 
-              duration: Math.random() * 2 + 1.5, 
-              repeat: Infinity, 
-              ease: 'linear',
-              delay: Math.random() * 2
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Volumetric Center Halo */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{ mixBlendMode: isLight ? 'normal' : 'screen' }}>
-        <motion.div
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
-          style={{ width: 450, height: 450, background: `radial-gradient(circle, ${glowColor}, ${isLight ? '0.12' : '0.2'}) 0%, ${glowColor}, 0.02) 40%, transparent 70%)`, filter: 'blur(30px)' }}
-          animate={{ scale: [0.9, 1.1, 0.9], opacity: [0.4, 0.8, 0.4] }}
-          transition={{ duration: 2.3, ease: 'easeInOut' }}
+      {/* Subtle table-felt ambient warmth */}
+      <div className="absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+        <div
+          className="rounded-full"
+          style={{
+            width: 400, height: 250,
+            background: isLight
+              ? 'radial-gradient(ellipse at center, rgba(212,175,55,0.08) 0%, transparent 70%)'
+              : 'radial-gradient(ellipse at center, rgba(155,129,249,0.12) 0%, transparent 70%)',
+            filter: 'blur(30px)'
+          }}
         />
       </div>
 
-      {/* Realistic Table Wash Shuffle */}
-      <div style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        position: 'relative', width: '100%', height: 250, zIndex: 10, perspective: 1000
-      }}>
-        {Array.from({ length: cardCount }, (_, i) => {
-          return (
-            <motion.div
-              key={i}
-              className="rounded-lg absolute"
-              style={{
-                width: 68, height: 108, originX: 0.5, originY: 0.5,
-                boxShadow: isLight 
-                  ? '0 12px 30px rgba(130, 100, 70, 0.2), 0 0 0 1px rgba(255,255,255,0.9)'
-                  : `0 10px 25px rgba(0,0,0,0.8), 0 0 15px ${glowColor}, 0.3), inset 0 0 0 1px rgba(255,255,255,0.1)`
-              }}
-              animate={getWashAnimation(i)}
-              transition={{
-                duration: 2.3, // Matches exactly the 2.3s lifecycle
-                times: [0, 0.25, 0.55, 0.85, 1], // Spread -> Swirl -> Swirl -> Gather
-                ease: 'easeInOut' // Smooth, continuous realistic motion
-              }}
-            >
-              <CardBack featured={false} system={mode} />
-            </motion.div>
-          );
-        })}
+      {/* Card wash area */}
+      <div style={{ position: 'relative', width: 0, height: 0, zIndex: 10 }}>
+        {trajectories.map((card, i) => (
+          <motion.div
+            key={i}
+            className="absolute rounded-md overflow-hidden"
+            style={{
+              width: 64, height: 100,
+              marginLeft: -32, marginTop: -50,
+              boxShadow: cardShadow,
+              willChange: 'transform'
+            }}
+            animate={{
+              x: card.xK,
+              y: card.yK,
+              rotate: card.rK,
+              zIndex: card.zK
+            }}
+            transition={{
+              duration: 2.3,
+              times: [0, 0.20, 0.45, 0.68, 0.88, 1.0],
+              ease: 'easeInOut'
+            }}
+          >
+            <CardBack featured={false} system={mode} />
+          </motion.div>
+        ))}
       </div>
 
       {/* Typography */}
-      <div className="text-center flex flex-col items-center gap-6 px-8 relative z-10 w-full max-w-2xl mx-auto mt-4">
-        <motion.p 
-          animate={{ opacity: [0.3, 0.9, 0.3] }}
+      <div className="text-center flex flex-col items-center gap-6 px-8 relative z-20 w-full max-w-2xl mx-auto mt-24">
+        <motion.p
+          animate={{ opacity: [0.3, 0.8, 0.3] }}
           transition={{ duration: 2.3, ease: 'easeInOut' }}
-          style={{ 
+          style={{
             fontFamily: "'Cinzel', 'Playfair Display', serif",
-            color: isLight ? '#B39982' : '#8A7A9E', 
-            fontSize: '0.8rem', 
+            color: isLight ? '#9E8B74' : '#8A7A9E',
+            fontSize: '0.8rem',
             letterSpacing: '0.5em',
-            fontWeight: 700, 
+            fontWeight: 700,
             textTransform: 'uppercase'
           }}
         >
-          {lang === 'en' ? 'The Fates are Weaving...' : '洗牌與感應中⋯'}
+          {lang === 'en' ? 'Shuffling...' : '洗牌中⋯'}
         </motion.p>
-        
+
         {question.trim() && (
           <motion.div
-            initial={{ opacity: 0, y: 15, filter: 'blur(8px)' }} 
-            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }} 
-            transition={{ delay: 0.2, duration: 1, ease: "easeOut" }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.8, ease: 'easeOut' }}
           >
-            <p className="font-serif text-xl sm:text-2xl font-semibold leading-relaxed px-4 tracking-widest" 
-               style={{ 
-                 color: isLight ? '#332922' : '#F4EFE6', 
-                 textShadow: isLight ? '0 2px 15px rgba(255,255,255,0.9)' : '0 4px 15px rgba(0,0,0,0.9), 0 0 20px rgba(255,255,255,0.2)' 
+            <p className="font-serif text-xl sm:text-2xl font-semibold leading-relaxed px-4 tracking-wider"
+               style={{
+                 color: isLight ? '#332922' : '#F4EFE6',
+                 textShadow: isLight ? '0 1px 8px rgba(255,255,255,0.7)' : '0 2px 10px rgba(0,0,0,0.9)'
                }}>
               {question.trim()}
             </p>
