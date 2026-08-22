@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ALL_CARDS, THOTH_SPREADS, WAITE_SPREADS, WAITE_SPREAD_IDS, THOTH_SPREAD_IDS, getCardEmoji, getCardImagePath, TAROT_TRIVIA, LENORMAND_CARDS, LENORMAND_SPREADS, LENORMAND_TRIVIA, THOTH_ALL_CARDS, THOTH_TRIVIA, ORACLE_DATA, type Spread, type TarotCard, type LenormandCard } from './constants';
 import { shuffleAndDraw } from './deckEngine';
 import { downloadShareCard, type ShareCardCard } from './shareCard';
-import { trackEvent } from './analytics';
+import { trackEvent, initAnalytics, setUserProperties, trackFunnelStep, startTimer, endTimer, trackFeatureUse } from './analytics';
 
 export interface DrawHistory {
   id: string;
@@ -665,6 +665,19 @@ export default function App() {
     }
 
     setIsLoaded(true);
+
+    // ── Analytics: bootstrap session tracking ──
+    initAnalytics();
+    const parsedHist = savedHistory ? (() => { try { return JSON.parse(savedHistory); } catch { return []; } })() : [];
+    const parsedSpr = savedSpreads ? (() => { try { return JSON.parse(savedSpreads); } catch { return []; } })() : [];
+    setUserProperties({
+      preferred_system: localStorage.getItem('tarot-mode') ?? 'waite',
+      preferred_theme: savedTheme ?? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'),
+      preferred_lang: localStorage.getItem('tarot_lang') ?? 'zh',
+      history_count: Array.isArray(parsedHist) ? parsedHist.length : 0,
+      custom_spread_count: Array.isArray(parsedSpr) ? parsedSpr.length : 0,
+      returning_user: !!savedHistory || !!savedSpreads,
+    });
   }, []);
 
   useEffect(() => {
@@ -715,7 +728,7 @@ export default function App() {
       });
     }
     if (location.pathname === '/result') {
-      trackEvent('view_result', {
+      endTimer('draw_to_result'); trackFunnelStep('view_result'); trackEvent('view_result', {
         spread_name: selectedSpread?.name ?? '',
         system: mode,
         has_question: question.trim().length > 0 ? 'true' : 'false',
@@ -736,7 +749,7 @@ export default function App() {
     setBottomCard(null);
     if (spread.id === 'choice') setChoiceCount(2);
     if (spread.id === 'mirror') setPeopleCount(2);
-    trackEvent('select_spread', { spread_name: spread.name, spread_count: spread.count, system: mode });
+    trackEvent('select_spread', { spread_name: spread.name, spread_count: spread.count, system: mode }); trackFunnelStep('select_spread', { spread_name: spread.name });
     navigate('/draw');
     setQuestion('');
   }, [navigate, mode]);
@@ -744,14 +757,14 @@ export default function App() {
   const handleLenormandSpreadSelect = useCallback((spread: Spread) => {
     setSelectedSpread(spread);
     setLenormandDrawnCards([]);
-    trackEvent('select_spread', { spread_name: spread.name, spread_count: spread.count, system: mode });
+    trackEvent('select_spread', { spread_name: spread.name, spread_count: spread.count, system: mode }); trackFunnelStep('select_spread', { spread_name: spread.name });
     navigate('/draw');
     setQuestion('');
   }, [navigate, mode]);
 
   const handleCustomSpreadSelect = useCallback((spread: Spread) => {
     setSelectedSpread(spread);
-    trackEvent('select_custom_spread', { spread_name: spread.name, card_count: spread.count, system: mode });
+    trackEvent('select_custom_spread', { spread_name: spread.name, card_count: spread.count, system: mode }); trackFunnelStep('select_spread', { spread_name: spread.name });
     navigate('/draw');
     setQuestion('');
   }, [navigate, mode]);
@@ -788,7 +801,7 @@ export default function App() {
       setHistory(prev => [{ id: newHistoryId, date: Date.now(), question: question || '', spread: selectedSpread, cards: [], lenormandCards: lenResults, mode: 'lenormand' as const }, ...prev]);
       drawn.forEach(card => { const img = new Image(); img.src = getCardImagePath('lenormand', card.id); });
       setIsShuffling(true);
-      trackEvent('draw_cards', { spread_name: selectedSpread.name, spread_count: selectedSpread.count, system: mode, has_question: (question.trim().length > 0), question_length: question.trim().length });
+      startTimer('draw_to_result'); trackFunnelStep('initiate_draw', { system: mode }); trackEvent('draw_cards', { spread_name: selectedSpread.name, spread_count: selectedSpread.count, system: mode, has_question: (question.trim().length > 0), question_length: question.trim().length });
       setTimeout(() => { setIsShuffling(false); navigate('/result'); }, SHUFFLE_ANIMATION_MS);
       return;
     }
@@ -817,7 +830,7 @@ export default function App() {
     setHistory(prev => [{ id: newHistoryId, date: Date.now(), question: question || '', spread: selectedSpread, cards: results, mode, bottomCard: bottomResult }, ...prev]);
     drawn.forEach(card => { const img = new Image(); img.src = getCardImagePath(mode === 'thoth' ? 'thoth' : 'waite', card.id); });
     setIsShuffling(true);
-    trackEvent('draw_cards', { spread_name: selectedSpread.name, spread_count: selectedSpread.count, system: mode, has_question: (question.trim().length > 0), question_length: question.trim().length });
+    startTimer('draw_to_result'); trackFunnelStep('initiate_draw', { system: mode }); trackEvent('draw_cards', { spread_name: selectedSpread.name, spread_count: selectedSpread.count, system: mode, has_question: (question.trim().length > 0), question_length: question.trim().length });
     setTimeout(() => { setIsShuffling(false); navigate('/result'); }, SHUFFLE_ANIMATION_MS);
   };
 
@@ -832,7 +845,7 @@ export default function App() {
       return;
     }
 
-    trackEvent('manual_submit', { spread_name: selectedSpread.name, system: mode, question_length: question.trim().length });
+    startTimer('draw_to_result'); trackFunnelStep('initiate_draw', { system: mode }); trackEvent('manual_submit', { spread_name: selectedSpread.name, system: mode, question_length: question.trim().length });
     if (mode === 'lenormand') {
       const results: DrawnLenormandCard[] = selectedSpread.positions.map((pos, i) => {
         const input = manualInputs[i] ?? { name: '', reversed: false };
@@ -899,7 +912,7 @@ export default function App() {
         h.id === currentHistoryId ? { ...h, cards: newDrawnCards } : h
       ));
     }
-    trackEvent('draw_extra', { spread_name: selectedSpread?.name ?? '', system: mode, extra_question: (extraQuestion.trim().length > 0) });
+    trackEvent('draw_extra', { spread_name: selectedSpread?.name ?? '', system: mode, extra_question: (extraQuestion.trim().length > 0) }); trackFeatureUse('extra_draw');
     setExtraQuestion('');
   };
 
@@ -1461,10 +1474,10 @@ ${themeNote}
 
     navigator.clipboard.writeText(text).then(() => {
       if (record) {
-        trackEvent('copy_prompt', { spread_name: targetSpread.name, system: targetMode, type: 'history' });
+        trackEvent('copy_prompt', { spread_name: targetSpread.name, system: targetMode, type: 'history' }); trackFunnelStep('copy_prompt');
         showToast(isEn ? 'AI prompt copied!' : '已複製 AI 解讀 Prompt！');
       } else {
-        trackEvent('copy_prompt', { spread_name: targetSpread.name, system: targetMode, type });
+        trackEvent('copy_prompt', { spread_name: targetSpread.name, system: targetMode, type }); trackFunnelStep('copy_prompt');
         setShowCopySuccess(type);
         setTimeout(() => setShowCopySuccess(null), 2000);
       }
@@ -1521,7 +1534,7 @@ ${themeNote}
           {/* Tarot group */}
           <div className="flex items-center surface-tab-group">
             <button
-              onClick={() => { setMode('waite'); navigate('/'); setSelectedSpread(null); trackEvent('select_system', { system: 'waite' }); }}
+              onClick={() => { setMode('waite'); navigate('/'); setSelectedSpread(null); trackEvent('select_system', { system: 'waite' }); trackFunnelStep('select_system', { system: 'waite' }); }}
               className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${mode === 'waite'
                 ? 'bg-[#8A6420] dark:bg-[#C9963A] text-white shadow-sm'
                 : 'tab-inactive'
@@ -1530,7 +1543,7 @@ ${themeNote}
               <Star size={14} className="inline-block mr-1 -mt-0.5" /><span className="text-[10px] sm:text-xs"> {t("偉特", "Waite")}</span>
             </button>
             <button
-              onClick={() => { setMode('thoth'); navigate('/'); setSelectedSpread(null); trackEvent('select_system', { system: 'thoth' }); }}
+              onClick={() => { setMode('thoth'); navigate('/'); setSelectedSpread(null); trackEvent('select_system', { system: 'thoth' }); trackFunnelStep('select_system', { system: 'thoth' }); }}
               className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${mode === 'thoth'
                 ? 'bg-[#3B4DA0] dark:bg-[#5566C0] text-white shadow-sm'
                 : 'tab-inactive'
@@ -1546,7 +1559,7 @@ ${themeNote}
           {/* Lenormand — independent system */}
           <div className="flex items-center surface-tab-group">
             <button
-              onClick={() => { setMode('lenormand'); navigate('/'); setSelectedSpread(null); trackEvent('select_system', { system: 'lenormand' }); }}
+              onClick={() => { setMode('lenormand'); navigate('/'); setSelectedSpread(null); trackEvent('select_system', { system: 'lenormand' }); trackFunnelStep('select_system', { system: 'lenormand' }); }}
               className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${mode === 'lenormand'
                 ? 'bg-[#2A6A55] dark:bg-[#3D8A70] text-white shadow-sm'
                 : 'tab-inactive'
@@ -1815,6 +1828,7 @@ ${themeNote}
                           value={question}
                           onChange={(e) => setQuestion(e.target.value)}
                           placeholder={selectedSpread.exampleQuestion ? `${t("例如：", "e.g. ")} ${t(selectedSpread.exampleQuestion, SPREAD_TRANSLATIONS[selectedSpread.id]?.exampleQuestion ?? selectedSpread.exampleQuestion)}` : t("請輸入你的困惑或想了解的事情...", "Please enter your confusion or what you want to know...")}
+                          onBlur={() => { if (question.trim().length > 0) trackFunnelStep('enter_question', { question_length: question.trim().length }); }}
                           className="w-full h-32 px-4 py-3 rounded-xl input-field focus:ring-2 outline-none transition-all resize-none shadow-inner"
                         />
                         {question.trim().length > 0 && question.trim().length < 10 && (
@@ -1926,7 +1940,7 @@ ${themeNote}
                           {t("✦ 隨機抽牌", "✦ Random Draw")}
                         </button>
                         <button
-                          onClick={() => { setDrawInputMode('manual'); trackEvent('switch_draw_mode', { mode: 'manual' }); }}
+                          onClick={() => { setDrawInputMode('manual'); trackEvent('switch_draw_mode', { mode: 'manual' }); trackFeatureUse('manual_input'); }}
                           className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${drawInputMode === 'manual'
                             ? 'bg-[#FAF6EE] dark:bg-[#2D2451] text-heading shadow'
                             : 'text-faint'
@@ -2173,7 +2187,7 @@ ${themeNote}
                               setDrawnCards([]);
                               setLenormandDrawnCards([]);
                             });
-                            trackEvent('redraw', { spread_name: selectedSpread?.name ?? '', system: mode });
+                            trackEvent('redraw', { spread_name: selectedSpread?.name ?? '', system: mode }); trackFeatureUse('redraw');
                             navigate('/draw');
                           }}
                           className="px-4 py-2 rounded-lg btn-ghost transition-colors text-sm font-medium"
@@ -2408,7 +2422,7 @@ ${themeNote}
                             : drawnCards.filter(c => !c.extraQuestion).map(c => ({ nameCN: c.nameCN, nameEN: c.nameEN, isReversed: c.isReversed, positionName: c.positionName }))
                           );
                           downloadShareCard({ spreadName: selectedSpread?.name ?? '', question, cards: cardList, mode });
-                          trackEvent('download_share_image', { spread_name: selectedSpread?.name ?? '', system: mode });
+                          trackEvent('download_share_image', { spread_name: selectedSpread?.name ?? '', system: mode }); trackFunnelStep('share_or_save');
                         }}
                         className="btn-secondary px-5 py-2.5 text-sm bg-[#F2EDE4] hover:bg-[#DDD7E3] dark:bg-[#141028] dark:hover:bg-[#221A34] text-[#5B32A0] dark:text-[#C8B8E8] border-[#CBBA9E] dark:border-[#43327A]"
                       >
@@ -2429,13 +2443,13 @@ ${themeNote}
                           ChatGPT
                         </a>
                         <a
-                          href="https://claude.ai" target="_blank" rel="noopener noreferrer" onClick={() => trackEvent('open_ai_model', { ai_model: 'claude' })}
+                          href="https://claude.ai" target="_blank" rel="noopener noreferrer" onClick={() => { trackEvent('open_ai_model', { ai_model: 'claude' }); trackFunnelStep('open_ai_model', { ai_model: 'claude' }); }}
                           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#B05E30]/10 hover:bg-[#B05E30]/20 text-[#B05E30] dark:text-[#D88350] border border-[#B05E30]/30 text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95"
                         >
                           Claude
                         </a>
                         <a
-                          href="https://gemini.google.com" target="_blank" rel="noopener noreferrer" onClick={() => trackEvent('open_ai_model', { ai_model: 'gemini' })}
+                          href="https://gemini.google.com" target="_blank" rel="noopener noreferrer" onClick={() => { trackEvent('open_ai_model', { ai_model: 'gemini' }); trackFunnelStep('open_ai_model', { ai_model: 'gemini' }); }}
                           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#3565A0]/10 hover:bg-[#3565A0]/20 text-[#3565A0] dark:text-[#6899D0] border border-[#3565A0]/30 text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95"
                         >
                           <span>✦</span> Gemini
