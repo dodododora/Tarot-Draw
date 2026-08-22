@@ -174,7 +174,6 @@ function getCardAnimation(offset: number, animType: ShuffleAnim, gatherX: number
 function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mode: 'waite' | 'thoth' | 'lenormand'; lang: 'en' | 'zh'; theme: 'light' | 'dark' }) {
   const cardCount = 14;
 
-  // Generate deterministic but organic table-wash trajectories
   const trajectories = React.useMemo(() => {
     return Array.from({ length: cardCount }, (_, i) => {
       const isLeft = i < cardCount / 2;
@@ -235,7 +234,6 @@ function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mod
     ? '0 1px 2px rgba(80,60,30,0.5), 0 4px 10px rgba(80,60,30,0.2), inset 0 0 0 1px rgba(255,255,255,0.15)'
     : '0 1px 3px rgba(0,0,0,0.7), 0 4px 12px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(255,255,255,0.06)';
 
-  // Ritual guidance text — changes each time for depth
   const ritualTexts = React.useMemo(() => {
     const zh = [
       '讓心靜下來，將問題放入心中⋯',
@@ -255,83 +253,95 @@ function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mod
 
   return (
     <motion.div
-      className="fixed inset-0 z-[200] flex flex-col items-center justify-center gap-10 overflow-hidden"
+      className="fixed inset-0 z-[200] flex flex-col items-center justify-between py-[12vh] overflow-hidden"
       style={{ background: bgStyle, backdropFilter: 'blur(20px)' }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3, ease: 'easeInOut' }}
     >
-      {/* Subtle ambient warmth on the table surface */}
-      <div className="absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-        <div
-          className="rounded-full"
-          style={{
-            width: 400, height: 250,
-            background: isLight
-              ? 'radial-gradient(ellipse at center, rgba(212,175,55,0.08) 0%, transparent 70%)'
-              : 'radial-gradient(ellipse at center, rgba(155,129,249,0.12) 0%, transparent 70%)',
-            filter: 'blur(30px)'
-          }}
-        />
-      </div>
-
-      {/* Card wash area */}
-      <div style={{ position: 'relative', width: 0, height: 0, zIndex: 10 }}>
-        {trajectories.map((card, i) => (
+      {/* Top Anchor: User's Question (Static, grounded) */}
+      <div className="z-20 px-6 w-full max-w-2xl text-center">
+        {question.trim() && (
           <motion.div
-            key={i}
-            className="absolute rounded-md overflow-hidden"
-            style={{
-              width: 64, height: 100,
-              marginLeft: -32, marginTop: -50,
-              boxShadow: cardShadow,
-              willChange: 'transform'
-            }}
-            animate={{
-              x: card.xK,
-              y: card.yK,
-              rotate: card.rK,
-              zIndex: card.zK
-            }}
-            transition={{
-              duration: 2.3,
-              times: [0, 0.20, 0.45, 0.68, 0.88, 1.0],
-              ease: 'easeInOut'
-            }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1.2, ease: 'easeInOut' }}
           >
-            <CardBack featured={false} system={mode} />
+            <p className="font-serif text-lg sm:text-xl font-medium leading-relaxed tracking-wider line-clamp-3"
+               style={{
+                 color: isLight ? '#4A3B2C' : '#F4EFE6',
+                 textShadow: isLight ? '0 1px 10px rgba(255,255,255,0.8)' : '0 2px 15px rgba(0,0,0,0.9)'
+               }}>
+              {question.trim()}
+            </p>
           </motion.div>
-        ))}
+        )}
       </div>
 
-      {/* Ritual guidance — this is a sacred moment, not a loading screen */}
-      <div className="text-center flex flex-col items-center gap-5 px-8 relative z-20 w-full max-w-lg mx-auto mt-20">
+      {/* Center Anchor: The Cards & Ambient Light (Dynamic) */}
+      <div className="relative flex-1 flex items-center justify-center w-full z-10 my-8">
+        {/* Subtle table-felt ambient warmth */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+          <div
+            className="rounded-full"
+            style={{
+              width: 400, height: 250,
+              background: isLight
+                ? 'radial-gradient(ellipse at center, rgba(212,175,55,0.08) 0%, transparent 70%)'
+                : 'radial-gradient(ellipse at center, rgba(155,129,249,0.12) 0%, transparent 70%)',
+              filter: 'blur(30px)'
+            }}
+          />
+        </div>
+
+        {/* Card wash area */}
+        <div style={{ position: 'relative', width: 0, height: 0 }}>
+          {trajectories.map((card, i) => (
+            <motion.div
+              key={i}
+              className="absolute rounded-md overflow-hidden"
+              style={{
+                width: 64, height: 100,
+                marginLeft: -32, marginTop: -50,
+                boxShadow: cardShadow,
+                willChange: 'transform'
+              }}
+              animate={{
+                x: card.xK,
+                y: card.yK,
+                rotate: card.rK,
+                zIndex: card.zK
+              }}
+              transition={{
+                duration: 2.3,
+                times: [0, 0.20, 0.45, 0.68, 0.88, 1.0],
+                ease: 'easeInOut'
+              }}
+            >
+              <CardBack featured={false} system={mode} />
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      {/* Bottom Anchor: Ritual Guidance (Static, deeply grounded) */}
+      <div className="z-20 px-6 w-full text-center">
         <motion.p
-          animate={{ opacity: [0.4, 1, 0.4] }}
-          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.8 }}
+          transition={{ duration: 1.5, ease: 'easeInOut' }}
           style={{
-            color: isLight ? 'rgba(120, 90, 50, 0.7)' : 'rgba(180, 150, 255, 0.7)',
-            fontSize: '0.75rem',
-            letterSpacing: '0.25em',
+            fontFamily: "'Cinzel', 'Playfair Display', serif",
+            color: isLight ? 'rgba(140, 110, 70, 0.9)' : 'rgba(160, 140, 200, 0.9)',
+            fontSize: '0.8rem',
+            letterSpacing: '0.3em',
             fontWeight: 500,
             textTransform: 'uppercase'
           }}
         >
           {lang === 'en' ? ritualTexts.en : ritualTexts.zh}
         </motion.p>
-
-        {question.trim() && (
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.8, ease: 'easeOut' }}
-          >
-            <p className="text-base sm:text-lg font-semibold max-w-sm leading-relaxed gold-text text-center px-2">
-              {question.trim()}
-            </p>
-          </motion.div>
-        )}
       </div>
     </motion.div>
   );
