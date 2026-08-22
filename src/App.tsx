@@ -1847,7 +1847,7 @@ ${themeNote}
                                     <button
                                       key={opt.value}
                                       type="button"
-                                      onClick={() => setGtQuerent(opt.value)}
+                                      onClick={() => { setGtQuerent(opt.value); trackEvent('gt_settings_change', { setting: 'querent', value: opt.value }); }}
                                       className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg border transition-all select-none ${
                                         gtQuerent === opt.value
                                           ? 'border-[#2D5A4C] bg-[#E6E3DA]/30 text-[#2A6A55] dark:text-[#5CC090]'
@@ -1871,7 +1871,7 @@ ${themeNote}
                                     <button
                                       key={opt.value}
                                       type="button"
-                                      onClick={() => setGtPartner(opt.value)}
+                                      onClick={() => { setGtPartner(opt.value); trackEvent('gt_settings_change', { setting: 'partner', value: opt.value }); }}
                                       className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg border transition-all select-none ${
                                         gtPartner === opt.value
                                           ? 'border-[#2D5A4C] bg-[#E6E3DA]/30 text-[#2A6A55] dark:text-[#5CC090]'
@@ -1897,7 +1897,7 @@ ${themeNote}
                                     <button
                                       key={opt.value}
                                       type="button"
-                                      onClick={() => setGtTheme(opt.value)}
+                                      onClick={() => { setGtTheme(opt.value); trackEvent('gt_settings_change', { setting: 'theme', value: opt.value }); }}
                                       className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg border transition-all select-none ${
                                         gtTheme === opt.value
                                           ? 'border-[#2D5A4C] bg-[#E6E3DA]/30 text-[#2A6A55] dark:text-[#5CC090]'
@@ -1917,7 +1917,7 @@ ${themeNote}
                       {/* Draw Mode Toggle */}
                       <div className="flex rounded-xl overflow-hidden surface-tab-group p-0.5 gap-0.5">
                         <button
-                          onClick={() => setDrawInputMode('random')}
+                          onClick={() => { setDrawInputMode('random'); trackEvent('switch_draw_mode', { mode: 'random' }); }}
                           className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${drawInputMode === 'random'
                             ? 'bg-[#FAF6EE] dark:bg-[#2D2451] text-heading shadow'
                             : 'text-faint'
@@ -1926,7 +1926,7 @@ ${themeNote}
                           {t("✦ 隨機抽牌", "✦ Random Draw")}
                         </button>
                         <button
-                          onClick={() => setDrawInputMode('manual')}
+                          onClick={() => { setDrawInputMode('manual'); trackEvent('switch_draw_mode', { mode: 'manual' }); }}
                           className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${drawInputMode === 'manual'
                             ? 'bg-[#FAF6EE] dark:bg-[#2D2451] text-heading shadow'
                             : 'text-faint'
@@ -2429,17 +2429,13 @@ ${themeNote}
                           ChatGPT
                         </a>
                         <a
-                          href="https://claude.ai"
-                          target="_blank"
-                          rel="noopener noreferrer"
+                          href="https://claude.ai" target="_blank" rel="noopener noreferrer" onClick={() => trackEvent('open_ai_model', { ai_model: 'claude' })}
                           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#B05E30]/10 hover:bg-[#B05E30]/20 text-[#B05E30] dark:text-[#D88350] border border-[#B05E30]/30 text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95"
                         >
                           Claude
                         </a>
                         <a
-                          href="https://gemini.google.com"
-                          target="_blank"
-                          rel="noopener noreferrer"
+                          href="https://gemini.google.com" target="_blank" rel="noopener noreferrer" onClick={() => trackEvent('open_ai_model', { ai_model: 'gemini' })}
                           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#3565A0]/10 hover:bg-[#3565A0]/20 text-[#3565A0] dark:text-[#6899D0] border border-[#3565A0]/30 text-xs font-bold transition-all hover:-translate-y-0.5 active:scale-95"
                         >
                           <span>✦</span> Gemini
