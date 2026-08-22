@@ -253,30 +253,32 @@ function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mod
 
   return (
     <motion.div
-      className="fixed inset-0 z-[200] flex flex-col items-center justify-between py-[10vh] overflow-hidden"
+      className="fixed inset-0 z-[200] overflow-hidden"
       style={{ background: bgStyle, backdropFilter: 'blur(20px)' }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3, ease: 'easeInOut' }}
     >
-      {/* Top Anchor: The Cards & Ambient Light (Dynamic) */}
-      <div className="relative flex-1 flex items-center justify-center w-full z-10">
-        {/* Subtle table-felt ambient warmth */}
+      {/* 1. TOP SECTION: The Dynamic Card Wash Area */}
+      {/* Placed at 30% from the top for an elegant, elevated visual center */}
+      <div className="absolute top-[32%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-full flex justify-center z-10 pointer-events-none">
+        
+        {/* Subtle table-felt ambient warmth anchored exactly to the cards */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
           <div
             className="rounded-full"
             style={{
-              width: 400, height: 250,
+              width: 450, height: 280,
               background: isLight
                 ? 'radial-gradient(ellipse at center, rgba(212,175,55,0.08) 0%, transparent 70%)'
                 : 'radial-gradient(ellipse at center, rgba(155,129,249,0.12) 0%, transparent 70%)',
-              filter: 'blur(30px)'
+              filter: 'blur(35px)'
             }}
           />
         </div>
 
-        {/* Card wash area */}
+        {/* The Cards */}
         <div style={{ position: 'relative', width: 0, height: 0 }}>
           {trajectories.map((card, i) => (
             <motion.div
@@ -306,17 +308,18 @@ function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mod
         </div>
       </div>
 
-      {/* Center Anchor: Ritual Guidance (Static, deeply grounded) */}
-      <div className="z-20 px-6 w-full text-center flex-1 flex items-center justify-center">
+      {/* 2. CENTER SECTION: Ritual Guidance (Static, elegant) */}
+      {/* Placed precisely at 55% down to bridge the gap between action and question */}
+      <div className="absolute top-[58%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-full px-8 text-center z-20 pointer-events-none">
         <motion.p
           initial={{ opacity: 0 }}
-          animate={{ opacity: 0.8 }}
+          animate={{ opacity: 0.85 }}
           transition={{ duration: 1.5, ease: 'easeInOut' }}
           style={{
             fontFamily: "'Cinzel', 'Playfair Display', serif",
-            color: isLight ? 'rgba(140, 110, 70, 0.9)' : 'rgba(160, 140, 200, 0.9)',
-            fontSize: '0.8rem',
-            letterSpacing: '0.3em',
+            color: isLight ? 'rgba(140, 110, 70, 0.95)' : 'rgba(170, 150, 210, 0.95)',
+            fontSize: '0.85rem',
+            letterSpacing: '0.4em',
             fontWeight: 500,
             textTransform: 'uppercase'
           }}
@@ -325,15 +328,16 @@ function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mod
         </motion.p>
       </div>
 
-      {/* Bottom Anchor: User's Question (Static, grounded) */}
-      <div className="z-20 px-6 w-full max-w-2xl text-center flex-1 flex items-end justify-center pb-4">
+      {/* 3. BOTTOM SECTION: User's Question (Static, grounded) */}
+      {/* Anchored to the bottom with graceful breathing room */}
+      <div className="absolute bottom-[10%] left-1/2 -translate-x-1/2 w-full max-w-2xl px-8 text-center z-20 pointer-events-none">
         {question.trim() && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1.2, ease: 'easeInOut' }}
           >
-            <p className="font-serif text-lg sm:text-xl font-medium leading-relaxed tracking-wider line-clamp-3"
+            <p className="font-serif text-lg sm:text-xl font-medium leading-relaxed tracking-widest line-clamp-3"
                style={{
                  color: isLight ? '#4A3B2C' : '#F4EFE6',
                  textShadow: isLight ? '0 1px 10px rgba(255,255,255,0.8)' : '0 2px 15px rgba(0,0,0,0.9)'
