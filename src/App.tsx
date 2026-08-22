@@ -1974,12 +1974,9 @@ ${themeNote}
                                       />
                                       {mode === 'waite' && (
                                         <button
-                                          onClick={() => setManualInputs(prev => {
-                                            const next = [...prev];
-                                            next[i] = { ...(next[i] || { name: '', reversed: false }), reversed: !next[i]?.reversed };
-                                            return next;
-                                          })}
-                                          className={`absolute right-1 top-1/2 -translate-y-1/2 text-xs px-2 py-1 rounded border transition-all ${manualInputs[i]?.reversed
+                                          onTouchEnd={e => { e.preventDefault(); setManualInputs(prev => { const next = [...prev]; next[i] = { ...(next[i] || { name: '', reversed: false }), reversed: !next[i]?.reversed }; return next; }); }}
+                                          onClick={() => setManualInputs(prev => { const next = [...prev]; next[i] = { ...(next[i] || { name: '', reversed: false }), reversed: !next[i]?.reversed }; return next; })}
+                                          className={`absolute right-0.5 top-1/2 -translate-y-1/2 text-xs px-3 py-2 rounded-md border transition-all select-none touch-manipulation ${manualInputs[i]?.reversed
                                             ? 'border-[#6B1D2F] dark:border-[#C83244]/50 text-[#8B2040] dark:text-[#C83244] bg-[#EAE0DB]/80 dark:bg-[#1C142B]/60 font-semibold'
                                             : 'border-[#D2C4AD]/40 dark:border-[#43327A]/40 text-hint bg-transparent hover:bg-[#F4EFE6]/50 dark:hover:bg-[#1C1438]/50'
                                             }`}
