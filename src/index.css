@@ -231,9 +231,7 @@
 
 /* Navbar */
 .surface-nav {
-  @apply sticky top-0 z-50 backdrop-blur-md
-         transform-gpu; /* Hardware acceleration for sticky header */
-         border-b transition-colors duration-500;
+  @apply sticky top-0 z-50 backdrop-blur-md transform-gpu border-b transition-colors duration-500; /* Hardware acceleration for sticky header */
   background: rgba(244, 239, 230, 0.75);
   border-color: #DBCFB8;
 }

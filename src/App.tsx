@@ -283,6 +283,29 @@ export default function App() {
   const [currentHistoryId, setCurrentHistoryId] = useState<string | null>(null);
   const [customSpreads, setCustomSpreads] = useState<Spread[]>([]);
   const [selectedSpread, setSelectedSpread] = useState<Spread | null>(null);
+
+  const getActiveDeck = React.useCallback(() => {
+    if (mode === 'thoth') return THOTH_ALL_CARDS;
+    if (mode === 'waite') return ALL_CARDS;
+    
+    const deck = [...LENORMAND_CARDS];
+    if (selectedSpread?.id === 'grand-tableau' && gtPartner === 'same') {
+      if (gtQuerent === 'woman') {
+        const ladyIndex = deck.findIndex(c => c.id === 29);
+        const gentlemanIndex = deck.findIndex(c => c.id === 28);
+        if (ladyIndex !== -1 && gentlemanIndex !== -1) {
+          deck[gentlemanIndex] = { ...deck[ladyIndex], id: 2902, nameCN: '女人 2', nameEN: 'Lady 2' };
+        }
+      } else {
+        const gentlemanIndex = deck.findIndex(c => c.id === 28);
+        const ladyIndex = deck.findIndex(c => c.id === 29);
+        if (gentlemanIndex !== -1 && ladyIndex !== -1) {
+          deck[ladyIndex] = { ...deck[gentlemanIndex], id: 2802, nameCN: '男人 2', nameEN: 'Gentleman 2' };
+        }
+      }
+    }
+    return deck;
+  }, [mode, gtQuerent, gtPartner, selectedSpread]);
   const [question, setQuestion] = useState('');
   const [drawnCards, setDrawnCards] = useState<DrawnCard[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -688,7 +711,8 @@ export default function App() {
       const results: DrawnLenormandCard[] = selectedSpread.positions.map((pos, i) => {
         const input = manualInputs[i] ?? { name: '', reversed: false };
         const cleanName = input.name.trim();
-        const matched = LENORMAND_CARDS.find(c =>
+        const activeDeck = getActiveDeck() as LenormandCard[];
+        const matched = activeDeck.find(c =>
           cleanName && (c.nameCN.includes(cleanName) || c.nameEN.toLowerCase().includes(cleanName.toLowerCase()))
         );
         return {
