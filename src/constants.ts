@@ -315,6 +315,10 @@ export function getCardImagePath(
   const sys = system;
 
   if (sys === 'lenormand') {
+    let actualId = cardId;
+    if (cardId === 2802) actualId = 28;
+    if (cardId === 2902) actualId = 29;
+
     const LENORMAND_NAMES = [
       'rider', 'clover', 'ship', 'house', 'tree',
       'clouds', 'snake', 'coffin', 'bouquet', 'scythe',
@@ -324,8 +328,8 @@ export function getCardImagePath(
       'book', 'letter', 'gentleman', 'lady', 'lily',
       'sun', 'moon', 'key', 'fish', 'anchor', 'cross',
     ];
-    const num = String(cardId).padStart(2, '0');
-    return `${base}/lenormand_${num}_${LENORMAND_NAMES[cardId - 1]}.webp`;
+    const num = String(actualId).padStart(2, '0');
+    return `${base}/lenormand_${num}_${LENORMAND_NAMES[actualId - 1]}.webp`;
   }
 
   // ── Major Arcana (id 0–21) ───────────────────────────────────────────
@@ -664,7 +668,9 @@ export const ORACLE_DATA: Record<string, Record<number, OracleInfo>> = {
     26: { score: 0, message: "秘密、未知、學習" },
     27: { score: 1, message: "消息來、文件" },
     28: { score: 0, message: "代表人物" },
+    2802: { score: 0, message: "代表人物 2" },
     29: { score: 0, message: "代表人物" },
+    2902: { score: 0, message: "代表人物 2" },
     30: { score: 1, message: "純粹、成熟、和諧" },
     31: { score: 2, message: "成功、最強 Yes" },
     32: { score: 1, message: "認可、情緒、有名望" },
