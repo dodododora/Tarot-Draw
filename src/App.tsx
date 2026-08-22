@@ -327,10 +327,7 @@ function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mod
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.8, ease: 'easeOut' }}
           >
-            <p className="text-base sm:text-lg font-semibold max-w-sm leading-relaxed"
-               style={{
-                 color: isLight ? 'rgba(160, 120, 40, 0.9)' : 'rgba(252, 211, 77, 0.9)'
-               }}>
+            <p className="text-base sm:text-lg font-semibold max-w-sm leading-relaxed gold-text text-center px-2">
               {question.trim()}
             </p>
           </motion.div>
