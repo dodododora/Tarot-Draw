@@ -393,7 +393,7 @@ export default function App() {
     if (mode === 'waite') return ALL_CARDS;
     
     const deck = [...LENORMAND_CARDS];
-    if (selectedSpread?.id === 'grand-tableau' && gtPartner === 'same') {
+    if (selectedSpread?.id === 'len-36' && gtPartner === 'same') {
       if (gtQuerent === 'woman') {
         const ladyIndex = deck.findIndex(c => c.id === 29);
         const gentlemanIndex = deck.findIndex(c => c.id === 28);
@@ -1201,8 +1201,8 @@ ${cardList}
 
         let facingDesc = '';
         if (qIdx >= 0 && pIdx >= 0) {
-          if (pCardId === 18) {
-            facingDesc = isEn ? 'Same-sex partner (Dog #18). No traditional facing rules, mainly read distance and height.' : '同性伴侶關係（以#18狗代表對象），無傳統性別視線背向規則，主要以高低位與距離解讀。';
+          if (pCardId === 2802 || pCardId === 2902) {
+            facingDesc = isEn ? 'Same-sex partner relation. No traditional opposite-sex facing rules, mainly read distance and height.' : '同性伴侶關係，無傳統異性視線背向規則，主要以高低位與距離解讀。';
           } else if ((qCardId === 29 && pCardId === 28) || (qCardId === 28 && pCardId === 29)) {
             const wCol = qCardId === 29 ? qCol : pCol;
             const mCol = qCardId === 28 ? qCol : pCol;
