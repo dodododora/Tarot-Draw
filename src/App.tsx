@@ -189,26 +189,23 @@ function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mod
 
       const xK = [
         0,
-        s * rx * 0.85 + Math.cos(phase) * 20,
-        s * rx * 0.3 + Math.sin(phase) * 40,
-        -s * rx * 0.65 + Math.cos(phase) * 25,
-        s * 35 + Math.sin(phase) * 12,
+        s * rx * 0.75 + Math.cos(phase) * 15,
+        s * rx * 0.15 - Math.sin(phase) * 20,
+        -s * rx * 0.35 + Math.cos(phase) * 15,
         stackX
       ];
       const yK = [
         0,
-        -50 * s + Math.sin(phase) * 18,
-        80 * s + Math.cos(phase) * 25,
-        -55 * s + Math.sin(phase) * 20,
-        18 * s + Math.cos(phase) * 8,
+        -40 * s + Math.sin(phase) * 15,
+        65 * s + Math.cos(phase) * 20,
+        -40 * s + Math.sin(phase) * 15,
         stackY
       ];
       const rK = [
         (i - cardCount / 2) * 1.2,
-        s * (40 + (i * 14) % 55),
-        s * (120 + (i * 18) % 80),
-        s * (160 + (i * 18) % 80),
-        i % 2 === 0 ? 180 + stackRot * 2 : stackRot * 2,
+        s * (45 + (i * 12) % 40),
+        s * (110 + (i * 15) % 50),
+        s * (160 + (i * 15) % 50),
         i % 2 === 0 ? 180 + stackRot : stackRot
       ];
       const zK = [
@@ -216,7 +213,6 @@ function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mod
         s > 0 ? i + cardCount : cardCount - i,
         i % 2 === 0 ? i + 10 : i,
         (cardCount - i) + 5,
-        i,
         i
       ];
 
@@ -297,8 +293,8 @@ function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mod
                 zIndex: card.zK
               }}
               transition={{
-                duration: 2.8,
-                times: [0, 0.20, 0.45, 0.68, 0.88, 1.0],
+                duration: 2.3,
+                times: [0, 0.25, 0.55, 0.85, 1.0],
                 ease: 'easeInOut'
               }}
             >
@@ -310,7 +306,7 @@ function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mod
 
       {/* 2. CENTER SECTION: Ritual Guidance (Static, elegant) */}
       {/* Placed precisely at 55% down to bridge the gap between action and question */}
-      <div className="absolute top-[52%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-full px-8 text-center z-20 pointer-events-none">
+      <div className="absolute top-[50%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-full px-8 text-center z-20 pointer-events-none">
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.85 }}
@@ -330,7 +326,7 @@ function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mod
 
       {/* 3. BOTTOM SECTION: User's Question (Static, grounded) */}
       {/* Anchored to the bottom with graceful breathing room */}
-      <div className="absolute bottom-[22%] left-1/2 -translate-x-1/2 w-full max-w-2xl px-8 text-center z-20 pointer-events-none">
+      <div className="absolute top-[65%] left-1/2 -translate-x-1/2 w-full max-w-2xl px-8 text-center z-20 pointer-events-none">
         {question.trim() && (
           <motion.div
             initial={{ opacity: 0 }}
