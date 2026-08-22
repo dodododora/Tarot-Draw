@@ -172,65 +172,61 @@ function getCardAnimation(offset: number, animType: ShuffleAnim, gatherX: number
 
 /** Full-screen shuffle animation overlay — random card count (5-7) and random style */
 function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mode: 'waite' | 'thoth' | 'lenormand'; lang: 'en' | 'zh'; theme: 'light' | 'dark' }) {
-  const cardCount = 5; // The optimal number for visual balance (2 left, 1 center, 2 right)
-  const centerIndex = 2;
-  const containerW = cardCount * 68 + (cardCount - 1) * 16 + 18;
+  const cardCount = 7; // Essential for a satisfying "crossover" weave shuffle
+  const centerIndex = 3;
 
-  // Calculate fan arc positions
-  const getFanAnimation = (index: number) => {
-    const offset = index - centerIndex;
-    const isCenter = offset === 0;
+  // Real "Mid-Air Crossover Shuffle" (Cards fly out, cross over each other, and gather)
+  const getShuffleAnimation = (index: number) => {
+    const offset = index - centerIndex; // -3 to 3
     
-    // Spread math
-    const spreadAngle = offset * 12; // -24, -12, 0, 12, 24 degrees
-    const spreadX = offset * 55;     // -110, -55, 0, 55, 110 px
-    const yDrop = Math.abs(offset) * 15; // 30, 15, 0, 15, 30 px drop
+    // 1. Spread wide (Fling out)
+    const spreadX = offset * 65; 
+    const spreadY = Math.abs(offset) * 15 - 35; 
+    const spreadAngle = offset * 15;
 
-    // Keyframes: 
-    // 0%: Stacked at center (wait 0.2s)
-    // 15%: Snap fan out
-    // 15% - 80%: Levitating breathe
-    // 85%: Snap back to center
-    // 100%: Gathered (wait 0.2s for navigation)
-    
+    // 2. Cross over to the opposite side (The actual mix)
+    const crossX = offset * -35;
+    const crossY = Math.abs(offset) * 8 - 15;
+    const crossAngle = offset * -8;
+
     return {
-      x: [0, spreadX, spreadX, 0, 0],
-      y: [0, yDrop, yDrop - 15, 0, 0],
-      rotateZ: [0, spreadAngle, spreadAngle + (offset * 1.5), 0, 0],
-      rotateX: [0, 8, 12, 0, 0],
-      rotateY: [0, offset * 2, offset * 4, 0, 0],
-      scale: [0.8, isCenter ? 1.1 : 0.95, isCenter ? 1.15 : 1.0, 0.8, 0.8],
-      zIndex: isCenter ? 10 : 10 - Math.abs(offset)
+      x: [0, spreadX, crossX, 0],
+      y: [0, spreadY, crossY, 0],
+      rotateZ: [0, spreadAngle, crossAngle, 0],
+      rotateX: [0, 15, -10, 0],
+      scale: [0.85, 1.15, 0.9, 0.85],
+      // Z-index trick: cards swap stacking order mid-air to simulate shuffling
+      zIndex: [10, 10 - Math.abs(offset), 10 + offset, 10]
     };
   };
 
   const isLight = theme === 'light';
 
-  // Premium Hextech / Arcanepunk Colors (Adapts to Light/Dark mode)
-  const glowColor = mode === 'thoth' ? 'rgba(155, 129, 249' : mode === 'lenormand' ? 'rgba(0, 240, 255' : 'rgba(212, 175, 55';
-  const rimColor = mode === 'thoth' ? 'rgba(212, 175, 55' : mode === 'lenormand' ? 'rgba(0, 240, 255' : 'rgba(255, 242, 178';
-  
-  // Base backgrounds
+  // Distinct Themes
   const bgStyle = isLight 
-    ? 'radial-gradient(circle at 50% 0%, #ffffff 0%, #fcf9f2 45%, #e8e2d2 100%)'
-    : 'radial-gradient(circle at 50% -20%, #1A1A24 0%, #0A0A0E 70%, #050508 100%)';
+    ? 'radial-gradient(circle at 50% 30%, #FFFFFF 0%, #F5F1E7 60%, #E3D9C6 100%)' // Sunlit Marble Altar
+    : 'radial-gradient(circle at 50% 50%, #120A1F 0%, #08050D 60%, #000000 100%)'; // Deep Obsidian Void
   
-  const particleColor = isLight ? '#DCB450' : '#F3E5AB';
-  const textColor = isLight ? '#312821' : '#F4EFE6';
-  const textGlow = isLight ? '0 2px 10px rgba(255,255,255,0.9)' : '0 4px 12px rgba(0,0,0,0.9), 0 0 20px rgba(255,255,255,0.1)';
+  const particleColor = isLight ? 'rgba(212, 175, 55, 0.5)' : 'rgba(180, 144, 255, 0.6)';
+  const particleDirection = isLight ? 1 : -1; // Light mode sun dust falls, Dark mode embers rise
+
+  // Center Magic Circle Glow
+  const glowColor = isLight 
+    ? 'rgba(235, 195, 50' // Holy Gold
+    : mode === 'thoth' ? 'rgba(255, 42, 109' : mode === 'lenormand' ? 'rgba(1, 249, 198' : 'rgba(155, 129, 249';
 
   return (
     <motion.div
-      className="fixed inset-0 z-[200] flex flex-col items-center justify-center gap-16 overflow-hidden"
+      className="fixed inset-0 z-[200] flex flex-col items-center justify-center gap-12 overflow-hidden"
       style={{ background: bgStyle, backdropFilter: 'blur(20px)' }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3, ease: 'easeInOut' }}
     >
-      {/* Slow Drifting Astral Particles */}
+      {/* Dynamic Ambient Particles */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ mixBlendMode: isLight ? 'multiply' : 'screen' }}>
-        {Array.from({ length: 15 }).map((_, i) => (
+        {Array.from({ length: 24 }).map((_, i) => (
           <motion.div
             key={i}
             className="absolute rounded-full"
@@ -239,16 +235,16 @@ function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mod
               height: Math.random() * 4 + 2,
               background: particleColor,
               left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
+              top: isLight ? `-${Math.random() * 20}%` : `${100 + Math.random() * 20}%`,
               filter: 'blur(1px)'
             }}
             animate={{ 
-              y: [0, -100 - Math.random() * 100], 
-              opacity: [0, Math.random() * 0.4 + 0.1, 0],
-              scale: [1, Math.random() * 1.5 + 1, 1]
+              y: [0, particleDirection * (100 + Math.random() * 200)], 
+              opacity: [0, Math.random() * 0.6 + 0.2, 0],
+              x: [0, (Math.random() - 0.5) * 60] // Gentle drift
             }}
             transition={{ 
-              duration: Math.random() * 3 + 2, 
+              duration: Math.random() * 2 + 1.5, // Faster to match the 2.3s timeframe
               repeat: Infinity, 
               ease: 'linear',
               delay: Math.random() * 2
@@ -257,82 +253,73 @@ function ShuffleOverlay({ question, mode, lang, theme }: { question: string; mod
         ))}
       </div>
 
-      {/* Volumetric Center Glow */}
+      {/* Volumetric Center Halo */}
       <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{ mixBlendMode: isLight ? 'normal' : 'screen' }}>
         <motion.div
           className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
-          style={{ width: 500, height: 500, background: `radial-gradient(circle, ${glowColor}, ${isLight ? '0.08' : '0.1'}) 0%, ${glowColor}, 0.01) 40%, transparent 70%)`, filter: 'blur(40px)' }}
-          animate={{ scale: [0.95, 1.05, 0.95], opacity: [0.4, 0.8, 0.4] }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+          style={{ width: 450, height: 450, background: `radial-gradient(circle, ${glowColor}, ${isLight ? '0.12' : '0.2'}) 0%, ${glowColor}, 0.02) 40%, transparent 70%)`, filter: 'blur(30px)' }}
+          animate={{ scale: [0.9, 1.1, 0.9], opacity: [0.4, 0.8, 0.4] }}
+          transition={{ duration: 2.3, ease: 'easeInOut' }}
         />
       </div>
 
-      {/* Card row */}
+      {/* Mid-Air Crossover Shuffle */}
       <div style={{
-        display: 'flex', alignItems: 'flex-end', gap: 16, height: 148,
-        position: 'relative', width: containerW, justifyContent: 'center', overflow: 'visible',
-        zIndex: 10, perspective: 1000
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        position: 'relative', width: '100%', height: 200, zIndex: 10, perspective: 1200
       }}>
         {Array.from({ length: cardCount }, (_, i) => {
-          const isCenter = i === centerIndex;
-          
           return (
             <motion.div
               key={i}
-              className="rounded-lg relative"
+              className="rounded-lg absolute"
               style={{
-                width: 68, height: 108,
-                originX: 0.5, originY: 1, flexShrink: 0, position: 'absolute',
+                width: 74, height: 118, originX: 0.5, originY: 0.5,
                 boxShadow: isLight 
-                  ? '0 24px 48px -12px rgba(110, 90, 60, 0.25), 0 12px 24px rgba(200, 160, 100, 0.1)'
-                  : isCenter 
-                    ? `0 10px 30px -5px rgba(0,0,0,0.9), 0 0 40px -10px ${glowColor}, 0.5)` 
-                    : '0 8px 20px -5px rgba(0,0,0,0.8)'
+                  ? '0 20px 40px rgba(130, 100, 70, 0.25), 0 0 0 1px rgba(255,255,255,0.9)'
+                  : `0 15px 35px rgba(0,0,0,0.9), 0 0 25px ${glowColor}, 0.4), inset 0 0 0 1px rgba(255,255,255,0.1)`
               }}
-              animate={getFanAnimation(i)}
+              animate={getShuffleAnimation(i)}
               transition={{
-                duration: 2.3, // SHUFFLE_ANIMATION_MS = 2300
-                times: [0, 0.15, 0.8, 0.9, 1], // Wait, fan out, breath, snap back, wait
-                ease: [0.16, 1, 0.3, 1] // Premium snapy bezier
+                duration: 2.3, // Matches exactly the 2.3s lifecycle
+                times: [0, 0.35, 0.7, 1], // Explode -> Cross over -> Collapse
+                ease: [0.25, 1, 0.5, 1] // Premium smooth cubic bezier
               }}
             >
-              {/* Ethereal Inner Rim Light */}
-              <motion.div
-                className="absolute inset-0 rounded-lg pointer-events-none z-10"
-                style={{ boxShadow: `inset 0 0 0 1px ${rimColor}, ${isLight ? '0.8' : '0.5'})` }}
-                animate={isCenter ? { opacity: [0.3, 1, 0.3] } : { opacity: 0 }}
-                transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-              />
               <CardBack featured={false} system={mode} />
             </motion.div>
           );
         })}
       </div>
 
-      {/* Question area */}
-      <div className="text-center flex flex-col items-center gap-8 px-8 relative z-10 w-full max-w-2xl mx-auto">
+      {/* Magical Typography */}
+      <div className="text-center flex flex-col items-center gap-6 px-8 relative z-10 w-full max-w-2xl mx-auto mt-4">
         <motion.p 
-          animate={{ opacity: [0.4, 0.8, 0.4] }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+          animate={{ opacity: [0.3, 0.9, 0.3] }}
+          transition={{ duration: 2.3, ease: 'easeInOut' }}
           style={{ 
             fontFamily: "'Cinzel', 'Playfair Display', serif",
-            color: isLight ? '#7A6352' : '#F3E5AB', 
-            fontSize: '0.85rem', 
-            letterSpacing: '0.3em',
-            fontWeight: 600, 
-            textTransform: 'uppercase',
-            textShadow: isLight ? 'none' : '0 0 15px rgba(212, 175, 55, 0.3)'
+            color: isLight ? '#B39982' : '#8A7A9E', 
+            fontSize: '0.8rem', 
+            letterSpacing: '0.5em',
+            fontWeight: 700, 
+            textTransform: 'uppercase'
           }}
         >
-          {lang === 'en' ? 'Calm your mind, hold your question within...' : '讓心靜下來，將問題放入心中⋯'}
+          {lang === 'en' ? 'The Fates are Weaving...' : '命運交織中⋯'}
         </motion.p>
         
         {question.trim() && (
           <motion.div
-            initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
+            initial={{ opacity: 0, y: 15, filter: 'blur(8px)' }} 
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }} 
+            transition={{ delay: 0.2, duration: 1, ease: "easeOut" }}
           >
-            <p className="font-serif text-xl sm:text-2xl font-medium leading-relaxed px-4 tracking-wider" 
-               style={{ color: textColor, textShadow: textGlow }}>
+            <p className="font-serif text-xl sm:text-2xl font-semibold leading-relaxed px-4 tracking-widest" 
+               style={{ 
+                 color: isLight ? '#332922' : '#F4EFE6', 
+                 textShadow: isLight ? '0 2px 15px rgba(255,255,255,0.9)' : '0 4px 15px rgba(0,0,0,0.9), 0 0 20px rgba(255,255,255,0.2)' 
+               }}>
               {question.trim()}
             </p>
           </motion.div>
