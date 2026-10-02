@@ -1886,16 +1886,10 @@ ${themeNote}
                               </button>
                               
                               <button
-                                onClick={() => { setQuickDrawCards([]); showToast(t('牌堆已洗牌', 'Deck shuffled')); }}
+                                onClick={() => { setQuickDrawCards([]); showToast(t('牌已全數收回並重新洗牌', 'Cards returned and deck reshuffled')); }}
                                 className="px-3 py-2 text-sm rounded-lg border divider-subtle text-muted hover:text-[#9B7114] hover:border-[#9B7114]/50 dark:hover:text-[#D4AF37] dark:hover:border-[#D4AF37]/50 transition-all flex items-center gap-1.5"
                               >
-                                <RefreshCw size={14} /> {t('洗牌', 'Shuffle')}
-                              </button>
-                              <button
-                                onClick={() => setQuickDrawCards([])}
-                                className="px-3 py-2 text-sm rounded-lg border divider-subtle text-muted hover:text-heading hover:bg-[#F4EFE6]/50 dark:hover:bg-[#1C1438]/50 transition-all flex items-center gap-1.5"
-                              >
-                                <Trash2 size={14} /> {t('清除', 'Clear')}
+                                <RefreshCw size={14} /> {t('收牌重洗', 'Reshuffle')}
                               </button>
                             </>
                           )}
