@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect, useCallback, type MouseEvent, type FormEvent } from 'react';
 import { flushSync } from 'react-dom';
 import { useNavigate, useLocation, Routes, Route, Navigate } from 'react-router-dom';
-import { Moon, Sun, Plus, Trash2, Edit2, Copy, ArrowLeft, Sparkles, Wand2, Info, X, History, CheckCircle2, Compass, Lightbulb, Clover, GitCompare, LayoutGrid, User, Heart, Briefcase, Coins, TreePine, Sparkles, BoxSelect, Navigation, Star, Hexagon, Users } from 'lucide-react';
+import { Moon, Sun, Plus, Trash2, Edit2, Copy, ArrowLeft, Sparkles, Wand2, Info, X, History, CheckCircle2, Compass, Lightbulb, Clover, GitCompare, LayoutGrid, User, Heart, Briefcase, Coins, TreePine, Sparkles, BoxSelect, Navigation, Star, Hexagon, Users , RefreshCw } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ALL_CARDS, THOTH_SPREADS, WAITE_SPREADS, WAITE_SPREAD_IDS, THOTH_SPREAD_IDS, getCardEmoji, getCardImagePath, TAROT_TRIVIA, LENORMAND_CARDS, LENORMAND_SPREADS, LENORMAND_TRIVIA, THOTH_ALL_CARDS, THOTH_TRIVIA, ORACLE_DATA, type Spread, type TarotCard, type LenormandCard } from './constants';
 import { shuffleAndDraw } from './deckEngine';
@@ -1678,118 +1678,7 @@ ${themeNote}
                 </div>
 
 
-                {/* ── Quick Draw ── */}
-                <section className="surface-card rounded-2xl p-4 sm:p-5">
-                  <div
-                    className="flex items-center justify-between cursor-pointer select-none"
-                    onClick={() => setIsQuickDrawOpen(v => !v)}
-                  >
-                    <div className="flex items-center gap-3">
-                      <Wand2 size={22} className="text-[#9B7114] dark:text-[#D4AF37]" />
-                      <h2 className="text-lg sm:text-xl font-bold text-heading font-serif-tc">
-                        {t('快速抽牌', 'Quick Draw')}
-                      </h2>
-                      {quickDrawCards.length > 0 && (
-                        <span className="text-xs font-bold badge-dim px-2 py-0.5 rounded-full">{quickDrawCards.length}</span>
-                      )}
-                    </div>
-                    <span className={`text-hint transition-transform duration-300 ${isQuickDrawOpen ? 'rotate-180' : ''}`}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6" /></svg>
-                    </span>
-                  </div>
-
-                  <AnimatePresence>
-                    {isQuickDrawOpen && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.25, ease: 'easeInOut' }}
-                        className="overflow-hidden"
-                      >
-                        <p className="text-xs text-muted mt-3 mb-4">
-                          {t('不需要牌陣，直接一張一張抽。抽到的牌不會重複。', 'No spread needed. Draw one card at a time. No duplicates.')}
-                        </p>
-
-                        {/* Action buttons */}
-                        <div className="flex flex-wrap items-center gap-2 mb-4">
-                          <button
-                            onClick={handleQuickDraw}
-                            disabled={quickDrawCards.length >= (mode === 'lenormand' ? 36 : 78)}
-                            className="btn-primary px-4 py-2 text-sm rounded-lg disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
-                          >
-                            <Sparkles size={15} />
-                            {quickDrawCards.length >= (mode === 'lenormand' ? 36 : 78)
-                              ? t('已抽完', 'All drawn')
-                              : t('抽一張', 'Draw one')}
-                          </button>
-
-                          {quickDrawCards.length > 0 && (
-                            <>
-                              <button
-                                onClick={handleQuickDrawCopy}
-                                className="btn-secondary px-3 py-2 text-sm rounded-lg flex items-center gap-1.5"
-                              >
-                                <Copy size={14} /> {t('複製', 'Copy')}
-                              </button>
-                              <button
-                                onClick={() => setQuickDrawCards([])}
-                                className="px-3 py-2 text-sm rounded-lg border divider-subtle text-muted hover:text-heading hover:bg-[#F4EFE6]/50 dark:hover:bg-[#1C1438]/50 transition-all flex items-center gap-1.5"
-                              >
-                                <Trash2 size={14} /> {t('清除', 'Clear')}
-                              </button>
-                            </>
-                          )}
-                        </div>
-
-                        {/* Drawn cards display */}
-                        {quickDrawCards.length > 0 && (
-                          <div className="flex flex-wrap gap-3 justify-start">
-                            {quickDrawCards.map((card, i) => (
-                              <motion.div
-                                key={`qd-${card.id}-${i}`}
-                                initial={{ opacity: 0, scale: 0.8, y: 10 }}
-                                animate={{ opacity: 1, scale: 1, y: 0 }}
-                                transition={{ duration: 0.2, ease: 'easeOut' }}
-                                className="flex flex-col items-center gap-1"
-                              >
-                                <div className={`relative w-[60px] sm:w-[72px] aspect-[2/3] rounded-lg overflow-hidden border-2 shadow-md ${
-                                  card.isReversed
-                                    ? 'border-[#8B1D33] dark:border-[#A3B1C6]/45'
-                                    : 'border-[#B8863A] dark:border-[#D4AF37]/35'
-                                }`}>
-                                  <img
-                                    src={getCardImagePath(mode === 'thoth' ? 'thoth' : mode === 'lenormand' ? 'lenormand' : 'waite', card.id)}
-                                    alt={lang === 'en' ? card.nameEN : card.nameCN}
-                                    loading="lazy"
-                                    className="absolute inset-0 w-full h-full object-cover"
-                                    style={{ transform: card.isReversed ? 'rotate(180deg)' : 'none' }}
-                                  />
-                                  {card.isReversed && (
-                                    <div className="absolute top-1 right-1 badge-reversed text-[8px] font-bold px-1 py-0.5 rounded shadow-sm z-10">
-                                      {lang === 'en' ? 'Rev' : '逆'}
-                                    </div>
-                                  )}
-                                </div>
-                                <div className="text-center w-[60px] sm:w-[72px]">
-                                  <div className="text-[9px] sm:text-[10px] font-bold text-muted">{i + 1}</div>
-                                  <div className="text-[10px] sm:text-xs font-bold text-heading leading-tight line-clamp-2">
-                                    {lang === 'en' ? card.nameEN : card.nameCN}
-                                  </div>
-                                  {card.isReversed !== undefined && (
-                                    <div className={`text-[9px] font-bold ${card.isReversed ? 'text-reversed' : 'text-upright'}`}>
-                                      {card.isReversed ? (lang === 'en' ? 'Reversed' : '逆位') : (lang === 'en' ? 'Upright' : '正位')}
-                                    </div>
-                                  )}
-                                </div>
-                              </motion.div>
-                            ))}
-                          </div>
-                        )}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </section>
+                
 
                 {/* Lenormand Home — collapsible */}
                 {mode === 'lenormand' && (
@@ -1940,6 +1829,126 @@ ${themeNote}
                     </div>
                   </section>
                 )}
+
+                {/* ── Quick Draw ── */}
+                <section className="surface-card rounded-2xl p-4 sm:p-5">
+                  <div
+                    className="flex items-center justify-between cursor-pointer select-none"
+                    onClick={() => setIsQuickDrawOpen(v => !v)}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Wand2 size={22} className="text-[#9B7114] dark:text-[#D4AF37]" />
+                      <h2 className="text-lg sm:text-xl font-bold text-heading font-serif-tc">
+                        {t('快速抽牌', 'Quick Draw')}
+                      </h2>
+                      {quickDrawCards.length > 0 && (
+                        <span className="text-xs font-bold badge-dim px-2 py-0.5 rounded-full">{quickDrawCards.length}</span>
+                      )}
+                    </div>
+                    <span className={`text-hint transition-transform duration-300 ${isQuickDrawOpen ? 'rotate-180' : ''}`}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6" /></svg>
+                    </span>
+                  </div>
+
+                  <AnimatePresence>
+                    {isQuickDrawOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.25, ease: 'easeInOut' }}
+                        className="overflow-hidden"
+                      >
+                        <p className="text-xs text-muted mt-3 mb-4">
+                          {t('不需要牌陣，直接一張一張抽。抽到的牌不會重複。', 'No spread needed. Draw one card at a time. No duplicates.')}
+                        </p>
+
+                        {/* Action buttons */}
+                        <div className="flex flex-wrap items-center gap-2 mb-4">
+                          <button
+                            onClick={handleQuickDraw}
+                            disabled={quickDrawCards.length >= (mode === 'lenormand' ? 36 : 78)}
+                            className="btn-primary px-4 py-2 text-sm rounded-lg disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
+                          >
+                            <Sparkles size={15} />
+                            {quickDrawCards.length >= (mode === 'lenormand' ? 36 : 78)
+                              ? t('已抽完', 'All drawn')
+                              : t('抽一張', 'Draw one')}
+                          </button>
+
+                          {quickDrawCards.length > 0 && (
+                            <>
+                              <button
+                                onClick={handleQuickDrawCopy}
+                                className="btn-secondary px-3 py-2 text-sm rounded-lg flex items-center gap-1.5"
+                              >
+                                <Copy size={14} /> {t('複製', 'Copy')}
+                              </button>
+                              
+                              <button
+                                onClick={() => { setQuickDrawCards([]); showToast(t('牌堆已洗牌', 'Deck shuffled')); }}
+                                className="px-3 py-2 text-sm rounded-lg border divider-subtle text-muted hover:text-[#9B7114] hover:border-[#9B7114]/50 dark:hover:text-[#D4AF37] dark:hover:border-[#D4AF37]/50 transition-all flex items-center gap-1.5"
+                              >
+                                <RefreshCw size={14} /> {t('洗牌', 'Shuffle')}
+                              </button>
+                              <button
+                                onClick={() => setQuickDrawCards([])}
+                                className="px-3 py-2 text-sm rounded-lg border divider-subtle text-muted hover:text-heading hover:bg-[#F4EFE6]/50 dark:hover:bg-[#1C1438]/50 transition-all flex items-center gap-1.5"
+                              >
+                                <Trash2 size={14} /> {t('清除', 'Clear')}
+                              </button>
+                            </>
+                          )}
+                        </div>
+
+                        {/* Drawn cards display */}
+                        {quickDrawCards.length > 0 && (
+                          <div className="flex flex-wrap gap-3 justify-start">
+                            {quickDrawCards.map((card, i) => (
+                              <motion.div
+                                key={`qd-${card.id}-${i}`}
+                                initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                transition={{ duration: 0.2, ease: 'easeOut' }}
+                                className="flex flex-col items-center gap-1"
+                              >
+                                <div className={`relative w-[60px] sm:w-[72px] aspect-[2/3] rounded-lg overflow-hidden border-2 shadow-md ${
+                                  card.isReversed
+                                    ? 'border-[#8B1D33] dark:border-[#A3B1C6]/45'
+                                    : 'border-[#B8863A] dark:border-[#D4AF37]/35'
+                                }`}>
+                                  <img
+                                    src={getCardImagePath(mode === 'thoth' ? 'thoth' : mode === 'lenormand' ? 'lenormand' : 'waite', card.id)}
+                                    alt={lang === 'en' ? card.nameEN : card.nameCN}
+                                    loading="lazy"
+                                    className="absolute inset-0 w-full h-full object-cover"
+                                    style={{ transform: card.isReversed ? 'rotate(180deg)' : 'none' }}
+                                  />
+                                  {card.isReversed && (
+                                    <div className="absolute top-1 right-1 badge-reversed text-[8px] font-bold px-1 py-0.5 rounded shadow-sm z-10">
+                                      {lang === 'en' ? 'Rev' : '逆'}
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="text-center w-[60px] sm:w-[72px]">
+                                  <div className="text-[9px] sm:text-[10px] font-bold text-muted">{i + 1}</div>
+                                  <div className="text-[10px] sm:text-xs font-bold text-heading leading-tight line-clamp-2">
+                                    {lang === 'en' ? card.nameEN : card.nameCN}
+                                  </div>
+                                  {card.isReversed !== undefined && (
+                                    <div className={`text-[9px] font-bold ${card.isReversed ? 'text-reversed' : 'text-upright'}`}>
+                                      {card.isReversed ? (lang === 'en' ? 'Reversed' : '逆位') : (lang === 'en' ? 'Upright' : '正位')}
+                                    </div>
+                                  )}
+                                </div>
+                              </motion.div>
+                            ))}
+                          </div>
+                        )}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </section>
 
                 {/* Donation + Legal footer */}
                 <div className="mt-auto pt-8 pb-2 border-t divider-subtle flex flex-col items-center gap-3">
